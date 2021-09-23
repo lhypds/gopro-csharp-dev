@@ -25,7 +25,7 @@ using Windows.Devices.Enumeration;
 using Windows.Media.MediaProperties;
 using Windows.Storage.Streams;
 
-namespace GoProCSharpSample
+namespace GoProCSharpDev
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

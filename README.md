@@ -1,4 +1,4 @@
-# GoProCSharpSample
+# GoProCSharpDev
 
 This sample demonstrates how to discover, pair, and connect to a GoPro camera via Bluetooth LE (BLE). Once a connection is established, the code shows how to:
 

@@ -1,9 +1,9 @@
-﻿<Window x:Class="GoProCSharpSample.MainWindow"
+﻿<Window x:Class="GoProCSharpDev.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GoProCSharpSample"
+        xmlns:local="clr-namespace:GoProCSharpDev"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="GoPro C# Sample" Height="378" Width="400" ResizeMode="NoResize">
