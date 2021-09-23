@@ -6,23 +6,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
-using Windows.Media.MediaProperties;
 using Windows.Storage.Streams;
 
 namespace GoProCSharpDev
@@ -40,22 +29,28 @@ namespace GoProCSharpDev
                 DeviceInfo = inDeviceInformation;
                 IsPresent = inPresent;
                 IsConnected = inConnected;
-            } 
+            }
+
             public DeviceInformation DeviceInfo { get; set; } = null;
+
             public bool IsPresent { get; set; } = false;
+
             public bool IsConnected { get; set; } = false;
+
             public bool IsVisible { get { return IsPresent || IsConnected; } }
 
             private GDeviceInformation() { }
         }
 
         #region Binded Properties
+
         public ObservableCollection<GDeviceInformation> Devices
         {
             get; set;
         } = new ObservableCollection<GDeviceInformation>();
 
         private bool mEncoding = false;
+
         public bool Encoding
         {
             get
@@ -73,6 +68,7 @@ namespace GoProCSharpDev
         }
 
         private int mBatterylevel = 0;
+
         public int BatteryLevel
         {
             get
@@ -90,6 +86,7 @@ namespace GoProCSharpDev
         }
 
         private bool mWifiOn = false;
+
         public bool WifiOn
         {
             get
@@ -109,6 +106,7 @@ namespace GoProCSharpDev
         #endregion
 
         #region Bluetooth Device Members
+
         private BluetoothLEDevice mBLED = null;
         public GattCharacteristic mNotifyCmds = null;
         public GattCharacteristic mSendCmds = null;
@@ -118,6 +116,7 @@ namespace GoProCSharpDev
         public GattCharacteristic mNotifyQueryResp = null;
         public GattCharacteristic mReadAPName = null;
         public GattCharacteristic mReadAPPass = null;
+
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -149,6 +148,7 @@ namespace GoProCSharpDev
             this.txtStatusBar.Text = "Scanning for devices...";
             mDeviceWatcher.Start();
         }
+
         private async void BtnPair_Click(object sender, RoutedEventArgs e)
         {
             GDeviceInformation lDevice = (GDeviceInformation)lbDevices.SelectedItem;
@@ -175,6 +175,7 @@ namespace GoProCSharpDev
                 StatusOutput("Select a device");
             }
         }
+
         private async void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
             StatusOutput("Connecting...");
@@ -190,6 +191,7 @@ namespace GoProCSharpDev
                 StatusOutput("Device not paired");
                 return;
             }
+
             GattDeviceServicesResult result = await mBLED.GetGattServicesAsync();
             mBLED.ConnectionStatusChanged += MBLED_ConnectionStatusChanged;
 
@@ -209,26 +211,32 @@ namespace GoProCSharpDev
                             {
                                 // This characteristic supports reading from it.
                             }
+
                             if (properties.HasFlag(GattCharacteristicProperties.Write))
                             {
                                 // This characteristic supports writing to it.
                             }
+
                             if (properties.HasFlag(GattCharacteristicProperties.Notify))
                             {
                                 // This characteristic supports subscribing to notifications.
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90002-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mReadAPName = characteristic;
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90003-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mReadAPPass = characteristic;
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90072-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mSendCmds = characteristic;
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90073-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mNotifyCmds = characteristic;
@@ -243,10 +251,12 @@ namespace GoProCSharpDev
                                     StatusOutput("Failed to attach notify cmd " + status);
                                 }
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90074-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mSetSettings = characteristic;
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90075-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mNotifySettings = characteristic;
@@ -261,10 +271,12 @@ namespace GoProCSharpDev
                                     StatusOutput("Failed to attach notify settings " + status);
                                 }
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90076-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mSendQueries = characteristic;
                             }
+
                             if (characteristic.Uuid.ToString() == "b5f90077-aa8d-11e3-9046-0002a5d5c51b")
                             {
                                 mNotifyQueryResp = characteristic;
@@ -304,6 +316,7 @@ namespace GoProCSharpDev
                 StatusOutput("Connection failed");
             }
         }
+
         private async void BtnReadAPName_Click(object sender, RoutedEventArgs e)
         {
             if (mReadAPName != null)
@@ -325,6 +338,7 @@ namespace GoProCSharpDev
                 StatusOutput("Not connected");
             }
         }
+
         private async void BtnReadAPPass_Click(object sender, RoutedEventArgs e)
         {
             if (mReadAPPass != null)
@@ -346,18 +360,22 @@ namespace GoProCSharpDev
                 StatusOutput("Not connected");
             }
         }
+
         private void BtnTurnWifiOn_Click(object sender, RoutedEventArgs e)
         {
             TogglefWifiAP(1);
         }
+
         private void BtnTurnWifiOff_Click(object sender, RoutedEventArgs e)
         {
             TogglefWifiAP(0);
         }
+
         private void BtnShutterOn_Click(object sender, RoutedEventArgs e)
         {
             ToggleShutter(1);
         }
+
         private void BtnShutterOff_Click(object sender, RoutedEventArgs e)
         {
             ToggleShutter(0);
@@ -366,6 +384,7 @@ namespace GoProCSharpDev
         #endregion
 
         #region Device Watcher Event Handlers
+
         private void MDeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
@@ -405,6 +424,7 @@ namespace GoProCSharpDev
             {
                 isPresent = (bool)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"];
             }
+
             if (args.Properties.ContainsKey("System.Devices.Aep.IsConnected"))
             {
                 isConnected = (bool)args.Properties["System.Devices.Aep.IsConnected"];
@@ -446,6 +466,7 @@ namespace GoProCSharpDev
             {
                 isPresent = (bool)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"];
             }
+
             if (args.Properties.ContainsKey("System.Devices.Aep.IsConnected"))
             {
                 isConnected = (bool)args.Properties["System.Devices.Aep.IsConnected"];
@@ -472,6 +493,7 @@ namespace GoProCSharpDev
                         break;
                     }
                 }
+
                 if (!found && (isPresent || isConnected))
                 {
                     Application.Current.Dispatcher.BeginInvoke(new Action(() =>
@@ -546,7 +568,9 @@ namespace GoProCSharpDev
         }
 
         private readonly List<byte> mBufSet = new List<byte>();
+
         private int mExpectedLengthSet = 0;
+
         private void MNotifySettings_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
@@ -569,7 +593,9 @@ namespace GoProCSharpDev
         }
 
         private readonly List<byte> mBufCmd = new List<byte>();
+
         private int mExpectedLengthCmd = 0;
+
         private void MNotifyCmds_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
@@ -605,6 +631,7 @@ namespace GoProCSharpDev
             {
                 res = await mSendCmds.WriteValueAsync(mm.DetachBuffer());
             }
+
             if (res != GattCommunicationStatus.Success && mSendCmds != null)
             {
                 StatusOutput("Failed to set command source: " + res.ToString());
@@ -618,11 +645,13 @@ namespace GoProCSharpDev
                 this.txtStatusBar.Text = status;
             }));
         }
+
         private int ReadBytesIntoBuffer(byte[] bytes, List<byte> mBuf)
         {
             int returnLength = -1;
             int startbyte = 1;
             int theseBytes = bytes.Length;
+
             if ((bytes[0] & 32) > 0)
             {
                 //extended 13 bit header
@@ -646,11 +675,13 @@ namespace GoProCSharpDev
                 //8 bit header
                 returnLength = bytes[0];
             }
+
             for (int k = startbyte; k < theseBytes; k++)
                 mBuf.Add(bytes[k]);
 
             return returnLength;
         }
+
         private async void TogglefWifiAP(int onOff)
         {
             DataWriter mm = new DataWriter();
@@ -670,13 +701,19 @@ namespace GoProCSharpDev
                 StatusOutput("Failed to turn on wifi: " + res.ToString());
             }
         }
-        private async void ToggleShutter(int onOff)
+
+        private void ToggleShutter(int onOff)
+        {
+            SendCommand(3, 1, 1, onOff, "Failed to send shutter");
+        }
+
+        private async void SendCommand(int code1, int code2, int code3, int code4, string msgError)
         {
             DataWriter mm = new DataWriter();
-            mm.WriteBytes(new byte[] { 3, 1, 1, (byte)onOff });
+            mm.WriteBytes(new byte[] { (byte)code1, (byte)code2, (byte)code3, (byte)code4 });
             GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
 
-            if (onOff != 1 && onOff != 0)
+            if (code4 != 1 && code4 != 0)
             {
                 res = GattCommunicationStatus.AccessDenied;
             }
@@ -686,12 +723,11 @@ namespace GoProCSharpDev
             }
             if (res != GattCommunicationStatus.Success)
             {
-                StatusOutput("Failed to send shutter: " + res.ToString());
+                StatusOutput(msgError +  ": " + res.ToString());
             }
         }
 
         #endregion
-
     }
 
     public class BrushBoolColorConverter : IValueConverter
@@ -704,6 +740,7 @@ namespace GoProCSharpDev
             }
             return new SolidColorBrush(Color.FromRgb(255, 100, 100));
         }
+
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
