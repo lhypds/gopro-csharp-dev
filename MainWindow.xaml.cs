@@ -702,18 +702,13 @@ namespace GoProCSharpDev
             }
         }
 
-        private void ToggleShutter(int onOff)
-        {
-            SendCommand(3, 1, 1, onOff, "Failed to send shutter");
-        }
-
-        private async void SendCommand(int code1, int code2, int code3, int code4, string msgError)
+        private async void ToggleShutter(int onOff)
         {
             DataWriter mm = new DataWriter();
-            mm.WriteBytes(new byte[] { (byte)code1, (byte)code2, (byte)code3, (byte)code4 });
+            mm.WriteBytes(new byte[] { 3, 1, 1, (byte)onOff });
             GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
 
-            if (code4 != 1 && code4 != 0)
+            if (onOff != 1 && onOff != 0)
             {
                 res = GattCommunicationStatus.AccessDenied;
             }
@@ -723,9 +718,34 @@ namespace GoProCSharpDev
             }
             if (res != GattCommunicationStatus.Success)
             {
-                StatusOutput(msgError + ": " + res.ToString());
+                StatusOutput("Failed to send shutter: " + res.ToString());
             }
         }
+
+        //private void ToggleShutter(int onOff)
+        //{
+        //    SendCommand(3, 1, 1, onOff, "Failed to send shutter");
+        //}
+
+        //private async void SendCommand(int code1, int code2, int code3, int code4, string msgError)
+        //{
+        //    DataWriter mm = new DataWriter();
+        //    mm.WriteBytes(new byte[] { (byte)code1, (byte)code2, (byte)code3, (byte)code4 });
+        //    GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
+
+        //    if (code4 != 1 && code4 != 0)
+        //    {
+        //        res = GattCommunicationStatus.AccessDenied;
+        //    }
+        //    else if (mSendCmds != null)
+        //    {
+        //        res = await mSendCmds.WriteValueAsync(mm.DetachBuffer());
+        //    }
+        //    if (res != GattCommunicationStatus.Success)
+        //    {
+        //        StatusOutput(msgError + ": " + res.ToString());
+        //    }
+        //}
 
         #endregion
     }
