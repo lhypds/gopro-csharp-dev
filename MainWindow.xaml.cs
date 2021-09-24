@@ -723,7 +723,7 @@ namespace GoProCSharpDev
             }
             if (res != GattCommunicationStatus.Success)
             {
-                StatusOutput(msgError +  ": " + res.ToString());
+                StatusOutput(msgError + ": " + res.ToString());
             }
         }
 
