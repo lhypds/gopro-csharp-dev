@@ -21,7 +21,6 @@ namespace GoProCSharpDev
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
         public class GDeviceInformation
         {
             public GDeviceInformation(DeviceInformation inDeviceInformation, bool inPresent, bool inConnected)
@@ -60,10 +59,7 @@ namespace GoProCSharpDev
             set
             {
                 mEncoding = value;
-                if (this.PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("Encoding"));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Encoding"));
             }
         }
 
@@ -78,10 +74,7 @@ namespace GoProCSharpDev
             set
             {
                 mBatterylevel = value;
-                if (this.PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("BatteryLevel"));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatteryLevel"));
             }
         }
 
@@ -96,7 +89,7 @@ namespace GoProCSharpDev
             set
             {
                 mWifiOn = value;
-                if (this.PropertyChanged != null)
+                if (PropertyChanged != null)
                 {
                     PropertyChanged(this, new PropertyChangedEventArgs("WifiOn"));
                 }
@@ -346,7 +339,7 @@ namespace GoProCSharpDev
                 GattReadResult res = await mReadAPPass.ReadValueAsync();
                 if (res.Status == GattCommunicationStatus.Success)
                 {
-                    DataReader dataReader = Windows.Storage.Streams.DataReader.FromBuffer(res.Value);
+                    DataReader dataReader = DataReader.FromBuffer(res.Value);
                     string output = dataReader.ReadString(res.Value.Length);
                     txtAPPassword.Text = output;
                 }
@@ -444,6 +437,7 @@ namespace GoProCSharpDev
                     break;
                 }
             }
+
             if(!found && (isPresent || isConnected))
             {
                 if (mAllDevices.ContainsKey(args.Id))
@@ -511,10 +505,11 @@ namespace GoProCSharpDev
         private void MBLED_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
         {
             if (sender.ConnectionStatus == BluetoothConnectionStatus.Connected)
-                StatusOutput("CONNECTED");
+                StatusOutput("Connected");
             else
-                StatusOutput("DISCONNECTED");
+                StatusOutput("Disconnected");
         }
+
         private void Custom_PairingRequested(DeviceInformationCustomPairing sender, DevicePairingRequestedEventArgs args)
         {
             StatusOutput("Pairing request...");
@@ -527,11 +522,13 @@ namespace GoProCSharpDev
 
         private readonly List<byte> mBufQ = new List<byte>();
         private int mExpectedLengthQ = 0;
+
         private void MNotifyQueryResp_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            var reader = DataReader.FromBuffer(args.CharacteristicValue);
+            DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
             reader.ReadBytes(myBytes);
+
             int newLength = ReadBytesIntoBuffer(myBytes, mBufQ);
             if (newLength > 0)
                 mExpectedLengthQ = newLength;
@@ -540,17 +537,19 @@ namespace GoProCSharpDev
             {
                 if ((mBufQ[0] == 0x53 || mBufQ[0] == 0x93) && mBufQ[1] == 0)
                 {
-                    //status messages
+                    // Status messages
                     for (int k = 0; k < mBufQ.Count;)
                     {
                         if (mBufQ[k] == 10)
                         {
                             Encoding = mBufQ[k + 2] > 0;
                         }
+
                         if (mBufQ[k] == 70)
                         {
                             BatteryLevel = mBufQ[k + 2];
                         }
+
                         if(mBufQ[k] == 69)
                         {
                             WifiOn = mBufQ[k + 2] == 1;
@@ -560,7 +559,7 @@ namespace GoProCSharpDev
                 }
                 else
                 {
-                    //Unhandled Query Message
+                    // Unhandled Query Message
                 }
                 mBufQ.Clear();
                 mExpectedLengthQ = 0;
@@ -701,7 +700,7 @@ namespace GoProCSharpDev
                 StatusOutput("Failed to turn on wifi: " + res.ToString());
             }
         }
-
+        
         private async void ToggleShutter(int onOff)
         {
             DataWriter mm = new DataWriter();
