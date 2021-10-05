@@ -17,8 +17,8 @@
         </Grid.ColumnDefinitions>
         <Label Content="Devices" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top"/>
         <ListBox x:Name="lbDevices" ItemsSource="{Binding Devices}" DisplayMemberPath="DeviceInfo.Name" HorizontalAlignment="Left" Height="167" Margin="10,33,0,0" VerticalAlignment="Top" Width="174"/>
-        <GroupBox Grid.Column="1" Header="BLE" HorizontalAlignment="Left" Height="190" Margin="10,10,0,0" VerticalAlignment="Top" Width="180"/>
 
+        <GroupBox Grid.Column="1" Header="BLE" HorizontalAlignment="Left" Height="190" Margin="10,10,0,0" VerticalAlignment="Top" Width="180"/>
         <Button x:Name="btnScanBLE" Content="Scan" Grid.Column="1" HorizontalAlignment="Left" Margin="20,33,0,0" VerticalAlignment="Top" Width="75" Click="BtnScanBLE_Click"/>
         <Button x:Name="btnPair" Content="Pair" Grid.Column="1" HorizontalAlignment="Right" Margin="0,33,20,0" VerticalAlignment="Top" Width="75" Click="BtnPair_Click"/>
         <Button x:Name="btnConnect" Content="Connect" Grid.Column="1" HorizontalAlignment="Left" Margin="20,58,0,0" VerticalAlignment="Top" Width="75" Click="BtnConnect_Click" />
@@ -28,7 +28,6 @@
         <Button x:Name="btnTurnWifiOff" Content="Wifi AP off" Grid.Column="1" HorizontalAlignment="Left" Margin="105,133,0,0" VerticalAlignment="Top" Width="75" Click="BtnTurnWifiOff_Click"  />
         <Button x:Name="btnShutterOn" Content="Shutter on" Grid.Column="1" HorizontalAlignment="Left" Margin="20,158,0,0" VerticalAlignment="Top" Width="75" Click="BtnShutterOn_Click" />
         <Button x:Name="btnShutterOff" Content="Shutter off" Grid.Column="1" HorizontalAlignment="Left" Margin="105,158,0,0" VerticalAlignment="Top" Width="75" Click="BtnShutterOff_Click" />
-
         
         <GroupBox Grid.Column="1" Header="Status" HorizontalAlignment="Left" Height="117" Margin="10,205,0,0" VerticalAlignment="Top" Width="180"/>
         <Label Content="Encoding" HorizontalAlignment="Left" Margin="117,222,0,0" VerticalAlignment="Top" Padding="0" Grid.Column="1"/>

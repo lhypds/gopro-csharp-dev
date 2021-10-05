@@ -21,6 +21,7 @@ namespace GoProCSharpDev
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        // Device Information
         public class GDeviceInformation
         {
             public GDeviceInformation(DeviceInformation inDeviceInformation, bool inPresent, bool inConnected)
@@ -41,81 +42,56 @@ namespace GoProCSharpDev
             private GDeviceInformation() { }
         }
 
-        #region Binded Properties
+        public ObservableCollection<GDeviceInformation> Devices { get; set; } = new ObservableCollection<GDeviceInformation>();
 
-        public ObservableCollection<GDeviceInformation> Devices
-        {
-            get; set;
-        } = new ObservableCollection<GDeviceInformation>();
-
-        private bool mEncoding = false;
+        // Encoding
+        private bool _Encoding = false;
 
         public bool Encoding
         {
-            get
-            {
-                return mEncoding;
-            }
-            set
-            {
-                mEncoding = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Encoding"));
-            }
+            get => _Encoding;
+            set { _Encoding = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Encoding")); }
         }
 
-        private int mBatterylevel = 0;
+        // Battery Level
+        private int _Batterylevel = 0;
 
         public int BatteryLevel
         {
-            get
-            {
-                return mBatterylevel;
-            }
-            set
-            {
-                mBatterylevel = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatteryLevel"));
-            }
+            get => _Batterylevel;
+            set { _Batterylevel = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatteryLevel")); }
         }
 
-        private bool mWifiOn = false;
+        // Wifi
+        private bool _WifiOn = false;
 
         public bool WifiOn
         {
-            get
-            {
-                return mWifiOn;
-            }
-            set
-            {
-                mWifiOn = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("WifiOn"));
-                }
-            }
+            get => _WifiOn;
+            set { _WifiOn = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WifiOn")); }
         }
 
-        #endregion
+        // Bluetooth
+        private BluetoothLEDevice _BleDevice = null;
+        public GattCharacteristic _NotifyCmds = null;
+        public GattCharacteristic _SendCmds = null;
+        public GattCharacteristic _SetSettings = null;
+        public GattCharacteristic _NotifySettings = null;
+        public GattCharacteristic _SendQueries = null;
+        public GattCharacteristic _NotifyQueryResp = null;
+        public GattCharacteristic _ReadApName = null;
+        public GattCharacteristic _ReadApPass = null;
 
-        #region Bluetooth Device Members
+        // Bluetooth GATT Characteristic
+        private readonly List<byte> _BufQ = new List<byte>();
+        private int _ExpectedLengthQ = 0;
+        private readonly List<byte> _BufCmd = new List<byte>();
+        private int _ExpectedLengthCmd = 0;
 
-        private BluetoothLEDevice mBLED = null;
-        public GattCharacteristic mNotifyCmds = null;
-        public GattCharacteristic mSendCmds = null;
-        public GattCharacteristic mSetSettings = null;
-        public GattCharacteristic mNotifySettings = null;
-        public GattCharacteristic mSendQueries = null;
-        public GattCharacteristic mNotifyQueryResp = null;
-        public GattCharacteristic mReadAPName = null;
-        public GattCharacteristic mReadAPPass = null;
-
-        #endregion
-
+        // Devices
+        private DeviceWatcher _DeviceWatcher = null;
+        private readonly Dictionary<string, DeviceInformation> _AllDevices = new Dictionary<string, DeviceInformation>();
         public event PropertyChangedEventHandler PropertyChanged;
-
-        DeviceWatcher mDeviceWatcher = null;
-        private readonly Dictionary<string, DeviceInformation> mAllDevices = new Dictionary<string, DeviceInformation>();
 
         public MainWindow()
         {
@@ -123,70 +99,202 @@ namespace GoProCSharpDev
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
-        #region Button Click Handlers
+        private void UpateStatusBar(string status)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.txtStatusBar.Text = status;
+            }));
+        }
 
         private void BtnScanBLE_Click(object sender, RoutedEventArgs e)
         {
-            string BLESelector = "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"";
+            string BleSelector = "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"";
             DeviceInformationKind deviceInformationKind = DeviceInformationKind.AssociationEndpoint;
             string[] requiredProperties = { "System.Devices.Aep.Bluetooth.Le.IsConnectable", "System.Devices.Aep.IsConnected" };
 
-            mDeviceWatcher = DeviceInformation.CreateWatcher(BLESelector, requiredProperties, deviceInformationKind);
-            mDeviceWatcher.Added += MDeviceWatcher_Added; ;
-            mDeviceWatcher.Updated += MDeviceWatcher_Updated; ;
-            mDeviceWatcher.Removed += MDeviceWatcher_Removed; ;
-            mDeviceWatcher.EnumerationCompleted += MDeviceWatcher_EnumerationCompleted; ;
-            mDeviceWatcher.Stopped += MDeviceWatcher_Stopped; ;
+            _DeviceWatcher = DeviceInformation.CreateWatcher(BleSelector, requiredProperties, deviceInformationKind);
+            _DeviceWatcher.Added += DeviceWatcher_Added;
+            _DeviceWatcher.Updated += DeviceWatcher_Updated;
+            _DeviceWatcher.Removed += DeviceWatcher_Removed;
+            _DeviceWatcher.EnumerationCompleted += DeviceWatcher_EnumerationCompleted;
+            _DeviceWatcher.Stopped += DeviceWatcher_Stopped;
 
             this.txtStatusBar.Text = "Scanning for devices...";
-            mDeviceWatcher.Start();
+            _DeviceWatcher.Start();
         }
+
+        #region Device Watcher Event Handlers
+
+        private void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.txtStatusBar.Text = "Scan Stopped!";
+            }));
+        }
+
+        private void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.txtStatusBar.Text = "Scan Complete";
+            }));
+        }
+
+        private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
+        {
+            for (int i = 0; i < Devices.Count; i++)
+            {
+                if (Devices[i].DeviceInfo.Id == args.Id)
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => { Devices.RemoveAt(i); }));
+                    break;
+                }
+            }
+        }
+
+        private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
+        {
+            bool isPresent = false, isConnected = false, found = false;
+
+            if (args.Properties.ContainsKey("System.Devices.Aep.Bluetooth.Le.IsConnectable"))
+            {
+                isPresent = (bool)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"];
+            }
+
+            if (args.Properties.ContainsKey("System.Devices.Aep.IsConnected"))
+            {
+                isConnected = (bool)args.Properties["System.Devices.Aep.IsConnected"];
+            }
+
+            for (int i = 0; i < Devices.Count; i++)
+            {
+                if (Devices[i].DeviceInfo.Id == args.Id)
+                {
+                    found = true;
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        Devices[i].DeviceInfo.Update(args);
+                        Devices[i].IsPresent = isPresent;
+                        Devices[i].IsConnected = isConnected;
+                    }));
+                    break;
+                }
+            }
+
+            if (!found && (isPresent || isConnected))
+            {
+                if (_AllDevices.ContainsKey(args.Id))
+                {
+                    _AllDevices[args.Id].Update(args);
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        Devices.Add(new GDeviceInformation(_AllDevices[args.Id], isPresent, isConnected));
+                    }));
+                }
+            }
+        }
+
+        private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
+        {
+            bool isPresent = false;
+            bool isConnected = false;
+
+            if (args.Properties.ContainsKey("System.Devices.Aep.Bluetooth.Le.IsConnectable"))
+            {
+                isPresent = (bool)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"];
+            }
+
+            if (args.Properties.ContainsKey("System.Devices.Aep.IsConnected"))
+            {
+                isConnected = (bool)args.Properties["System.Devices.Aep.IsConnected"];
+            }
+
+            if (args.Name != "" && args.Name.Contains("GoPro"))
+            {
+                bool found = false;
+                if (!_AllDevices.ContainsKey(args.Id))
+                {
+                    _AllDevices.Add(args.Id, args);
+                }
+
+                for (int i = 0; i < Devices.Count; i++)
+                {
+                    if (Devices[i].DeviceInfo.Id == args.Id)
+                    {
+                        found = true;
+                        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            Devices[i].DeviceInfo = args;
+                            Devices[i].IsPresent = isPresent;
+                            Devices[i].IsConnected = isConnected;
+                        }));
+                        break;
+                    }
+                }
+
+                if (!found && (isPresent || isConnected))
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        Devices.Add(new GDeviceInformation(args, isPresent, isConnected));
+                    }));
+                }
+            }
+        }
+
+        #endregion
 
         private async void BtnPair_Click(object sender, RoutedEventArgs e)
         {
             GDeviceInformation lDevice = (GDeviceInformation)lbDevices.SelectedItem;
             if (lDevice != null)
             {
-                StatusOutput("Pairing started");
-
-                mBLED = await BluetoothLEDevice.FromIdAsync(lDevice.DeviceInfo.Id);
-                mBLED.DeviceInformation.Pairing.Custom.PairingRequested += Custom_PairingRequested;
-                if (mBLED.DeviceInformation.Pairing.CanPair)
+                UpateStatusBar("Pairing started");
+                _BleDevice = await BluetoothLEDevice.FromIdAsync(lDevice.DeviceInfo.Id);
+                _BleDevice.DeviceInformation.Pairing.Custom.PairingRequested += Custom_PairingRequested;
+                if (_BleDevice.DeviceInformation.Pairing.CanPair)
                 {
-                    DevicePairingProtectionLevel dppl = mBLED.DeviceInformation.Pairing.ProtectionLevel;
-                    DevicePairingResult dpr = await mBLED.DeviceInformation.Pairing.Custom.PairAsync(DevicePairingKinds.ConfirmOnly, dppl);
-
-                    StatusOutput("Pairing result = " + dpr.Status.ToString());
+                    DevicePairingProtectionLevel dppl = _BleDevice.DeviceInformation.Pairing.ProtectionLevel;
+                    DevicePairingResult dpr = await _BleDevice.DeviceInformation.Pairing.Custom.PairAsync(DevicePairingKinds.ConfirmOnly, dppl);
+                    UpateStatusBar("Pairing result = " + dpr.Status.ToString());
                 }
                 else
                 {
-                    StatusOutput("Pairing failed");
+                    UpateStatusBar("Pairing failed");
                 }
             }
             else
             {
-                StatusOutput("Select a device");
+                UpateStatusBar("Select a device");
             }
+        }
+
+        private void Custom_PairingRequested(DeviceInformationCustomPairing sender, DevicePairingRequestedEventArgs args)
+        {
+            UpateStatusBar("Pairing request...");
+            args.Accept();
         }
 
         private async void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
-            StatusOutput("Connecting...");
+            UpateStatusBar("Connecting...");
             GDeviceInformation mDI = (GDeviceInformation)lbDevices.SelectedItem;
             if (mDI == null)
             {
-                StatusOutput("No device selected");
+                UpateStatusBar("No device selected");
                 return;
             }
-            mBLED = await BluetoothLEDevice.FromIdAsync(mDI.DeviceInfo.Id);
-            if(!mBLED.DeviceInformation.Pairing.IsPaired)
+            _BleDevice = await BluetoothLEDevice.FromIdAsync(mDI.DeviceInfo.Id);
+            if(!_BleDevice.DeviceInformation.Pairing.IsPaired)
             {
-                StatusOutput("Device not paired");
+                UpateStatusBar("Device not paired");
                 return;
             }
 
-            GattDeviceServicesResult result = await mBLED.GetGattServicesAsync();
-            mBLED.ConnectionStatusChanged += MBLED_ConnectionStatusChanged;
+            GattDeviceServicesResult result = await _BleDevice.GetGattServicesAsync();
+            _BleDevice.ConnectionStatusChanged += MBLED_ConnectionStatusChanged;
 
             if (result.Status == GattCommunicationStatus.Success)
             {
@@ -217,85 +325,85 @@ namespace GoProCSharpDev
 
                             if (characteristic.Uuid.ToString() == "b5f90002-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mReadAPName = characteristic;
+                                _ReadApName = characteristic;
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90003-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mReadAPPass = characteristic;
+                                _ReadApPass = characteristic;
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90072-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mSendCmds = characteristic;
+                                _SendCmds = characteristic;
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90073-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mNotifyCmds = characteristic;
-                                GattCommunicationStatus status = await mNotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                _NotifyCmds = characteristic;
+                                GattCommunicationStatus status = await _NotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                 if (status == GattCommunicationStatus.Success)
                                 {
-                                    mNotifyCmds.ValueChanged += MNotifyCmds_ValueChanged;
+                                    _NotifyCmds.ValueChanged += MNotifyCmds_ValueChanged;
                                 }
                                 else
                                 {
                                     //failure
-                                    StatusOutput("Failed to attach notify cmd " + status);
+                                    UpateStatusBar("Failed to attach notify cmd " + status);
                                 }
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90074-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mSetSettings = characteristic;
+                                _SetSettings = characteristic;
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90075-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mNotifySettings = characteristic;
-                                GattCommunicationStatus status = await mNotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                _NotifySettings = characteristic;
+                                GattCommunicationStatus status = await _NotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                 if (status == GattCommunicationStatus.Success)
                                 {
-                                    mNotifySettings.ValueChanged += MNotifySettings_ValueChanged;
+                                    _NotifySettings.ValueChanged += NotifySettings_ValueChanged;
                                 }
                                 else
                                 {
                                     //failure
-                                    StatusOutput("Failed to attach notify settings " + status);
+                                    UpateStatusBar("Failed to attach notify settings " + status);
                                 }
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90076-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mSendQueries = characteristic;
+                                _SendQueries = characteristic;
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90077-aa8d-11e3-9046-0002a5d5c51b")
                             {
-                                mNotifyQueryResp = characteristic;
-                                GattCommunicationStatus status = await mNotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                _NotifyQueryResp = characteristic;
+                                GattCommunicationStatus status = await _NotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                 if (status == GattCommunicationStatus.Success)
                                 {
-                                    mNotifyQueryResp.ValueChanged += MNotifyQueryResp_ValueChanged;
-                                    if (mSendQueries != null)
+                                    _NotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
+                                    if (_SendQueries != null)
                                     {
                                         //Register for settings and status updates
                                         DataWriter mm = new DataWriter();
                                         mm.WriteBytes(new byte[] { 1, 0x52 });
-                                        GattCommunicationStatus gat = await mSendQueries.WriteValueAsync(mm.DetachBuffer());
+                                        GattCommunicationStatus gat = await _SendQueries.WriteValueAsync(mm.DetachBuffer());
                                         mm = new DataWriter();
                                         mm.WriteBytes(new byte[] { 1, 0x53 });
-                                        gat = await mSendQueries.WriteValueAsync(mm.DetachBuffer());
+                                        gat = await _SendQueries.WriteValueAsync(mm.DetachBuffer());
                                     }
                                     else
                                     {
-                                        StatusOutput("send queries was null!");
+                                        UpateStatusBar("send queries was null!");
                                     }
                                 }
                                 else
                                 {
                                     //failure
-                                    StatusOutput("Failed to attach notify query " + status);
+                                    UpateStatusBar("Failed to attach notify query " + status);
                                 }
                             }
                         }
@@ -305,16 +413,28 @@ namespace GoProCSharpDev
             }
             else if (result.Status == GattCommunicationStatus.Unreachable)
             {
-                //couldn't find camera
-                StatusOutput("Connection failed");
+                // couldn't find camera
+                UpateStatusBar("Connection failed");
+            }
+        }
+
+        private void MBLED_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
+        {
+            if (sender.ConnectionStatus == BluetoothConnectionStatus.Connected)
+            {
+                UpateStatusBar("Connected");
+            }
+            else
+            {
+                UpateStatusBar("Disconnected");
             }
         }
 
         private async void BtnReadAPName_Click(object sender, RoutedEventArgs e)
         {
-            if (mReadAPName != null)
+            if (_ReadApName != null)
             {
-                GattReadResult res = await mReadAPName.ReadValueAsync();
+                GattReadResult res = await _ReadApName.ReadValueAsync();
                 if (res.Status == GattCommunicationStatus.Success)
                 {
                     DataReader dataReader = Windows.Storage.Streams.DataReader.FromBuffer(res.Value);
@@ -323,20 +443,20 @@ namespace GoProCSharpDev
                 }
                 else
                 {
-                    StatusOutput("Failed to read ap name");
+                    UpateStatusBar("Failed to read ap name");
                 }
             }
             else
             {
-                StatusOutput("Not connected");
+                UpateStatusBar("Not connected");
             }
         }
 
         private async void BtnReadAPPass_Click(object sender, RoutedEventArgs e)
         {
-            if (mReadAPPass != null)
+            if (_ReadApPass != null)
             {
-                GattReadResult res = await mReadAPPass.ReadValueAsync();
+                GattReadResult res = await _ReadApPass.ReadValueAsync();
                 if (res.Status == GattCommunicationStatus.Success)
                 {
                     DataReader dataReader = DataReader.FromBuffer(res.Value);
@@ -345,12 +465,12 @@ namespace GoProCSharpDev
                 }
                 else
                 {
-                    StatusOutput("Failed to read password");
+                    UpateStatusBar("Failed to read password");
                 }
             }
             else
             {
-                StatusOutput("Not connected");
+                UpateStatusBar("Not connected");
             }
         }
 
@@ -364,6 +484,26 @@ namespace GoProCSharpDev
             TogglefWifiAP(0);
         }
 
+        private async void TogglefWifiAP(int onOff)
+        {
+            DataWriter writer = new DataWriter();
+            writer.WriteBytes(new byte[] { 0x03, 0x17, 0x01, (byte)onOff });
+            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
+
+            if (onOff != 1 && onOff != 0)
+            {
+                res = GattCommunicationStatus.AccessDenied;
+            }
+            else if (_SendCmds != null)
+            {
+                res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
+            }
+            if (res != GattCommunicationStatus.Success)
+            {
+                UpateStatusBar("Failed to turn on wifi: " + res.ToString());
+            }
+        }
+
         private void BtnShutterOn_Click(object sender, RoutedEventArgs e)
         {
             ToggleShutter(1);
@@ -374,212 +514,85 @@ namespace GoProCSharpDev
             ToggleShutter(0);
         }
 
-        #endregion
-
-        #region Device Watcher Event Handlers
-
-        private void MDeviceWatcher_Stopped(DeviceWatcher sender, object args)
+        private async void ToggleShutter(int onOff)
         {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                this.txtStatusBar.Text = "Scan Stopped!";
-            }));
-        }
+            DataWriter writer = new DataWriter();
+            writer.WriteBytes(new byte[] { 3, 1, 1, (byte)onOff });
+            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
 
-        private void MDeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
-        {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            if (onOff != 1 && onOff != 0)
             {
-                this.txtStatusBar.Text = "Scan Complete";
-            }));
-        }
-
-        private void MDeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
-        {
-            for (int i = 0; i < Devices.Count; i++)
+                res = GattCommunicationStatus.AccessDenied;
+            }
+            else if (_SendCmds != null)
             {
-                if (Devices[i].DeviceInfo.Id == args.Id)
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        Devices.RemoveAt(i);
-                    }));
-                    break;
-                }
+                res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
+            }
+            if (res != GattCommunicationStatus.Success)
+            {
+                UpateStatusBar("Failed to send shutter: " + res.ToString());
             }
         }
 
-        private void MDeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
-        {
-            bool isPresent = false, isConnected = false, found = false;
+        // Bluetooth GATT Characteristic Notification Handlers
+        // A GATT characteristic is a basic data element used to construct a GATT service
 
-            if (args.Properties.ContainsKey("System.Devices.Aep.Bluetooth.Le.IsConnectable"))
-            {
-                isPresent = (bool)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"];
-            }
-
-            if (args.Properties.ContainsKey("System.Devices.Aep.IsConnected"))
-            {
-                isConnected = (bool)args.Properties["System.Devices.Aep.IsConnected"];
-            }
-
-            for (int i = 0; i < Devices.Count; i++)
-            {
-                if (Devices[i].DeviceInfo.Id == args.Id)
-                {
-                    found = true;
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        Devices[i].DeviceInfo.Update(args);
-                        Devices[i].IsPresent = isPresent;
-                        Devices[i].IsConnected = isConnected;
-                    }));
-                    break;
-                }
-            }
-
-            if(!found && (isPresent || isConnected))
-            {
-                if (mAllDevices.ContainsKey(args.Id))
-                {
-                    mAllDevices[args.Id].Update(args);
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        Devices.Add(new GDeviceInformation(mAllDevices[args.Id], isPresent, isConnected));
-                    }));
-                }
-            }
-        }
-
-        private void MDeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
-        {
-            bool isPresent = false;
-            bool isConnected = false;
-
-            if (args.Properties.ContainsKey("System.Devices.Aep.Bluetooth.Le.IsConnectable"))
-            {
-                isPresent = (bool)args.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"];
-            }
-
-            if (args.Properties.ContainsKey("System.Devices.Aep.IsConnected"))
-            {
-                isConnected = (bool)args.Properties["System.Devices.Aep.IsConnected"];
-            }
-
-            if (args.Name != "" && args.Name.Contains("GoPro"))
-            {
-                bool found = false;
-                if (!mAllDevices.ContainsKey(args.Id))
-                {
-                    mAllDevices.Add(args.Id, args);
-                }
-                for (int i = 0; i < Devices.Count; i++)
-                {
-                    if (Devices[i].DeviceInfo.Id == args.Id)
-                    {
-                        found = true;
-                        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            Devices[i].DeviceInfo = args;
-                            Devices[i].IsPresent = isPresent;
-                            Devices[i].IsConnected = isConnected;
-                        }));
-                        break;
-                    }
-                }
-
-                if (!found && (isPresent || isConnected))
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        Devices.Add(new GDeviceInformation(args, isPresent, isConnected));
-                    }));
-                }
-            }
-        }
-
-        #endregion
-
-        #region BLE Device Handlers
-
-        private void MBLED_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
-        {
-            if (sender.ConnectionStatus == BluetoothConnectionStatus.Connected)
-                StatusOutput("Connected");
-            else
-                StatusOutput("Disconnected");
-        }
-
-        private void Custom_PairingRequested(DeviceInformationCustomPairing sender, DevicePairingRequestedEventArgs args)
-        {
-            StatusOutput("Pairing request...");
-            args.Accept();
-        }
-
-        #endregion
-
-        #region Gatt Characteristic Notification Handlers
-
-        private readonly List<byte> mBufQ = new List<byte>();
-        private int mExpectedLengthQ = 0;
-
-        private void MNotifyQueryResp_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        private void NotifyQueryResp_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
             reader.ReadBytes(myBytes);
 
-            int newLength = ReadBytesIntoBuffer(myBytes, mBufQ);
+            int newLength = ReadBytesIntoBuffer(myBytes, _BufQ);
             if (newLength > 0)
-                mExpectedLengthQ = newLength;
+                _ExpectedLengthQ = newLength;
 
-            if (mExpectedLengthQ == mBufQ.Count)
+            if (_ExpectedLengthQ == _BufQ.Count)
             {
-                if ((mBufQ[0] == 0x53 || mBufQ[0] == 0x93) && mBufQ[1] == 0)
+                if ((_BufQ[0] == 0x53 || _BufQ[0] == 0x93) && _BufQ[1] == 0)
                 {
                     // Status messages
-                    for (int k = 0; k < mBufQ.Count;)
+                    for (int k = 0; k < _BufQ.Count;)
                     {
-                        if (mBufQ[k] == 10)
+                        if (_BufQ[k] == 10)
                         {
-                            Encoding = mBufQ[k + 2] > 0;
+                            Encoding = _BufQ[k + 2] > 0;
                         }
 
-                        if (mBufQ[k] == 70)
+                        if (_BufQ[k] == 70)
                         {
-                            BatteryLevel = mBufQ[k + 2];
+                            BatteryLevel = _BufQ[k + 2];
                         }
 
-                        if(mBufQ[k] == 69)
+                        if(_BufQ[k] == 69)
                         {
-                            WifiOn = mBufQ[k + 2] == 1;
+                            WifiOn = _BufQ[k + 2] == 1;
                         }
-                        k += 2 + mBufQ[k + 1];
+                        k += 2 + _BufQ[k + 1];
                     }
                 }
                 else
                 {
                     // Unhandled Query Message
                 }
-                mBufQ.Clear();
-                mExpectedLengthQ = 0;
+                _BufQ.Clear();
+                _ExpectedLengthQ = 0;
             }
         }
 
-        private readonly List<byte> mBufSet = new List<byte>();
+        private readonly List<byte> _BufSet = new List<byte>();
+        private int _ExpectedLengthSet = 0;
 
-        private int mExpectedLengthSet = 0;
-
-        private void MNotifySettings_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        private void NotifySettings_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
             reader.ReadBytes(myBytes);
-            int newLength = ReadBytesIntoBuffer(myBytes, mBufSet);
+            int newLength = ReadBytesIntoBuffer(myBytes, _BufSet);
             if (newLength > 0)
-                mExpectedLengthSet = newLength;
+                _ExpectedLengthSet = newLength;
 
-            if (mExpectedLengthSet == mBufSet.Count)
+            if (_ExpectedLengthSet == _BufSet.Count)
             {
                 /*
                 if (mBufSet[0] == 0xXX)
@@ -587,24 +600,20 @@ namespace GoProCSharpDev
 
                 }
                 */
-                mBufSet.Clear();
+                _BufSet.Clear();
             }
         }
 
-        private readonly List<byte> mBufCmd = new List<byte>();
-
-        private int mExpectedLengthCmd = 0;
-
         private void MNotifyCmds_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            var reader = DataReader.FromBuffer(args.CharacteristicValue);
+            DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
             reader.ReadBytes(myBytes);
-            int newLength = ReadBytesIntoBuffer(myBytes, mBufCmd);
+            int newLength = ReadBytesIntoBuffer(myBytes, _BufCmd);
             if (newLength > 0)
-                mExpectedLengthCmd = newLength;
+                _ExpectedLengthCmd = newLength;
 
-            if (mExpectedLengthCmd == mBufCmd.Count)
+            if (_ExpectedLengthCmd == _BufCmd.Count)
             {
                 /*
                 if (mBufCmd[0] == 0xXX)
@@ -612,37 +621,25 @@ namespace GoProCSharpDev
 
                 }
                 */
-                mBufCmd.Clear();
+                _BufCmd.Clear();
             }
         }
-
-        #endregion
-
-        #region Private Helper Functions
 
         private async void SetThirdPartySource()
         {
-            DataWriter mm = new DataWriter();
-            mm.WriteBytes(new byte[] { 0x01, 0x50 });
+            DataWriter writer = new DataWriter();
+            writer.WriteBytes(new byte[] { 0x01, 0x50 });
             GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
 
-            if (mSendCmds != null)
+            if (_SendCmds != null)
             {
-                res = await mSendCmds.WriteValueAsync(mm.DetachBuffer());
+                res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
             }
 
-            if (res != GattCommunicationStatus.Success && mSendCmds != null)
+            if (res != GattCommunicationStatus.Success && _SendCmds != null)
             {
-                StatusOutput("Failed to set command source: " + res.ToString());
+                UpateStatusBar("Failed to set command source: " + res.ToString());
             }
-        }
-
-        private void StatusOutput(string status)
-        {
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                this.txtStatusBar.Text = status;
-            }));
         }
 
         private int ReadBytesIntoBuffer(byte[] bytes, List<byte> mBuf)
@@ -653,111 +650,42 @@ namespace GoProCSharpDev
 
             if ((bytes[0] & 32) > 0)
             {
-                //extended 13 bit header
+                // extended 13 bit header
                 startbyte = 2;
                 int len = ((bytes[0] & 0xF) << 8) | bytes[1];
                 returnLength = len;
             }
             else if ((bytes[0] & 64) > 0)
             {
-                //extended 16 bit header
+                // extended 16 bit header
                 startbyte = 3;
                 int len = (bytes[1] << 8) | bytes[2];
                 returnLength = len;
             }
             else if ((bytes[0] & 128) > 0)
             {
-                //its a continuation packet
+                // its a continuation packet
             }
             else
             {
-                //8 bit header
+                // 8 bit header
                 returnLength = bytes[0];
             }
 
             for (int k = startbyte; k < theseBytes; k++)
+            {
                 mBuf.Add(bytes[k]);
-
+            }
             return returnLength;
         }
-
-        private async void TogglefWifiAP(int onOff)
-        {
-            DataWriter mm = new DataWriter();
-            mm.WriteBytes(new byte[] { 0x03, 0x17, 0x01, (byte)onOff });
-            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
-
-            if (onOff != 1 && onOff != 0)
-            {
-                res = GattCommunicationStatus.AccessDenied;
-            }
-            else if (mSendCmds != null)
-            {
-                res = await mSendCmds.WriteValueAsync(mm.DetachBuffer());
-            }
-            if (res != GattCommunicationStatus.Success)
-            {
-                StatusOutput("Failed to turn on wifi: " + res.ToString());
-            }
-        }
-        
-        private async void ToggleShutter(int onOff)
-        {
-            DataWriter mm = new DataWriter();
-            mm.WriteBytes(new byte[] { 3, 1, 1, (byte)onOff });
-            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
-
-            if (onOff != 1 && onOff != 0)
-            {
-                res = GattCommunicationStatus.AccessDenied;
-            }
-            else if (mSendCmds != null)
-            {
-                res = await mSendCmds.WriteValueAsync(mm.DetachBuffer());
-            }
-            if (res != GattCommunicationStatus.Success)
-            {
-                StatusOutput("Failed to send shutter: " + res.ToString());
-            }
-        }
-
-        //private void ToggleShutter(int onOff)
-        //{
-        //    SendCommand(3, 1, 1, onOff, "Failed to send shutter");
-        //}
-
-        //private async void SendCommand(int code1, int code2, int code3, int code4, string msgError)
-        //{
-        //    DataWriter mm = new DataWriter();
-        //    mm.WriteBytes(new byte[] { (byte)code1, (byte)code2, (byte)code3, (byte)code4 });
-        //    GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
-
-        //    if (code4 != 1 && code4 != 0)
-        //    {
-        //        res = GattCommunicationStatus.AccessDenied;
-        //    }
-        //    else if (mSendCmds != null)
-        //    {
-        //        res = await mSendCmds.WriteValueAsync(mm.DetachBuffer());
-        //    }
-        //    if (res != GattCommunicationStatus.Success)
-        //    {
-        //        StatusOutput(msgError + ": " + res.ToString());
-        //    }
-        //}
-
-        #endregion
     }
 
     public class BrushBoolColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(bool)value)
-            {
-                return new SolidColorBrush(Color.FromRgb(100, 100, 100));
-            }
-            return new SolidColorBrush(Color.FromRgb(255, 100, 100));
+            Color color = !(bool)value ? Color.FromRgb(100, 100, 100) : Color.FromRgb(255, 100, 100);
+            return new SolidColorBrush(color);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
