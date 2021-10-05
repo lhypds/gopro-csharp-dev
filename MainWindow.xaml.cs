@@ -380,6 +380,7 @@ namespace GoProCSharpDev
                                         DataWriter writer = new DataWriter();
                                         writer.WriteBytes(new byte[] { 1, 0x52 });
                                         GattCommunicationStatus gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
+
                                         writer = new DataWriter();
                                         writer.WriteBytes(new byte[] { 1, 0x53 });
                                         gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
@@ -411,19 +412,13 @@ namespace GoProCSharpDev
                 GattReadResult res = await _ReadApName.ReadValueAsync();
                 if (res.Status == GattCommunicationStatus.Success)
                 {
-                    DataReader dataReader = Windows.Storage.Streams.DataReader.FromBuffer(res.Value);
+                    DataReader dataReader = DataReader.FromBuffer(res.Value);
                     string output = dataReader.ReadString(res.Value.Length);
                     txtAPName.Text = output;
                 }
-                else
-                {
-                    UpateStatusBar("Failed to read ap name");
-                }
+                else { UpateStatusBar("Failed to read ap name"); }
             }
-            else
-            {
-                UpateStatusBar("Not connected");
-            }
+            else { UpateStatusBar("Not connected"); }
         }
 
         private async void BtnReadApPass_Click(object sender, RoutedEventArgs e)
