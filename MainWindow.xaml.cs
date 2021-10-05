@@ -87,6 +87,8 @@ namespace GoProCSharpDev
         private int _ExpectedLengthQ = 0;
         private readonly List<byte> _BufCmd = new List<byte>();
         private int _ExpectedLengthCmd = 0;
+        private readonly List<byte> _BufSet = new List<byte>();
+        private int _ExpectedLengthSet = 0;
 
         // Devices
         private DeviceWatcher _DeviceWatcher = null;
@@ -339,7 +341,7 @@ namespace GoProCSharpDev
                                 GattCommunicationStatus status = await _NotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                 if (status == GattCommunicationStatus.Success)
                                 {
-                                    _NotifyCmds.ValueChanged += MNotifyCmds_ValueChanged;
+                                    _NotifyCmds.ValueChanged += NotifyCmds_ValueChanged;
                                 }
                                 else { UpateStatusBar("Failed to attach notify cmd " + status); }
                             }
@@ -503,7 +505,6 @@ namespace GoProCSharpDev
 
         // Bluetooth GATT Characteristic Notification Handlers
         // A GATT characteristic is a basic data element used to construct a GATT service
-
         private void NotifyQueryResp_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
@@ -512,7 +513,9 @@ namespace GoProCSharpDev
 
             int newLength = ReadBytesIntoBuffer(myBytes, _BufQ);
             if (newLength > 0)
+            {
                 _ExpectedLengthQ = newLength;
+            }
 
             if (_ExpectedLengthQ == _BufQ.Count)
             {
@@ -547,9 +550,6 @@ namespace GoProCSharpDev
             }
         }
 
-        private readonly List<byte> _BufSet = new List<byte>();
-        private int _ExpectedLengthSet = 0;
-
         private void NotifySettings_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
@@ -571,7 +571,7 @@ namespace GoProCSharpDev
             }
         }
 
-        private void MNotifyCmds_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        private void NotifyCmds_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
