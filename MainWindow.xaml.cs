@@ -260,15 +260,9 @@ namespace GoProCSharpDev
                     DevicePairingResult dpr = await _BleDevice.DeviceInformation.Pairing.Custom.PairAsync(DevicePairingKinds.ConfirmOnly, dppl);
                     UpateStatusBar("Pairing result = " + dpr.Status.ToString());
                 }
-                else
-                {
-                    UpateStatusBar("Pairing failed");
-                }
+                else { UpateStatusBar("Pairing failed"); }
             }
-            else
-            {
-                UpateStatusBar("Select a device");
-            }
+            else { UpateStatusBar("Select a device"); }
         }
 
         private void Custom_PairingRequested(DeviceInformationCustomPairing sender, DevicePairingRequestedEventArgs args)
@@ -280,14 +274,15 @@ namespace GoProCSharpDev
         private async void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
             UpateStatusBar("Connecting...");
-            GDeviceInformation mDI = (GDeviceInformation)lbDevices.SelectedItem;
-            if (mDI == null)
+            GDeviceInformation deviceInfo = (GDeviceInformation)lbDevices.SelectedItem;
+            if (deviceInfo == null)
             {
                 UpateStatusBar("No device selected");
                 return;
             }
-            _BleDevice = await BluetoothLEDevice.FromIdAsync(mDI.DeviceInfo.Id);
-            if(!_BleDevice.DeviceInformation.Pairing.IsPaired)
+
+            _BleDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.DeviceInfo.Id);
+            if (!_BleDevice.DeviceInformation.Pairing.IsPaired)
             {
                 UpateStatusBar("Device not paired");
                 return;
@@ -346,11 +341,7 @@ namespace GoProCSharpDev
                                 {
                                     _NotifyCmds.ValueChanged += MNotifyCmds_ValueChanged;
                                 }
-                                else
-                                {
-                                    //failure
-                                    UpateStatusBar("Failed to attach notify cmd " + status);
-                                }
+                                else { UpateStatusBar("Failed to attach notify cmd " + status); }
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90074-aa8d-11e3-9046-0002a5d5c51b")
@@ -366,11 +357,7 @@ namespace GoProCSharpDev
                                 {
                                     _NotifySettings.ValueChanged += NotifySettings_ValueChanged;
                                 }
-                                else
-                                {
-                                    //failure
-                                    UpateStatusBar("Failed to attach notify settings " + status);
-                                }
+                                else { UpateStatusBar("Failed to attach notify settings " + status); }
                             }
 
                             if (characteristic.Uuid.ToString() == "b5f90076-aa8d-11e3-9046-0002a5d5c51b")
@@ -388,23 +375,16 @@ namespace GoProCSharpDev
                                     if (_SendQueries != null)
                                     {
                                         //Register for settings and status updates
-                                        DataWriter mm = new DataWriter();
-                                        mm.WriteBytes(new byte[] { 1, 0x52 });
-                                        GattCommunicationStatus gat = await _SendQueries.WriteValueAsync(mm.DetachBuffer());
-                                        mm = new DataWriter();
-                                        mm.WriteBytes(new byte[] { 1, 0x53 });
-                                        gat = await _SendQueries.WriteValueAsync(mm.DetachBuffer());
+                                        DataWriter writer = new DataWriter();
+                                        writer.WriteBytes(new byte[] { 1, 0x52 });
+                                        GattCommunicationStatus gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
+                                        writer = new DataWriter();
+                                        writer.WriteBytes(new byte[] { 1, 0x53 });
+                                        gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
                                     }
-                                    else
-                                    {
-                                        UpateStatusBar("send queries was null!");
-                                    }
+                                    else { UpateStatusBar("send queries was null!"); }
                                 }
-                                else
-                                {
-                                    //failure
-                                    UpateStatusBar("Failed to attach notify query " + status);
-                                }
+                                else { UpateStatusBar("Failed to attach notify query " + status); }
                             }
                         }
                     }
@@ -413,24 +393,16 @@ namespace GoProCSharpDev
             }
             else if (result.Status == GattCommunicationStatus.Unreachable)
             {
-                // couldn't find camera
                 UpateStatusBar("Connection failed");
             }
         }
 
         private void MBLED_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
         {
-            if (sender.ConnectionStatus == BluetoothConnectionStatus.Connected)
-            {
-                UpateStatusBar("Connected");
-            }
-            else
-            {
-                UpateStatusBar("Disconnected");
-            }
+            UpateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "Connected" : "Disconnected");
         }
 
-        private async void BtnReadAPName_Click(object sender, RoutedEventArgs e)
+        private async void BtnReadApName_Click(object sender, RoutedEventArgs e)
         {
             if (_ReadApName != null)
             {
@@ -452,7 +424,7 @@ namespace GoProCSharpDev
             }
         }
 
-        private async void BtnReadAPPass_Click(object sender, RoutedEventArgs e)
+        private async void BtnReadApPass_Click(object sender, RoutedEventArgs e)
         {
             if (_ReadApPass != null)
             {
@@ -463,28 +435,22 @@ namespace GoProCSharpDev
                     string output = dataReader.ReadString(res.Value.Length);
                     txtAPPassword.Text = output;
                 }
-                else
-                {
-                    UpateStatusBar("Failed to read password");
-                }
+                else { UpateStatusBar("Failed to read password"); }
             }
-            else
-            {
-                UpateStatusBar("Not connected");
-            }
+            else { UpateStatusBar("Not connected"); }
         }
 
         private void BtnTurnWifiOn_Click(object sender, RoutedEventArgs e)
         {
-            TogglefWifiAP(1);
+            TogglefWifiAp(1);
         }
 
         private void BtnTurnWifiOff_Click(object sender, RoutedEventArgs e)
         {
-            TogglefWifiAP(0);
+            TogglefWifiAp(0);
         }
 
-        private async void TogglefWifiAP(int onOff)
+        private async void TogglefWifiAp(int onOff)
         {
             DataWriter writer = new DataWriter();
             writer.WriteBytes(new byte[] { 0x03, 0x17, 0x01, (byte)onOff });
@@ -498,6 +464,7 @@ namespace GoProCSharpDev
             {
                 res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
             }
+
             if (res != GattCommunicationStatus.Success)
             {
                 UpateStatusBar("Failed to turn on wifi: " + res.ToString());

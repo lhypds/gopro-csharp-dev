@@ -22,8 +22,8 @@
         <Button x:Name="btnScanBLE" Content="Scan" Grid.Column="1" HorizontalAlignment="Left" Margin="20,33,0,0" VerticalAlignment="Top" Width="75" Click="BtnScanBLE_Click"/>
         <Button x:Name="btnPair" Content="Pair" Grid.Column="1" HorizontalAlignment="Right" Margin="0,33,20,0" VerticalAlignment="Top" Width="75" Click="BtnPair_Click"/>
         <Button x:Name="btnConnect" Content="Connect" Grid.Column="1" HorizontalAlignment="Left" Margin="20,58,0,0" VerticalAlignment="Top" Width="75" Click="BtnConnect_Click" />
-        <Button x:Name="btnReadAPName" Content="Read AP Name" Grid.Column="1" HorizontalAlignment="Left" Margin="20,83,0,0" VerticalAlignment="Top" Width="160" Click="BtnReadAPName_Click"/>
-        <Button x:Name="btnReadAPPass" Content="Read AP Pass" Grid.Column="1" HorizontalAlignment="Left" Margin="20,108,0,0" VerticalAlignment="Top" Width="160" Click="BtnReadAPPass_Click" />
+        <Button x:Name="btnReadAPName" Content="Read AP Name" Grid.Column="1" HorizontalAlignment="Left" Margin="20,83,0,0" VerticalAlignment="Top" Width="160" Click="BtnReadApName_Click"/>
+        <Button x:Name="btnReadAPPass" Content="Read AP Pass" Grid.Column="1" HorizontalAlignment="Left" Margin="20,108,0,0" VerticalAlignment="Top" Width="160" Click="BtnReadApPass_Click" />
         <Button x:Name="btnTurnWifiOn" Content="Wifi AP on" Grid.Column="1" HorizontalAlignment="Left" Margin="20,133,0,0" VerticalAlignment="Top" Width="75" Click="BtnTurnWifiOn_Click"  />
         <Button x:Name="btnTurnWifiOff" Content="Wifi AP off" Grid.Column="1" HorizontalAlignment="Left" Margin="105,133,0,0" VerticalAlignment="Top" Width="75" Click="BtnTurnWifiOff_Click"  />
         <Button x:Name="btnShutterOn" Content="Shutter on" Grid.Column="1" HorizontalAlignment="Left" Margin="20,158,0,0" VerticalAlignment="Top" Width="75" Click="BtnShutterOn_Click" />
