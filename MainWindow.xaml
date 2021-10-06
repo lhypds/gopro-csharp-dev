@@ -46,7 +46,7 @@
         <Label Content="Battery Level" HorizontalAlignment="Left" Margin="20,0,0,111" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
         <ProgressBar x:Name="prgBatteryLevel" HorizontalAlignment="Left" Height="11" Margin="20,0,0,99" VerticalAlignment="Bottom" Width="75" Value="{Binding BatteryLevel, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100" Grid.Column="1"/>
         <Label Content="Wi-Fi" HorizontalAlignment="Left" Margin="23,0,0,75" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
-        <Rectangle Fill="{Binding WifiOn, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="83,0,0,74" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
+        <Rectangle Fill="{Binding WifiStatus, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="83,0,0,74" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
 
         <Label Content="Camera Wifi AP Name" HorizontalAlignment="Left" Margin="10,0,0,143" VerticalAlignment="Bottom"/>
         <TextBox x:Name="txtAPName" HorizontalAlignment="Left" Height="23" Margin="10,0,0,120" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="174"/>

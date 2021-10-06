@@ -65,12 +65,12 @@ namespace GoProCSharpDev
         }
 
         // Wifi
-        private bool _WifiOn = false;
+        private bool _WifiStatus = false;
 
-        public bool WifiOn
+        public bool WifiStatus
         {
-            get => _WifiOn;
-            set { _WifiOn = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WifiOn")); }
+            get => _WifiStatus;
+            set { _WifiStatus = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WifiStatus")); }
         }
 
         // Is Bluetooth Connected
@@ -531,9 +531,23 @@ namespace GoProCSharpDev
                     // Status messages
                     for (int k = 0; k < _QueryBuf.Count;)
                     {
-                        if (_QueryBuf[k] == 10) Encoding = _QueryBuf[k + 2] > 0;
-                        if (_QueryBuf[k] == 70) BatteryLevel = _QueryBuf[k + 2];
-                        if (_QueryBuf[k] == 69) WifiOn = _QueryBuf[k + 2] == 1;
+                        if (_QueryBuf[k] == 10)
+                        {
+                            Encoding = _QueryBuf[k + 2] > 0;
+                            Debug.Print("Encoding: " + Encoding);
+                        }
+
+                        if (_QueryBuf[k] == 70)
+                        {
+                            BatteryLevel = _QueryBuf[k + 2];
+                            Debug.Print("Battery Level: " + BatteryLevel);
+                        }
+
+                        if (_QueryBuf[k] == 69)
+                        {
+                            WifiStatus = _QueryBuf[k + 2] == 1;
+                            Debug.Print("Wifi Status: " + WifiStatus);
+                        }
                         k += 2 + _QueryBuf[k + 1];
                     }
                 }
@@ -546,11 +560,12 @@ namespace GoProCSharpDev
             }
         }
 
+        // Fill recieved bytes to target buffer
         private int ReadBytesIntoBuffer(byte[] bytes, List<byte> targetBuffer)
         {
             int returnLength = -1;
-            int startbyte = 1;
-            int theseBytes = bytes.Length;
+            int startbyte = 1;  // This will ignore the first byte
+            int bytesLength = bytes.Length;
 
             if ((bytes[0] & 32) > 0)
             {
@@ -576,7 +591,7 @@ namespace GoProCSharpDev
                 returnLength = bytes[0];
             }
 
-            for (int k = startbyte; k < theseBytes; k++)
+            for (int k = startbyte; k < bytesLength; k++)
             {
                 targetBuffer.Add(bytes[k]);
             }
