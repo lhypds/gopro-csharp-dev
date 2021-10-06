@@ -71,6 +71,15 @@ namespace GoProCSharpDev
             set { _WifiOn = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WifiOn")); }
         }
 
+        // Is Bluetooth Connected
+        private bool _IsBluetoothConnected = false;
+
+        public bool IsBluetoothConnected
+        {
+            get => _IsBluetoothConnected;
+            set { _IsBluetoothConnected = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBluetoothConnected")); }
+        }
+
         // Bluetooth
         private BluetoothLEDevice _BleDevice = null;
         public GattCharacteristic _NotifyCmds = null;
@@ -109,7 +118,7 @@ namespace GoProCSharpDev
             }));
         }
 
-        private void BtnScanBLE_Click(object sender, RoutedEventArgs e)
+        private void BtnScanBle_Click(object sender, RoutedEventArgs e)
         {
             string BleSelector = "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"";
             DeviceInformationKind deviceInformationKind = DeviceInformationKind.AssociationEndpoint;
@@ -291,7 +300,7 @@ namespace GoProCSharpDev
             }
 
             GattDeviceServicesResult result = await _BleDevice.GetGattServicesAsync();
-            _BleDevice.ConnectionStatusChanged += MBLED_ConnectionStatusChanged;
+            _BleDevice.ConnectionStatusChanged += BleDevice_ConnectionStatusChanged;
 
             if (result.Status == GattCommunicationStatus.Success)
             {
@@ -400,9 +409,10 @@ namespace GoProCSharpDev
             }
         }
 
-        private void MBLED_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
+        private void BleDevice_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
         {
             UpateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "Connected" : "Disconnected");
+            IsBluetoothConnected = sender.ConnectionStatus == BluetoothConnectionStatus.Connected;
         }
 
         private async void BtnReadApName_Click(object sender, RoutedEventArgs e)
@@ -646,7 +656,7 @@ namespace GoProCSharpDev
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Color color = !(bool)value ? Color.FromRgb(100, 100, 100) : Color.FromRgb(255, 100, 100);
+            Color color = !(bool)value ? Color.FromRgb(255, 100, 100) : Color.FromRgb(100, 220, 100);
             return new SolidColorBrush(color);
         }
 

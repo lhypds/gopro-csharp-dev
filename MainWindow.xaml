@@ -20,21 +20,23 @@
         <ListBox x:Name="lbDevices" ItemsSource="{Binding Devices}" DisplayMemberPath="DeviceInfo.Name" HorizontalAlignment="Left" Height="116" Margin="10,0,0,199" VerticalAlignment="Bottom" Width="174"/>
 
         <GroupBox Grid.Column="1" Header="BLE" HorizontalAlignment="Left" Height="190" Margin="10,0,0,155" VerticalAlignment="Bottom" Width="180"/>
-        <Button x:Name="btnScanBLE" Content="Scan" HorizontalAlignment="Left" Margin="101,0,0,322" VerticalAlignment="Bottom" Width="83" Click="BtnScanBLE_Click"/>
-        <Button x:Name="btnPair" Content="Pair" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,22,302" VerticalAlignment="Bottom" Width="75" Click="BtnPair_Click"/>
-        <Button x:Name="btnConnect" Content="Connect" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,302" VerticalAlignment="Bottom" Width="75" Click="BtnConnect_Click" />
-        <Button x:Name="btnReadAPName" Content="Read AP Name" HorizontalAlignment="Left" Margin="10,0,0,171" VerticalAlignment="Bottom" Width="174" Click="BtnReadApName_Click"/>
-        <Button x:Name="btnReadAPPass" Content="Read AP Pass" HorizontalAlignment="Left" Margin="10,0,0,82" VerticalAlignment="Bottom" Width="174" Click="BtnReadApPass_Click" />
-        <Button x:Name="btnTurnWifiOn" Content="Wifi AP on" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,248" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOn_Click"  />
-        <Button x:Name="btnTurnWifiOff" Content="Wifi AP off" Grid.Column="1" HorizontalAlignment="Left" Margin="102,0,0,248" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOff_Click"  />
-        <Button x:Name="btnShutterOn" Content="Shutter on" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,275" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOn_Click" />
-        <Button x:Name="btnShutterOff" Content="Shutter off" Grid.Column="1" HorizontalAlignment="Left" Margin="103,0,0,275" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOff_Click" />
-        <Label Content="Encoding" HorizontalAlignment="Left" Margin="117,0,0,117" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
-        <Rectangle Fill="{Binding Encoding, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="23" Margin="117,0,0,94" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
+        <Label Content="BLE Connection" HorizontalAlignment="Left" Margin="22,0,0,305" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
+        <Rectangle Fill="{Binding IsBluetoothConnected, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="114,0,0,304" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
+        <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="101,0,0,322" VerticalAlignment="Bottom" Width="83" Click="BtnScanBle_Click"/>
+        <Button x:Name="btnPair" Content="Pair" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,22,277" VerticalAlignment="Bottom" Width="75" Click="BtnPair_Click"/>
+        <Button x:Name="btnConnect" Content="Connect" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,277" VerticalAlignment="Bottom" Width="75" Click="BtnConnect_Click" />
+        <Button x:Name="btnReadApName" Content="Read AP Name" HorizontalAlignment="Left" Margin="10,0,0,171" VerticalAlignment="Bottom" Width="174" Click="BtnReadApName_Click"/>
+        <Button x:Name="btnReadApPass" Content="Read AP Password" HorizontalAlignment="Left" Margin="10,0,0,82" VerticalAlignment="Bottom" Width="174" Click="BtnReadApPass_Click" />
+        <Button x:Name="btnTurnWifiOn" Content="Wi-Fi On" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,223" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOn_Click"  />
+        <Button x:Name="btnTurnWifiOff" Content="Wi-Fi Off" Grid.Column="1" HorizontalAlignment="Left" Margin="102,0,0,223" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOff_Click"  />
+        <Button x:Name="btnShutterOn" Content="Shutter On" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,250" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOn_Click" />
+        <Button x:Name="btnShutterOff" Content="Shutter Off" Grid.Column="1" HorizontalAlignment="Left" Margin="103,0,0,250" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOff_Click" />
+        <Label Content="Encoding" HorizontalAlignment="Left" Margin="23,0,0,55" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
+        <Rectangle Fill="{Binding Encoding, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="83,0,0,51" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
         <Label Content="Battery Level" HorizontalAlignment="Left" Margin="20,0,0,111" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
         <ProgressBar x:Name="prgBatteryLevel" HorizontalAlignment="Left" Height="11" Margin="20,0,0,99" VerticalAlignment="Bottom" Width="75" Value="{Binding BatteryLevel, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100" Grid.Column="1"/>
-        <Label Content="Wifi On" HorizontalAlignment="Left" Margin="117,0,0,66" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
-        <Rectangle Fill="{Binding WifiOn, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="23" Margin="117,0,0,43" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
+        <Label Content="Wi-Fi" HorizontalAlignment="Left" Margin="23,0,0,75" VerticalAlignment="Bottom" Padding="0" Grid.Column="1"/>
+        <Rectangle Fill="{Binding WifiOn, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="83,0,0,74" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
 
         <Label Content="Camera Wifi AP Name" HorizontalAlignment="Left" Margin="10,0,0,143" VerticalAlignment="Bottom"/>
         <TextBox x:Name="txtAPName" HorizontalAlignment="Left" Height="23" Margin="10,0,0,120" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="174"/>
