@@ -476,56 +476,49 @@ namespace GoProCSharpDev
 
         private void NotifyCommands_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            Debug.Print("Commands notification recieved");
             DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
             reader.ReadBytes(myBytes);
+
             int newLength = ReadBytesIntoBuffer(myBytes, _CommandBuf);
+            Debug.Print("Commands response recieved: " + BitConverter.ToString(myBytes));
+
             if (newLength > 0)
                 _ExpectedLengthCmd = newLength;
 
             if (_ExpectedLengthCmd == _CommandBuf.Count)
             {
-                /*
-                if (mBufCmd[0] == 0xXX)
-                {
-
-                }
-                */
                 _CommandBuf.Clear();
             }
         }
 
         private void NotifySettings_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            Debug.Print("Setting changed notification recieved");
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
             reader.ReadBytes(myBytes);
+
             int newLength = ReadBytesIntoBuffer(myBytes, _SettingBuf);
+            Debug.Print("Setting changed response recieved: " + BitConverter.ToString(myBytes));
+
             if (newLength > 0)
                 _ExpectedLengthSet = newLength;
 
             if (_ExpectedLengthSet == _SettingBuf.Count)
             {
-                /*
-                if (mBufSet[0] == 0xXX)
-                {
-
-                }
-                */
                 _SettingBuf.Clear();
             }
         }
 
         private void NotifyQueryResp_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            Debug.Print("Query response notification recieved");
             DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
             byte[] myBytes = new byte[reader.UnconsumedBufferLength];
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _QueryBuf);
+            Debug.Print("Query response recieved: " + BitConverter.ToString(myBytes));
+
             if (newLength > 0)
             {
                 _ExpectedLengthQuery = newLength;
