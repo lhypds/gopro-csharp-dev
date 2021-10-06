@@ -82,6 +82,15 @@ namespace GoProCSharpDev
             set { _IsBluetoothConnected = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBluetoothConnected")); }
         }
 
+        // Battery Level
+        private int _Zoomlevel = 0;
+
+        public int ZoomLevel
+        {
+            get => _Zoomlevel;
+            set { _Zoomlevel = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Zoomlevel")); }
+        }
+
         // Bluetooth
         private BluetoothLEDevice _BleDevice = null;
 
@@ -388,12 +397,19 @@ namespace GoProCSharpDev
                             {
                                 Debug.Print("Set GATT Characteristic: Command Response");
                                 _NotifyCmds = characteristic;
-                                GattCommunicationStatus status = await _NotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                                if (status == GattCommunicationStatus.Success)
+                                try
                                 {
-                                    _NotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
+                                    GattCommunicationStatus status = await _NotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                    if (status == GattCommunicationStatus.Success)
+                                    {
+                                        _NotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
+                                    }
+                                    else { UpateStatusBar("Failed to attach notify cmd " + status); }
                                 }
-                                else { UpateStatusBar("Failed to attach notify cmd " + status); }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Exception");
+                                }
                             }
 
                             // Settings
@@ -408,12 +424,19 @@ namespace GoProCSharpDev
                             {
                                 Debug.Print("Set GATT Characteristic: Settings Response");
                                 _NotifySettings = characteristic;
-                                GattCommunicationStatus status = await _NotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                                if (status == GattCommunicationStatus.Success)
+                                try
                                 {
-                                    _NotifySettings.ValueChanged += NotifySettings_ValueChanged;
+                                    GattCommunicationStatus status = await _NotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                    if (status == GattCommunicationStatus.Success)
+                                    {
+                                        _NotifySettings.ValueChanged += NotifySettings_ValueChanged;
+                                    }
+                                    else { UpateStatusBar("Failed to attach notify settings " + status); }
                                 }
-                                else { UpateStatusBar("Failed to attach notify settings " + status); }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Exception");
+                                }
                             }
 
                             // Query
@@ -428,24 +451,31 @@ namespace GoProCSharpDev
                             {
                                 Debug.Print("Set GATT Characteristic: Query Response");
                                 _NotifyQueryResp = characteristic;
-                                GattCommunicationStatus status = await _NotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                                if (status == GattCommunicationStatus.Success)
+                                try
                                 {
-                                    _NotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
-                                    if (_SendQueries != null)
+                                    GattCommunicationStatus status = await _NotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                    if (status == GattCommunicationStatus.Success)
                                     {
-                                        // Register for settings and status updates
-                                        DataWriter writer = new DataWriter();
-                                        writer.WriteBytes(new byte[] { 1, 0x52 });
-                                        GattCommunicationStatus gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
+                                        _NotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
+                                        if (_SendQueries != null)
+                                        {
+                                            // Register for settings and status updates
+                                            DataWriter writer = new DataWriter();
+                                            writer.WriteBytes(new byte[] { 1, 0x52 });
+                                            GattCommunicationStatus gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
 
-                                        writer = new DataWriter();
-                                        writer.WriteBytes(new byte[] { 1, 0x53 });
-                                        gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
+                                            writer = new DataWriter();
+                                            writer.WriteBytes(new byte[] { 1, 0x53 });
+                                            gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
+                                        }
+                                        else { UpateStatusBar("send queries was null!"); }
                                     }
-                                    else { UpateStatusBar("send queries was null!"); }
+                                    else { UpateStatusBar("Failed to attach notify query " + status); }
                                 }
-                                else { UpateStatusBar("Failed to attach notify query " + status); }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Exception");
+                                }
                             }
                         }
                     }
@@ -526,6 +556,7 @@ namespace GoProCSharpDev
 
             if (_ExpectedLengthQuery == _QueryBuf.Count)
             {
+                // Check the first byte is 83 or 147
                 if ((_QueryBuf[0] == 0x53 || _QueryBuf[0] == 0x93) && _QueryBuf[1] == 0)
                 {
                     // Status messages
@@ -547,6 +578,12 @@ namespace GoProCSharpDev
                         {
                             WifiStatus = _QueryBuf[k + 2] == 1;
                             Debug.Print("Wifi Status: " + WifiStatus);
+                        }
+
+                        if (_QueryBuf[k] == 75)
+                        {
+                            ZoomLevel = _QueryBuf[k + 2];
+                            Debug.Print("Digital Zoom Level: " + ZoomLevel);
                         }
                         k += 2 + _QueryBuf[k + 1];
                     }
@@ -606,16 +643,48 @@ namespace GoProCSharpDev
 
         // Bluetooth Funcitons
 
+        // 1. GoPro WiFi Access Point
+
         private async void BtnReadWifiApName_Click(object sender, RoutedEventArgs e)
         {
             if (_WifiApSsid != null)
             {
-                GattReadResult res = await _WifiApSsid.ReadValueAsync();
-                if (res.Status == GattCommunicationStatus.Success)
+                GattReadResult gattReadResult = await _WifiApSsid.ReadValueAsync();
+                if (gattReadResult.Status == GattCommunicationStatus.Success)
                 {
-                    DataReader dataReader = DataReader.FromBuffer(res.Value);
-                    string output = dataReader.ReadString(res.Value.Length);
+                    DataReader dataReader = DataReader.FromBuffer(gattReadResult.Value);
+                    string output = dataReader.ReadString(gattReadResult.Value.Length);
                     txtAPName.Text = output;
+                    Debug.Print("Wifi AP SSID: " + output);
+
+                }
+                else { UpateStatusBar("Failed to read ap name"); }
+            }
+            else { UpateStatusBar("Not connected"); }
+        }
+
+        private async void BtnSetApName_Click(object sender, RoutedEventArgs e)
+        {
+            if (_WifiApSsid != null)
+            {
+                // Write
+                DataWriter writer = new DataWriter();
+                writer.WriteString(txtAPName.Text);
+                GattWriteResult gattWriteResult = await _WifiApSsid.WriteValueWithResultAsync(writer.DetachBuffer());
+                if (gattWriteResult.Status == GattCommunicationStatus.Success)
+                {
+                    Debug.Print("Wifi AP SSID updated to " + txtAPName.Text);
+                }
+                else { UpateStatusBar("Failed to update ap name"); }
+
+                // Read
+                GattReadResult gattReadResult = await _WifiApSsid.ReadValueAsync();
+                if (gattReadResult.Status == GattCommunicationStatus.Success)
+                {
+                    DataReader dataReader = DataReader.FromBuffer(gattReadResult.Value);
+                    string output = dataReader.ReadString(gattReadResult.Value.Length);
+                    txtAPName.Text = output;
+                    Debug.Print("Latest Wifi AP SSID: " + output);
                 }
                 else { UpateStatusBar("Failed to read ap name"); }
             }
@@ -626,17 +695,48 @@ namespace GoProCSharpDev
         {
             if (_WifiApPass != null)
             {
-                GattReadResult res = await _WifiApPass.ReadValueAsync();
-                if (res.Status == GattCommunicationStatus.Success)
+                GattReadResult gattReadResult = await _WifiApPass.ReadValueAsync();
+                if (gattReadResult.Status == GattCommunicationStatus.Success)
                 {
-                    DataReader dataReader = DataReader.FromBuffer(res.Value);
-                    string output = dataReader.ReadString(res.Value.Length);
+                    DataReader dataReader = DataReader.FromBuffer(gattReadResult.Value);
+                    string output = dataReader.ReadString(gattReadResult.Value.Length);
                     txtAPPassword.Text = output;
+                    Debug.Print("Wifi AP Password: " + output);
                 }
                 else { UpateStatusBar("Failed to read password"); }
             }
             else { UpateStatusBar("Not connected"); }
         }
+
+        private async void BtnSetApPass_Click(object sender, RoutedEventArgs e)
+        {
+            if (_WifiApPass != null)
+            {
+                // Write
+                DataWriter writer = new DataWriter();
+                writer.WriteString(txtAPPassword.Text);
+                GattWriteResult gattWriteResult = await _WifiApPass.WriteValueWithResultAsync(writer.DetachBuffer());
+                if (gattWriteResult.Status == GattCommunicationStatus.Success)
+                {
+                    Debug.Print("Wifi AP Password updated to " + txtAPPassword.Text);
+                }
+                else { UpateStatusBar("Failed to update ap name"); }
+
+                // Read
+                GattReadResult gattReadResult = await _WifiApPass.ReadValueAsync();
+                if (gattReadResult.Status == GattCommunicationStatus.Success)
+                {
+                    DataReader dataReader = DataReader.FromBuffer(gattReadResult.Value);
+                    string output = dataReader.ReadString(gattReadResult.Value.Length);
+                    txtAPPassword.Text = output;
+                    Debug.Print("Latest Wifi AP password: " + output);
+                }
+                else { UpateStatusBar("Failed to read ap name"); }
+            }
+            else { UpateStatusBar("Not connected"); }
+        }
+
+        // 2. Control & Query
 
         private async void SendBleCommand(byte[] value, string function)
         {
