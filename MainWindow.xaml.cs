@@ -1,10 +1,12 @@
 /* MainWindow.xaml.cs/Open GoPro, Version 2.0 (C) Copyright 2021 GoPro, Inc. (http://gopro.com/OpenGoPro). */
 /* This copyright was auto-generated on Wed, Sep  1, 2021  5:05:38 PM */
 
-﻿using System;
+using GoProCSharpDev.Utils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -82,25 +84,27 @@ namespace GoProCSharpDev
 
         // Bluetooth
         private BluetoothLEDevice _BleDevice = null;
-        public GattCharacteristic _NotifyCmds = null;
+
+        // GATT Characteristics
+        public GattCharacteristic _WifiApSsid = null;
+        public GattCharacteristic _WifiApPass = null;
         public GattCharacteristic _SendCmds = null;
+        public GattCharacteristic _NotifyCmds = null;
         public GattCharacteristic _SetSettings = null;
         public GattCharacteristic _NotifySettings = null;
         public GattCharacteristic _SendQueries = null;
         public GattCharacteristic _NotifyQueryResp = null;
-        public GattCharacteristic _ReadApName = null;
-        public GattCharacteristic _ReadApPass = null;
 
         // Bluetooth GATT Characteristic
-        private readonly List<byte> _BufQ = new List<byte>();
-        private int _ExpectedLengthQ = 0;
-        private readonly List<byte> _BufCmd = new List<byte>();
+        private readonly List<byte> _QueryBuf = new List<byte>();
+        private int _ExpectedLengthQuery = 0;
+        private readonly List<byte> _CommandBuf = new List<byte>();
         private int _ExpectedLengthCmd = 0;
-        private readonly List<byte> _BufSet = new List<byte>();
+        private readonly List<byte> _SettingBuf = new List<byte>();
         private int _ExpectedLengthSet = 0;
 
         // Devices
-        private DeviceWatcher _DeviceWatcher = null;
+        private DeviceWatcher _BluetoothDeviceWatcher = null;
         private readonly Dictionary<string, DeviceInformation> _AllDevices = new Dictionary<string, DeviceInformation>();
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -118,26 +122,28 @@ namespace GoProCSharpDev
             }));
         }
 
+        #region Bluetooth
+
+        // Scannning Devices
+
         private void BtnScanBle_Click(object sender, RoutedEventArgs e)
         {
             string BleSelector = "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"";
             DeviceInformationKind deviceInformationKind = DeviceInformationKind.AssociationEndpoint;
             string[] requiredProperties = { "System.Devices.Aep.Bluetooth.Le.IsConnectable", "System.Devices.Aep.IsConnected" };
 
-            _DeviceWatcher = DeviceInformation.CreateWatcher(BleSelector, requiredProperties, deviceInformationKind);
-            _DeviceWatcher.Added += DeviceWatcher_Added;
-            _DeviceWatcher.Updated += DeviceWatcher_Updated;
-            _DeviceWatcher.Removed += DeviceWatcher_Removed;
-            _DeviceWatcher.EnumerationCompleted += DeviceWatcher_EnumerationCompleted;
-            _DeviceWatcher.Stopped += DeviceWatcher_Stopped;
+            _BluetoothDeviceWatcher = DeviceInformation.CreateWatcher(BleSelector, requiredProperties, deviceInformationKind);
+            _BluetoothDeviceWatcher.Added += BluetoothDeviceWatcher_Added;
+            _BluetoothDeviceWatcher.Updated += BluetoothDeviceWatcher_Updated;
+            _BluetoothDeviceWatcher.Removed += BluetoothDeviceWatcher_Removed;
+            _BluetoothDeviceWatcher.EnumerationCompleted += BluetoothDeviceWatcher_EnumerationCompleted;
+            _BluetoothDeviceWatcher.Stopped += BluetoothDeviceWatcher_Stopped;
 
             this.txtStatusBar.Text = "Scanning for devices...";
-            _DeviceWatcher.Start();
+            _BluetoothDeviceWatcher.Start();
         }
 
-        #region Device Watcher Event Handlers
-
-        private void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
+        private void BluetoothDeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -145,7 +151,7 @@ namespace GoProCSharpDev
             }));
         }
 
-        private void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
+        private void BluetoothDeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -153,7 +159,7 @@ namespace GoProCSharpDev
             }));
         }
 
-        private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
+        private void BluetoothDeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             for (int i = 0; i < Devices.Count; i++)
             {
@@ -165,7 +171,7 @@ namespace GoProCSharpDev
             }
         }
 
-        private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
+        private void BluetoothDeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             bool isPresent = false, isConnected = false, found = false;
 
@@ -207,7 +213,7 @@ namespace GoProCSharpDev
             }
         }
 
-        private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
+        private void BluetoothDeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
             bool isPresent = false;
             bool isConnected = false;
@@ -255,7 +261,7 @@ namespace GoProCSharpDev
             }
         }
 
-        #endregion
+        // Pairing and Connecting
 
         private async void BtnPair_Click(object sender, RoutedEventArgs e)
         {
@@ -292,6 +298,7 @@ namespace GoProCSharpDev
                 return;
             }
 
+            // Get device
             _BleDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.DeviceInfo.Id);
             if (!_BleDevice.DeviceInformation.Pairing.IsPaired)
             {
@@ -299,69 +306,107 @@ namespace GoProCSharpDev
                 return;
             }
 
-            GattDeviceServicesResult result = await _BleDevice.GetGattServicesAsync();
+            // Get GATT services
+            GattDeviceServicesResult gattDeviceServicesResult = await _BleDevice.GetGattServicesAsync();
             _BleDevice.ConnectionStatusChanged += BleDevice_ConnectionStatusChanged;
 
-            if (result.Status == GattCommunicationStatus.Success)
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.Unreachable)
             {
-                IReadOnlyList<GattDeviceService> services = result.Services;
+                UpateStatusBar("Connection unreachable");
+                return;
+            }
+
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.AccessDenied)
+            {
+                UpateStatusBar("Connection access denied");
+                return;
+            }
+
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.ProtocolError)
+            {
+                UpateStatusBar("Connection protocol error");
+                return;
+            }
+
+            // Success, then get GATT Characteristics
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.Success)
+            {
+                IReadOnlyList<GattDeviceService> services = gattDeviceServicesResult.Services;
                 foreach (GattDeviceService gatt in services)
                 {
-                    GattCharacteristicsResult res = await gatt.GetCharacteristicsAsync();
-                    if (res.Status == GattCommunicationStatus.Success)
+                    GattCharacteristicsResult gattCharacteristicsResult = await gatt.GetCharacteristicsAsync();
+                    if (gattCharacteristicsResult.Status == GattCommunicationStatus.Success)
                     {
-                        IReadOnlyList<GattCharacteristic> characteristics = res.Characteristics;
+                        IReadOnlyList<GattCharacteristic> characteristics = gattCharacteristicsResult.Characteristics;
                         foreach (GattCharacteristic characteristic in characteristics)
                         {
-                            GattCharacteristicProperties properties = characteristic.CharacteristicProperties;
-                            if (properties.HasFlag(GattCharacteristicProperties.Read))
+                            // Properties
+                            GattCharacteristicProperties charProperties = characteristic.CharacteristicProperties;
+                            if (charProperties.HasFlag(GattCharacteristicProperties.Read))
                             {
-                                // This characteristic supports reading from it.
+                              // This characteristic supports reading from it.
                             }
 
-                            if (properties.HasFlag(GattCharacteristicProperties.Write))
+                            if (charProperties.HasFlag(GattCharacteristicProperties.Write))
                             {
-                                // This characteristic supports writing to it.
+                              // This characteristic supports writing to it.
                             }
 
-                            if (properties.HasFlag(GattCharacteristicProperties.Notify))
+                            if (charProperties.HasFlag(GattCharacteristicProperties.Notify))
                             {
-                                // This characteristic supports subscribing to notifications.
+                              // This characteristic supports subscribing to notifications.
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90002-aa8d-11e3-9046-0002a5d5c51b")
+                            // Services and Characteristics
+                            // Refer: https://gopro.github.io/OpenGoPro/ble_1_0 for GoPro 9
+
+                            // GoPro WiFi Access Point
+                            // WiFi AP SSID
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0002")))
                             {
-                                _ReadApName = characteristic;
+                                Debug.Print("Set GATT Characteristic: WiFi AP SSID");
+                                _WifiApSsid = characteristic;
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90003-aa8d-11e3-9046-0002a5d5c51b")
+                            // WiFi AP Password
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0003")))
                             {
-                                _ReadApPass = characteristic;
+                                Debug.Print("Set GATT Characteristic: WiFi AP Password");
+                                _WifiApPass = characteristic;
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90072-aa8d-11e3-9046-0002a5d5c51b")
+                            // Control and Query
+                            // Command
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0072")))
                             {
+                                Debug.Print("Set GATT Characteristic: Command");
                                 _SendCmds = characteristic;
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90073-aa8d-11e3-9046-0002a5d5c51b")
+                            // Command Response
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0073")))
                             {
+                                Debug.Print("Set GATT Characteristic: Command Response");
                                 _NotifyCmds = characteristic;
                                 GattCommunicationStatus status = await _NotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                 if (status == GattCommunicationStatus.Success)
                                 {
-                                    _NotifyCmds.ValueChanged += NotifyCmds_ValueChanged;
+                                    _NotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
                                 }
                                 else { UpateStatusBar("Failed to attach notify cmd " + status); }
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90074-aa8d-11e3-9046-0002a5d5c51b")
+                            // Settings
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0074")))
                             {
+                                Debug.Print("Set GATT Characteristic: Settings");
                                 _SetSettings = characteristic;
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90075-aa8d-11e3-9046-0002a5d5c51b")
+                            // Settings Response
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0075")))
                             {
+                                Debug.Print("Set GATT Characteristic: Settings Response");
                                 _NotifySettings = characteristic;
                                 GattCommunicationStatus status = await _NotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                 if (status == GattCommunicationStatus.Success)
@@ -371,13 +416,17 @@ namespace GoProCSharpDev
                                 else { UpateStatusBar("Failed to attach notify settings " + status); }
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90076-aa8d-11e3-9046-0002a5d5c51b")
+                            // Query
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0076")))
                             {
+                                Debug.Print("Set GATT Characteristic: Query");
                                 _SendQueries = characteristic;
                             }
 
-                            if (characteristic.Uuid.ToString() == "b5f90077-aa8d-11e3-9046-0002a5d5c51b")
+                            // Query Response
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0077")))
                             {
+                                Debug.Print("Set GATT Characteristic: Query Response");
                                 _NotifyQueryResp = characteristic;
                                 GattCommunicationStatus status = await _NotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                 if (status == GattCommunicationStatus.Success)
@@ -385,7 +434,7 @@ namespace GoProCSharpDev
                                     _NotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
                                     if (_SendQueries != null)
                                     {
-                                        //Register for settings and status updates
+                                        // Register for settings and status updates
                                         DataWriter writer = new DataWriter();
                                         writer.WriteBytes(new byte[] { 1, 0x52 });
                                         GattCommunicationStatus gat = await _SendQueries.WriteValueAsync(writer.DetachBuffer());
@@ -403,206 +452,14 @@ namespace GoProCSharpDev
                 }
                 SetThirdPartySource();
             }
-            else if (result.Status == GattCommunicationStatus.Unreachable)
-            {
-                UpateStatusBar("Connection failed");
-            }
-        }
-
-        private void BleDevice_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
-        {
-            UpateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "Connected" : "Disconnected");
-            IsBluetoothConnected = sender.ConnectionStatus == BluetoothConnectionStatus.Connected;
-        }
-
-        private async void BtnReadApName_Click(object sender, RoutedEventArgs e)
-        {
-            if (_ReadApName != null)
-            {
-                GattReadResult res = await _ReadApName.ReadValueAsync();
-                if (res.Status == GattCommunicationStatus.Success)
-                {
-                    DataReader dataReader = DataReader.FromBuffer(res.Value);
-                    string output = dataReader.ReadString(res.Value.Length);
-                    txtAPName.Text = output;
-                }
-                else { UpateStatusBar("Failed to read ap name"); }
-            }
-            else { UpateStatusBar("Not connected"); }
-        }
-
-        private async void BtnReadApPass_Click(object sender, RoutedEventArgs e)
-        {
-            if (_ReadApPass != null)
-            {
-                GattReadResult res = await _ReadApPass.ReadValueAsync();
-                if (res.Status == GattCommunicationStatus.Success)
-                {
-                    DataReader dataReader = DataReader.FromBuffer(res.Value);
-                    string output = dataReader.ReadString(res.Value.Length);
-                    txtAPPassword.Text = output;
-                }
-                else { UpateStatusBar("Failed to read password"); }
-            }
-            else { UpateStatusBar("Not connected"); }
-        }
-
-        private void BtnTurnWifiOn_Click(object sender, RoutedEventArgs e)
-        {
-            TogglefWifiAp(1);
-        }
-
-        private void BtnTurnWifiOff_Click(object sender, RoutedEventArgs e)
-        {
-            TogglefWifiAp(0);
-        }
-
-        private async void TogglefWifiAp(int onOff)
-        {
-            DataWriter writer = new DataWriter();
-            writer.WriteBytes(new byte[] { 0x03, 0x17, 0x01, (byte)onOff });
-            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
-
-            if (onOff != 1 && onOff != 0)
-            {
-                res = GattCommunicationStatus.AccessDenied;
-            }
-            else if (_SendCmds != null)
-            {
-                res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
-            }
-
-            if (res != GattCommunicationStatus.Success)
-            {
-                UpateStatusBar("Failed to turn on wifi: " + res.ToString());
-            }
-        }
-
-        private void BtnShutterOn_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleShutter(1);
-        }
-
-        private void BtnShutterOff_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleShutter(0);
-        }
-
-        private async void ToggleShutter(int onOff)
-        {
-            DataWriter writer = new DataWriter();
-            writer.WriteBytes(new byte[] { 3, 1, 1, (byte)onOff });
-            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
-
-            if (onOff != 1 && onOff != 0)
-            {
-                res = GattCommunicationStatus.AccessDenied;
-            }
-            else if (_SendCmds != null)
-            {
-                res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
-            }
-            if (res != GattCommunicationStatus.Success)
-            {
-                UpateStatusBar("Failed to send shutter: " + res.ToString());
-            }
-        }
-
-        // Bluetooth GATT Characteristic Notification Handlers
-        // A GATT characteristic is a basic data element used to construct a GATT service
-        private void NotifyQueryResp_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
-            byte[] myBytes = new byte[reader.UnconsumedBufferLength];
-            reader.ReadBytes(myBytes);
-
-            int newLength = ReadBytesIntoBuffer(myBytes, _BufQ);
-            if (newLength > 0)
-            {
-                _ExpectedLengthQ = newLength;
-            }
-
-            if (_ExpectedLengthQ == _BufQ.Count)
-            {
-                if ((_BufQ[0] == 0x53 || _BufQ[0] == 0x93) && _BufQ[1] == 0)
-                {
-                    // Status messages
-                    for (int k = 0; k < _BufQ.Count;)
-                    {
-                        if (_BufQ[k] == 10)
-                        {
-                            Encoding = _BufQ[k + 2] > 0;
-                        }
-
-                        if (_BufQ[k] == 70)
-                        {
-                            BatteryLevel = _BufQ[k + 2];
-                        }
-
-                        if(_BufQ[k] == 69)
-                        {
-                            WifiOn = _BufQ[k + 2] == 1;
-                        }
-                        k += 2 + _BufQ[k + 1];
-                    }
-                }
-                else
-                {
-                    // Unhandled Query Message
-                }
-                _BufQ.Clear();
-                _ExpectedLengthQ = 0;
-            }
-        }
-
-        private void NotifySettings_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            var reader = DataReader.FromBuffer(args.CharacteristicValue);
-            byte[] myBytes = new byte[reader.UnconsumedBufferLength];
-            reader.ReadBytes(myBytes);
-            int newLength = ReadBytesIntoBuffer(myBytes, _BufSet);
-            if (newLength > 0)
-                _ExpectedLengthSet = newLength;
-
-            if (_ExpectedLengthSet == _BufSet.Count)
-            {
-                /*
-                if (mBufSet[0] == 0xXX)
-                {
-
-                }
-                */
-                _BufSet.Clear();
-            }
-        }
-
-        private void NotifyCmds_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
-            byte[] myBytes = new byte[reader.UnconsumedBufferLength];
-            reader.ReadBytes(myBytes);
-            int newLength = ReadBytesIntoBuffer(myBytes, _BufCmd);
-            if (newLength > 0)
-                _ExpectedLengthCmd = newLength;
-
-            if (_ExpectedLengthCmd == _BufCmd.Count)
-            {
-                /*
-                if (mBufCmd[0] == 0xXX)
-                {
-
-                }
-                */
-                _BufCmd.Clear();
-            }
         }
 
         private async void SetThirdPartySource()
         {
             DataWriter writer = new DataWriter();
             writer.WriteBytes(new byte[] { 0x01, 0x50 });
-            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
 
+            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
             if (_SendCmds != null)
             {
                 res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
@@ -614,7 +471,89 @@ namespace GoProCSharpDev
             }
         }
 
-        private int ReadBytesIntoBuffer(byte[] bytes, List<byte> mBuf)
+        // Bluetooth GATT Characteristic Notification Handlers
+        // A GATT characteristic is a basic data element used to construct a GATT service
+
+        private void NotifyCommands_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            Debug.Print("Commands notification recieved");
+            DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
+            byte[] myBytes = new byte[reader.UnconsumedBufferLength];
+            reader.ReadBytes(myBytes);
+            int newLength = ReadBytesIntoBuffer(myBytes, _CommandBuf);
+            if (newLength > 0)
+                _ExpectedLengthCmd = newLength;
+
+            if (_ExpectedLengthCmd == _CommandBuf.Count)
+            {
+                /*
+                if (mBufCmd[0] == 0xXX)
+                {
+
+                }
+                */
+                _CommandBuf.Clear();
+            }
+        }
+
+        private void NotifySettings_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            Debug.Print("Setting changed notification recieved");
+            var reader = DataReader.FromBuffer(args.CharacteristicValue);
+            byte[] myBytes = new byte[reader.UnconsumedBufferLength];
+            reader.ReadBytes(myBytes);
+            int newLength = ReadBytesIntoBuffer(myBytes, _SettingBuf);
+            if (newLength > 0)
+                _ExpectedLengthSet = newLength;
+
+            if (_ExpectedLengthSet == _SettingBuf.Count)
+            {
+                /*
+                if (mBufSet[0] == 0xXX)
+                {
+
+                }
+                */
+                _SettingBuf.Clear();
+            }
+        }
+
+        private void NotifyQueryResp_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            Debug.Print("Query response notification recieved");
+            DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
+            byte[] myBytes = new byte[reader.UnconsumedBufferLength];
+            reader.ReadBytes(myBytes);
+
+            int newLength = ReadBytesIntoBuffer(myBytes, _QueryBuf);
+            if (newLength > 0)
+            {
+                _ExpectedLengthQuery = newLength;
+            }
+
+            if (_ExpectedLengthQuery == _QueryBuf.Count)
+            {
+                if ((_QueryBuf[0] == 0x53 || _QueryBuf[0] == 0x93) && _QueryBuf[1] == 0)
+                {
+                    // Status messages
+                    for (int k = 0; k < _QueryBuf.Count;)
+                    {
+                        if (_QueryBuf[k] == 10) Encoding = _QueryBuf[k + 2] > 0;
+                        if (_QueryBuf[k] == 70) BatteryLevel = _QueryBuf[k + 2];
+                        if (_QueryBuf[k] == 69) WifiOn = _QueryBuf[k + 2] == 1;
+                        k += 2 + _QueryBuf[k + 1];
+                    }
+                }
+                else
+                {
+                    // Unhandled Query Message
+                }
+                _QueryBuf.Clear();
+                _ExpectedLengthQuery = 0;
+            }
+        }
+
+        private int ReadBytesIntoBuffer(byte[] bytes, List<byte> targetBuffer)
         {
             int returnLength = -1;
             int startbyte = 1;
@@ -646,10 +585,122 @@ namespace GoProCSharpDev
 
             for (int k = startbyte; k < theseBytes; k++)
             {
-                mBuf.Add(bytes[k]);
+                targetBuffer.Add(bytes[k]);
             }
             return returnLength;
         }
+
+        private void BleDevice_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
+        {
+            UpateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "Connected" : "Disconnected");
+            IsBluetoothConnected = sender.ConnectionStatus == BluetoothConnectionStatus.Connected;
+        }
+
+        // Bluetooth Funcitons
+
+        private async void BtnReadWifiApName_Click(object sender, RoutedEventArgs e)
+        {
+            if (_WifiApSsid != null)
+            {
+                GattReadResult res = await _WifiApSsid.ReadValueAsync();
+                if (res.Status == GattCommunicationStatus.Success)
+                {
+                    DataReader dataReader = DataReader.FromBuffer(res.Value);
+                    string output = dataReader.ReadString(res.Value.Length);
+                    txtAPName.Text = output;
+                }
+                else { UpateStatusBar("Failed to read ap name"); }
+            }
+            else { UpateStatusBar("Not connected"); }
+        }
+
+        private async void BtnReadWifiApPass_Click(object sender, RoutedEventArgs e)
+        {
+            if (_WifiApPass != null)
+            {
+                GattReadResult res = await _WifiApPass.ReadValueAsync();
+                if (res.Status == GattCommunicationStatus.Success)
+                {
+                    DataReader dataReader = DataReader.FromBuffer(res.Value);
+                    string output = dataReader.ReadString(res.Value.Length);
+                    txtAPPassword.Text = output;
+                }
+                else { UpateStatusBar("Failed to read password"); }
+            }
+            else { UpateStatusBar("Not connected"); }
+        }
+
+        private async void SendBleCommand(byte[] value, string function)
+        {
+            Debug.Print("Send command: " + function);
+            DataWriter writer = new DataWriter();
+            writer.WriteBytes(value);
+
+            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
+            if (_SendCmds != null)
+            {
+                res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
+            }
+            if (res != GattCommunicationStatus.Success)
+            {
+                UpateStatusBar("Failed! Respose: " + res.ToString());
+            }
+        }
+
+        private void BtnTurnWifiOn_Click(object sender, RoutedEventArgs e)
+        {
+            int onOff = 1;
+            SendBleCommand(new byte[] { 0x03, 0x17, 0x01, (byte)onOff }, "Wifi On");
+        }
+
+        private void BtnTurnWifiOff_Click(object sender, RoutedEventArgs e)
+        {
+            int onOff = 0;
+            SendBleCommand(new byte[] { 0x03, 0x17, 0x01, (byte)onOff }, "Wifi Off");
+        }
+
+        private void BtnShutterOn_Click(object sender, RoutedEventArgs e)
+        {
+            int onOff = 1;
+            SendBleCommand(new byte[] { 0x03, 0x01, 0x01, (byte)onOff }, "Shutter On");
+        }
+
+        private void BtnShutterOff_Click(object sender, RoutedEventArgs e)
+        {
+            int onOff = 0;
+            SendBleCommand(new byte[] { 0x03, 0x01, 0x01, (byte)onOff }, "Shutter Off");
+        }
+
+        private void BtnSleep_Click(object sender, RoutedEventArgs e)
+        {
+            SendBleCommand(new byte[] { 0x01, 0x05 }, "Put camera to sleep");
+        }
+
+        private void BtnOpenGoProVersion_Click(object sender, RoutedEventArgs e)
+        {
+            SendBleCommand(new byte[] { 0x01, 0x51 }, "Get Open GoPro version");
+        }
+
+        private void BtnHardwareInfo_Click(object sender, RoutedEventArgs e)
+        {
+            SendBleCommand(new byte[] { 0x01, 0x3C }, "Get camera hardware info");
+        }
+        private void BtnTimelapseMode_Click(object sender, RoutedEventArgs e)
+        {
+            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xEA }, "Presets: Load Group - Timelapse");
+        }
+
+        private void BtnPhotoMode_Click(object sender, RoutedEventArgs e)
+        {
+            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE8 }, "Presets: Load Group - Photo");
+        }
+
+        private void BtnVideoMode_Click(object sender, RoutedEventArgs e)
+        {
+            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE8 }, "Presets: Load Group - Video");
+        }
+
+        #endregion Bluetooth
     }
 
     public class BrushBoolColorConverter : IValueConverter
