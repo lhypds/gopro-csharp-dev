@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GoProCSharpDev"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="GoPro C# Dev" Height="384" Width="596" ResizeMode="NoResize">
+        Title="GoPro C# Dev" Height="347" Width="596" ResizeMode="NoResize">
     <Window.Resources>
         <local:BrushBoolColorConverter x:Key="BConverter"></local:BrushBoolColorConverter>
     </Window.Resources>
@@ -15,63 +15,67 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="390"/>
         </Grid.ColumnDefinitions>
-        <GroupBox Grid.Column="1" Header="BLE" HorizontalAlignment="Left" Height="320" Margin="10,0,0,28" VerticalAlignment="Bottom" Width="368">
-            <ComboBox x:Name="CmbResolutionList" HorizontalAlignment="Left" Margin="245,170,0,0" VerticalAlignment="Top" Width="74">
-                <ComboBoxItem x:Name="CmbItem4K" Content="4K" Selected="CmbItem4K_Selected"/>
-                <ComboBoxItem x:Name="CmbItem5K" Content="5K" Selected="CmbItem5K_Selected"/>
-                <ComboBoxItem x:Name="CmbItem1080" Content="1080" Selected="CmbItem1080_Selected"/>
-                <ComboBoxItem x:Name="CmbItem1440" Content="1440" Selected="CmbItem1440_Selected"/>
-            </ComboBox>
-        </GroupBox>
 
-        <GroupBox Header="Status" HorizontalAlignment="Left" Height="166" Margin="9,0,0,28" VerticalAlignment="Bottom" Width="177"/>
+        <GroupBox Grid.Column="1" Header="BLE" HorizontalAlignment="Left" Height="285" Margin="12,0,0,27" VerticalAlignment="Bottom" Width="368" />
+        <GroupBox Header="Status" HorizontalAlignment="Left" Height="141" Margin="11,0,0,27" VerticalAlignment="Bottom" Width="177" />
 
-        <Label Content="Devices" HorizontalAlignment="Left" Margin="12,0,0,320" VerticalAlignment="Bottom" Height="26" Width="50"/>
-        <ListBox x:Name="lbDevices" ItemsSource="{Binding Devices}" DisplayMemberPath="DeviceInfo.Name" HorizontalAlignment="Left" Height="91" Margin="12,0,0,224" VerticalAlignment="Bottom" Width="174"/>
+        <Label Content="Devices" HorizontalAlignment="Left" Margin="14,0,0,287" VerticalAlignment="Bottom" Height="26" Width="50"/>
+        <ListBox x:Name="lbDevices" ItemsSource="{Binding Devices}" DisplayMemberPath="DeviceInfo.Name" HorizontalAlignment="Left" Height="91" Margin="14,0,0,199" VerticalAlignment="Bottom" Width="174"/>
 
-        <Label Content="BLE Connection" HorizontalAlignment="Left" Margin="22,0,0,305" VerticalAlignment="Bottom" Padding="0" Grid.Column="1" Height="16" Width="83"/>
-        <Rectangle Fill="{Binding IsBluetoothConnected, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="114,0,0,304" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
+        <Label Content="BLE Connection" HorizontalAlignment="Left" Margin="24,0,0,119" VerticalAlignment="Bottom" Padding="0" Height="16" Width="83"/>
+        <Rectangle Fill="{Binding IsBluetoothConnected, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="120,0,0,118" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
-        <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="103,0,0,322" VerticalAlignment="Bottom" Width="83" Click="BtnScanBle_Click" Height="20"/>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="12,0,0,199" VerticalAlignment="Bottom" Width="75" Click="BtnConnect_Click" Height="20" />
-        <Button x:Name="btnPair" Content="Pair" HorizontalAlignment="Left" Margin="111,0,0,199" VerticalAlignment="Bottom" Width="75" Click="BtnPair_Click" Height="20"/>
+        <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="73,0,0,173" VerticalAlignment="Bottom" Width="55" Click="BtnScanBle_Click" Height="20"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="133,0,0,173" VerticalAlignment="Bottom" Width="55" Click="BtnConnect_Click" Height="20" />
+        <Button x:Name="btnPair" Content="Pair" HorizontalAlignment="Left" Margin="14,0,0,173" VerticalAlignment="Bottom" Width="55" Click="BtnPair_Click" Height="20"/>
 
-        <Button x:Name="BtnReadApName" Content="Read" HorizontalAlignment="Left" Margin="261,0,0,255" VerticalAlignment="Bottom" Width="50" Click="BtnReadWifiApName_Click" Height="20" Grid.Column="1" />
-        <Button x:Name="BtnSetApName" Content="Set" HorizontalAlignment="Left" Margin="316,0,0,255" VerticalAlignment="Bottom" Width="50" Click="BtnSetApName_Click" Height="20" Grid.Column="1" />
-        <Button x:Name="BtnReadApPass" Content="Read" HorizontalAlignment="Left" Margin="261,0,0,170" VerticalAlignment="Bottom" Width="50" Click="BtnReadWifiApPass_Click" Height="20" Grid.Column="1" />
-        <Button x:Name="BtnSetApPass" Content="Set" HorizontalAlignment="Left" Margin="316,0,0,170" VerticalAlignment="Bottom" Width="50" Click="BtnSetApPass_Click" Height="20" Grid.Column="1" />
+        <Button x:Name="BtnReadApName" Content="Read" HorizontalAlignment="Left" Margin="263,0,0,219" VerticalAlignment="Bottom" Width="50" Click="BtnReadWifiApName_Click" Height="20" Grid.Column="1" />
+        <Button x:Name="BtnSetApName" Content="Set" HorizontalAlignment="Left" Margin="318,0,0,219" VerticalAlignment="Bottom" Width="50" Click="BtnSetApName_Click" Height="20" Grid.Column="1" />
+        <Button x:Name="BtnReadApPass" Content="Read" HorizontalAlignment="Left" Margin="263,0,0,137" VerticalAlignment="Bottom" Width="50" Click="BtnReadWifiApPass_Click" Height="20" Grid.Column="1" />
+        <Button x:Name="BtnSetApPass" Content="Set" HorizontalAlignment="Left" Margin="318,0,0,137" VerticalAlignment="Bottom" Width="50" Click="BtnSetApPass_Click" Height="20" Grid.Column="1" />
 
-        <Button x:Name="btnShutterOn" Content="Shutter On" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,276" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOn_Click" Height="20" />
-        <Button x:Name="btnShutterOff" Content="Shutter Off" Grid.Column="1" HorizontalAlignment="Left" Margin="103,0,0,276" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOff_Click" Height="20" />
-        <Button x:Name="btnTurnWifiOn" Content="Wi-Fi On" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,249" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOn_Click" Height="20"  />
-        <Button x:Name="btnTurnWifiOff" Content="Wi-Fi Off" Grid.Column="1" HorizontalAlignment="Left" Margin="102,0,0,249" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOff_Click" Height="20"  />
-        <Button x:Name="BtnSleep" Content="Sleep" Grid.Column="1" HorizontalAlignment="Left" Margin="22,0,0,224" VerticalAlignment="Bottom" Width="75" Click="BtnSleep_Click" Height="20" />
-        <Button x:Name="BtnHardwareInfo" Content="Hard Info" Grid.Column="1" HorizontalAlignment="Left" Margin="23,0,0,199" VerticalAlignment="Bottom" Width="75" Click="BtnHardwareInfo_Click" Height="20" />
-        <Button x:Name="BtnOpenGoProVersion" Content="GoPro Ver" Grid.Column="1" HorizontalAlignment="Left" Margin="103,0,0,224" VerticalAlignment="Bottom" Width="75" Click="BtnOpenGoProVersion_Click" Height="20" />
-        <Button x:Name="BtnVideoMode" Content="Video Mode" Grid.Column="1" HorizontalAlignment="Left" Margin="103,0,0,174" VerticalAlignment="Bottom" Width="75" Click="BtnVideoMode_Click" Height="20" />
-        <Button x:Name="BtnPhotoMode" Content="Photo Mode" Grid.Column="1" HorizontalAlignment="Left" Margin="23,0,0,174" VerticalAlignment="Bottom" Width="75" Click="BtnPhotoMode_Click" Height="20" />
-        <Button x:Name="BtnTimelapseMode" Content="Timelapse" Grid.Column="1" HorizontalAlignment="Left" Margin="103,0,0,199" VerticalAlignment="Bottom" Width="75" Click="BtnTimelapseMode_Click" Height="20" />
+        <Button x:Name="btnShutterOn" Content="Shutter On" Grid.Column="1" HorizontalAlignment="Left" Margin="24,0,0,260" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOn_Click" Height="20" />
+        <Button x:Name="btnShutterOff" Content="Shutter Off" Grid.Column="1" HorizontalAlignment="Left" Margin="105,0,0,260" VerticalAlignment="Bottom" Width="75" Click="BtnShutterOff_Click" Height="20" />
+        <Button x:Name="btnTurnWifiOn" Content="Wi-Fi On" Grid.Column="1" HorizontalAlignment="Left" Margin="24,0,0,198" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOn_Click" Height="20"  />
+        <Button x:Name="btnTurnWifiOff" Content="Wi-Fi Off" Grid.Column="1" HorizontalAlignment="Left" Margin="104,0,0,198" VerticalAlignment="Bottom" Width="75" Click="BtnTurnWifiOff_Click" Height="20"  />
+        <Button x:Name="BtnSleep" Content="Sleep" Grid.Column="1" HorizontalAlignment="Left" Margin="268,0,0,39" VerticalAlignment="Bottom" Width="75" Click="BtnSleep_Click" Height="20" />
+        <Button x:Name="BtnHardwareInfo" Content="Hard Info" Grid.Column="1" HorizontalAlignment="Left" Margin="25,0,0,39" VerticalAlignment="Bottom" Width="75" Click="BtnHardwareInfo_Click" Height="20" />
+        <Button x:Name="BtnOpenGoProVersion" Content="GoPro Ver" Grid.Column="1" HorizontalAlignment="Left" Margin="106,0,0,39" VerticalAlignment="Bottom" Width="75" Click="BtnOpenGoProVersion_Click" Height="20" />
 
-        <Label Content="Encoding" HorizontalAlignment="Left" Margin="22,0,0,99" VerticalAlignment="Bottom" Padding="0" Height="16" Width="49"/>
-        <Rectangle Fill="{Binding Encoding, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="82,0,0,95" Stroke="Black" VerticalAlignment="Bottom" Width="63"/>
-        <Label Content="Battery Level" HorizontalAlignment="Left" Margin="19,0,0,155" VerticalAlignment="Bottom" Padding="0" Height="16" Width="68"/>
-        <ProgressBar x:Name="prgBatteryLevel" HorizontalAlignment="Left" Height="11" Margin="19,0,0,143" VerticalAlignment="Bottom" Width="75" Value="{Binding BatteryLevel, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100"/>
-        <Label Content="Wi-Fi" HorizontalAlignment="Left" Margin="22,0,0,119" VerticalAlignment="Bottom" Padding="0" Height="16" Width="28"/>
-        <Rectangle Fill="{Binding WifiStatus, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="82,0,0,118" Stroke="Black" VerticalAlignment="Bottom" Width="63"/>
+        <Label Content="Encoding" HorizontalAlignment="Left" Margin="37,0,0,237" VerticalAlignment="Bottom" Padding="0" Height="16" Width="49" Grid.Column="1"/>
+        <Rectangle Fill="{Binding Encoding, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="104,0,0,235" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
+        <Label Content="Battery Level" HorizontalAlignment="Left" Margin="24,0,0,95" VerticalAlignment="Bottom" Padding="0" Height="16" Width="68"/>
+        <ProgressBar x:Name="prgBatteryLevel" HorizontalAlignment="Left" Height="11" Margin="24,0,0,79" VerticalAlignment="Bottom" Width="83" Value="{Binding BatteryLevel, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100"/>
+        <Label Content="Wi-Fi" HorizontalAlignment="Left" Margin="47,0,0,174" VerticalAlignment="Bottom" Padding="0" Height="16" Width="28" Grid.Column="1"/>
+        <Rectangle Fill="{Binding WifiStatus, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="105,0,0,173" Stroke="Black" VerticalAlignment="Bottom" Width="63" Grid.Column="1"/>
 
-        <Label Content="Camera Wifi AP Name" HorizontalAlignment="Left" Margin="192,0,0,303" VerticalAlignment="Bottom" Height="26" Width="127" Grid.Column="1"/>
-        <TextBox x:Name="txtAPName" HorizontalAlignment="Left" Height="23" Margin="192,0,0,280" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="174" Grid.Column="1"/>
-        <Label Content="Camera Wifi AP Password" HorizontalAlignment="Left" Margin="192,0,0,219" Height="26" VerticalAlignment="Bottom" Width="145" Grid.Column="1"/>
-        <TextBox x:Name="txtAPPassword" HorizontalAlignment="Left" Height="23" Margin="192,0,0,196" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="174" Grid.Column="1"/>
+        <Label Content="Camera Wifi AP Name" HorizontalAlignment="Left" Margin="194,0,0,267" VerticalAlignment="Bottom" Height="26" Width="127" Grid.Column="1"/>
+        <TextBox x:Name="txtAPName" HorizontalAlignment="Left" Height="23" Margin="194,0,0,244" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="174" Grid.Column="1"/>
+        <Label Content="Camera Wifi AP Password" HorizontalAlignment="Left" Margin="194,0,0,186" Height="26" VerticalAlignment="Bottom" Width="145" Grid.Column="1"/>
+        <TextBox x:Name="txtAPPassword" HorizontalAlignment="Left" Height="23" Margin="194,0,0,163" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="174" Grid.Column="1"/>
 
         <StatusBar Grid.ColumnSpan="2" Height="20" Margin="0,0,0,0" VerticalAlignment="Bottom">
             <StatusBarItem Padding="0" Width="575">
                 <TextBlock x:Name="txtStatusBar" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="12" Padding="0,0,0,0"/>
             </StatusBarItem>
         </StatusBar>
-        <Label Content="Zoom Level(%)" HorizontalAlignment="Left" Margin="22,0,0,74" VerticalAlignment="Bottom" Padding="0" Height="16" Width="78"/>
-        <Label Content="{Binding ZoomLevel}" HorizontalAlignment="Left" Margin="111,0,0,72" VerticalAlignment="Bottom" Padding="0" Height="19" RenderTransformOrigin="0.5,0.5" Width="25" />
-        <Button x:Name="BtnKeepAlive" Content="Keep Alive" Grid.Column="1" HorizontalAlignment="Left" Margin="23,0,0,148" VerticalAlignment="Bottom" Width="74" Height="21" Click="BtnKeepAlive_Click" />
-        <Label Content="Resolution" HorizontalAlignment="Left" Margin="192,0,0,139" Height="26" VerticalAlignment="Bottom" Width="67" Grid.Column="1"/>
+        <Label Content="Zoom Level(%)" HorizontalAlignment="Left" Margin="25,0,0,55" VerticalAlignment="Bottom" Padding="0" Height="16" Width="78"/>
+        <Label Content="{Binding ZoomLevel}" HorizontalAlignment="Left" Margin="114,0,0,52" VerticalAlignment="Bottom" Padding="0" Height="19" RenderTransformOrigin="0.5,0.5" Width="25" />
+        <Button x:Name="BtnKeepAlive" Content="Keep Alive" Grid.Column="1" HorizontalAlignment="Left" Margin="187,0,0,39" VerticalAlignment="Bottom" Width="74" Height="20" Click="BtnKeepAlive_Click" />
+
+        <Label Content="Resolution" HorizontalAlignment="Left" Margin="26,0,0,116" Height="26" VerticalAlignment="Bottom" Width="67" Grid.Column="1"/>
+        <ComboBox x:Name="CmbResolutionList" HorizontalAlignment="Left" Margin="126,0,0,116" Width="74" Grid.Column="1" Height="22" VerticalAlignment="Bottom">
+            <ComboBoxItem x:Name="CmbItem4K" Content="4K" Selected="CmbItem4K_Selected"/>
+            <ComboBoxItem x:Name="CmbItem5K" Content="5K" Selected="CmbItem5K_Selected"/>
+            <ComboBoxItem x:Name="CmbItem1080" Content="1080" Selected="CmbItem1080_Selected"/>
+            <ComboBoxItem x:Name="CmbItem1440" Content="1440" Selected="CmbItem1440_Selected"/>
+        </ComboBox>
+
+        <Label Content="Preset Group" HorizontalAlignment="Left" Margin="26,0,0,89" Height="26" VerticalAlignment="Bottom" Width="83" Grid.Column="1"/>
+        <ComboBox x:Name="CmbPresetGroupList" HorizontalAlignment="Left" Margin="126,0,0,89" Width="74" Grid.Column="1" Height="22" VerticalAlignment="Bottom">
+            <ComboBoxItem x:Name="CmbItemVideo" Content="Video" Selected="CmbItemVideo_Selected" />
+            <ComboBoxItem x:Name="CmbItemPhoto" Content="Photo" Selected="CmbItemPhoto_Selected" />
+            <ComboBoxItem x:Name="CmbItemTimelapse" Content="Timelapse" Selected="CmbItemTimelapse_Selected" />
+        </ComboBox>
     </Grid>
 </Window>

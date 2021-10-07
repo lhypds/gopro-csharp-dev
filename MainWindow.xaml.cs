@@ -842,19 +842,19 @@ namespace GoProCSharpDev
             SendBleCommand(new byte[] { 0x01, 0x3C }, "Get camera hardware info");
         }
 
-        private void BtnTimelapseMode_Click(object sender, RoutedEventArgs e)
+        private void CmbItemVideo_Selected(object sender, RoutedEventArgs e)
         {
-            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xEA }, "Presets: Load Group - Timelapse");
+            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE8 }, "Presets: Load Group - Video");
         }
 
-        private void BtnPhotoMode_Click(object sender, RoutedEventArgs e)
+        private void CmbItemPhoto_Selected(object sender, RoutedEventArgs e)
         {
             SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE8 }, "Presets: Load Group - Photo");
         }
 
-        private void BtnVideoMode_Click(object sender, RoutedEventArgs e)
+        private void CmbItemTimelapse_Selected(object sender, RoutedEventArgs e)
         {
-            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE8 }, "Presets: Load Group - Video");
+            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xEA }, "Presets: Load Group - Timelapse");
         }
 
         private void BtnKeepAlive_Click(object sender, RoutedEventArgs e)
