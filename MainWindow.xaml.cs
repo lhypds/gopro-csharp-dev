@@ -91,6 +91,15 @@ namespace GoProCSharpDev
             set { _Zoomlevel = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Zoomlevel")); }
         }
 
+        // Resolution
+        private string _Resolution = "";
+
+        public string Resolution
+        {
+            get => _Resolution;
+            set { _Resolution = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Resolution")); }
+        }
+
         // Bluetooth
         private BluetoothLEDevice _BleDevice = null;
 
@@ -299,7 +308,13 @@ namespace GoProCSharpDev
 
         private async void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
-            UpateStatusBar("Connecting...");
+            if (IsBluetoothConnected)
+            {
+                UpateStatusBar("Deivce already connected");
+                return;
+            }
+            else { UpateStatusBar("Connecting..."); }
+
             GDeviceInformation deviceInfo = (GDeviceInformation)lbDevices.SelectedItem;
             if (deviceInfo == null)
             {
@@ -738,8 +753,16 @@ namespace GoProCSharpDev
 
         // 2. Control & Query
 
+        // Send with GP-0072
+        // Response with GP-0073
         private async void SendBleCommand(byte[] value, string function)
         {
+            if (!IsBluetoothConnected)
+            {
+                UpateStatusBar("Bluetooth not connected");
+                return;
+            }
+
             Debug.Print("Send command: " + function);
             DataWriter writer = new DataWriter();
             writer.WriteBytes(value);
@@ -748,6 +771,31 @@ namespace GoProCSharpDev
             if (_SendCmds != null)
             {
                 res = await _SendCmds.WriteValueAsync(writer.DetachBuffer());
+            }
+            if (res != GattCommunicationStatus.Success)
+            {
+                UpateStatusBar("Failed! Respose: " + res.ToString());
+            }
+        }
+
+        // Send with GP-0074
+        // Response with GP-0075
+        private async void SendBleSetting(byte[] value, string function)
+        {
+            if (!IsBluetoothConnected)
+            {
+                UpateStatusBar("Bluetooth not connected");
+                return;
+            }
+
+            Debug.Print("Send setting: " + function);
+            DataWriter writer = new DataWriter();
+            writer.WriteBytes(value);
+
+            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
+            if (_SetSettings != null)
+            {
+                res = await _SetSettings.WriteValueAsync(writer.DetachBuffer());
             }
             if (res != GattCommunicationStatus.Success)
             {
@@ -793,6 +841,7 @@ namespace GoProCSharpDev
         {
             SendBleCommand(new byte[] { 0x01, 0x3C }, "Get camera hardware info");
         }
+
         private void BtnTimelapseMode_Click(object sender, RoutedEventArgs e)
         {
             SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xEA }, "Presets: Load Group - Timelapse");
@@ -806,6 +855,31 @@ namespace GoProCSharpDev
         private void BtnVideoMode_Click(object sender, RoutedEventArgs e)
         {
             SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE8 }, "Presets: Load Group - Video");
+        }
+
+        private void BtnKeepAlive_Click(object sender, RoutedEventArgs e)
+        {
+            SendBleSetting(new byte[] { 0x03, 0x5B, 0x01, 0x42 }, "Keep Alive");
+        }
+
+        private void CmbItem4K_Selected(object sender, RoutedEventArgs e)
+        {
+            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x01 }, "Set video resolution (id: 2) to 4k (value: 1)");
+        }
+
+        private void CmbItem5K_Selected(object sender, RoutedEventArgs e)
+        {
+            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x18 }, "Set video resolution (id: 2) to 5k (value: 24)");
+        }
+
+        private void CmbItem1080_Selected(object sender, RoutedEventArgs e)
+        {
+            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x09 }, "Set video resolution (id: 2) to 1080 (value: 9)");
+        }
+
+        private void CmbItem1440_Selected(object sender, RoutedEventArgs e)
+        {
+            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x07 }, "Set video resolution (id: 2) to 1440 (value: 7)");
         }
 
         #endregion Bluetooth
