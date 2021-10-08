@@ -112,20 +112,22 @@ namespace GoProCSharpDev.Utils
                     // Accept file stream response
                     if (contentType.Equals("application/octet-stream"))
                     {
-                        Stream responseStream = webResponse.GetResponseStream();
-                        FileStream strmFile = File.Create(outputPath);
-
-                        int bytes;
-                        byte[] buffer = new byte[1024];
-                        bytes = responseStream.Read(buffer, 0, buffer.Length);
-                        while (bytes > 0)
+                        using (Stream responseStream = webResponse.GetResponseStream())
                         {
-                            strmFile.Write(buffer, 0, bytes);
-                            bytes = responseStream.Read(buffer, 0, buffer.Length);
-                        }
+                            FileStream strmFile = File.Create(outputPath);
 
-                        // Show result
-                        return responseStatusCode + responseHeaderText + outputPath;
+                            int bytes;
+                            byte[] buffer = new byte[1024];
+                            bytes = responseStream.Read(buffer, 0, buffer.Length);
+                            while (bytes > 0)
+                            {
+                                strmFile.Write(buffer, 0, bytes);
+                                bytes = responseStream.Read(buffer, 0, buffer.Length);
+                            }
+
+                            // Show result
+                            return responseStatusCode + responseHeaderText + outputPath;
+                        }
                     }
                     else
                     {
