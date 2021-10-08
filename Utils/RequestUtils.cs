@@ -117,11 +117,11 @@ namespace GoProCSharpDev.Utils
 
                         int bytes;
                         byte[] buffer = new byte[1024];
-                        bytes = strmFile.Read(buffer, 0, buffer.Length);
+                        bytes = responseStream.Read(buffer, 0, buffer.Length);
                         while (bytes > 0)
                         {
                             strmFile.Write(buffer, 0, bytes);
-                            bytes = strmFile.Read(buffer, 0, buffer.Length);
+                            bytes = responseStream.Read(buffer, 0, buffer.Length);
                         }
 
                         // Show result
