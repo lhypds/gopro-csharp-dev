@@ -10,7 +10,7 @@ namespace GoProCSharpDev.Utils
     {
         public static string GetUuid128(string CharacteristicUuid)
         {
-            return Consts.GoProUuidBase128.Replace("xxxx", CharacteristicUuid);
+            return Const.GoProUuidBase128.Replace("xxxx", CharacteristicUuid);
         }
     }
 }

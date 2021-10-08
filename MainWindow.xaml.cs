@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Net;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -519,6 +520,25 @@ namespace GoProCSharpDev
         // Bluetooth GATT Characteristic Notification Handlers
         // A GATT characteristic is a basic data element used to construct a GATT service
 
+        private void ResponseLog(string responseText)
+        {
+            string logText = "";
+            TxtResponse.Dispatcher.Invoke(new Action(() => { logText = TxtResponse.Text; }));
+            if (logText != null)
+            {
+                if (!logText.Equals(string.Empty))
+                {
+                    logText += "\r\n";
+                }
+            }
+            logText += "[" + DateTime.Now.ToLongTimeString() + "] ";
+            logText += responseText;
+            TxtResponse.Dispatcher.Invoke(new Action(() => {
+                TxtResponse.Text = logText;
+                TxtResponse.ScrollToEnd();
+            }));
+        }
+
         private void NotifyCommands_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             DataReader reader = DataReader.FromBuffer(args.CharacteristicValue);
@@ -526,6 +546,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _CommandBuf);
+            ResponseLog("Command Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Commands response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -544,10 +565,13 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _SettingBuf);
+            ResponseLog("Setting Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Setting changed response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
+            {
                 _ExpectedLengthSet = newLength;
+            }
 
             if (_ExpectedLengthSet == _SettingBuf.Count)
             {
@@ -562,6 +586,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _QueryBuf);
+            ResponseLog("Query Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Query response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -571,7 +596,7 @@ namespace GoProCSharpDev
 
             if (_ExpectedLengthQuery == _QueryBuf.Count)
             {
-                // Check the first byte is 83 or 147
+                // Check the first byte is 83(0x53) or 147(0x93)
                 if ((_QueryBuf[0] == 0x53 || _QueryBuf[0] == 0x93) && _QueryBuf[1] == 0)
                 {
                     // Status messages
@@ -857,7 +882,7 @@ namespace GoProCSharpDev
             SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xEA }, "Presets: Load Group - Timelapse");
         }
 
-        private void BtnKeepAlive_Click(object sender, RoutedEventArgs e)
+        private void BtnBleKeepAlive_Click(object sender, RoutedEventArgs e)
         {
             SendBleSetting(new byte[] { 0x03, 0x5B, 0x01, 0x42 }, "Keep Alive");
         }
@@ -883,6 +908,36 @@ namespace GoProCSharpDev
         }
 
         #endregion Bluetooth
+
+        #region Wifi
+
+        private void BtnListMedia_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/media/list";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
+        }
+
+        private void BtnGetMediaFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/media/gpmf?path=100GOPRO/";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName;
+        }
+
+        private void BtnWifiKeepAlive_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/camera/keep_alive";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
+        }
+
+        private void BtnSendApiRequest_Click(object sender, RoutedEventArgs e)
+        {
+            WebRequestUtils.Get(TxtRequestUrl.Text);
+        }
+
+        #endregion Wifi
     }
 
     public class BrushBoolColorConverter : IValueConverter
