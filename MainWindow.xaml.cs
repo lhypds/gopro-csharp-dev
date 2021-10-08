@@ -520,10 +520,10 @@ namespace GoProCSharpDev
         // Bluetooth GATT Characteristic Notification Handlers
         // A GATT characteristic is a basic data element used to construct a GATT service
 
-        private void ResponseLog(string responseText)
+        private void BleResponse(string responseText)
         {
             string logText = "";
-            TxtResponse.Dispatcher.Invoke(new Action(() => { logText = TxtResponse.Text; }));
+            TxtBleResponse.Dispatcher.Invoke(new Action(() => { logText = TxtBleResponse.Text; }));
             if (logText != null)
             {
                 if (!logText.Equals(string.Empty))
@@ -533,9 +533,9 @@ namespace GoProCSharpDev
             }
             logText += "[" + DateTime.Now.ToLongTimeString() + "] ";
             logText += responseText;
-            TxtResponse.Dispatcher.Invoke(new Action(() => {
-                TxtResponse.Text = logText;
-                TxtResponse.ScrollToEnd();
+            TxtBleResponse.Dispatcher.Invoke(new Action(() => {
+                TxtBleResponse.Text = logText;
+                TxtBleResponse.ScrollToEnd();
             }));
         }
 
@@ -546,7 +546,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _CommandBuf);
-            ResponseLog("Command Response: " + BitConverter.ToString(myBytes));
+            BleResponse("Command Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Commands response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -565,7 +565,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _SettingBuf);
-            ResponseLog("Setting Response: " + BitConverter.ToString(myBytes));
+            BleResponse("Setting Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Setting changed response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -586,7 +586,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _QueryBuf);
-            ResponseLog("Query Response: " + BitConverter.ToString(myBytes));
+            BleResponse("Query Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Query response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -911,6 +911,13 @@ namespace GoProCSharpDev
 
         #region Wifi
 
+        private void WebResponse(string responseText)
+        {
+            TxtWebResponse.Dispatcher.Invoke(new Action(() => {
+                TxtWebResponse.Text = responseText;
+            }));
+        }
+
         private void BtnListMedia_Click(object sender, RoutedEventArgs e)
         {
             if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
@@ -934,7 +941,7 @@ namespace GoProCSharpDev
 
         private void BtnSendApiRequest_Click(object sender, RoutedEventArgs e)
         {
-            WebRequestUtils.Get(TxtRequestUrl.Text);
+            WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text));
         }
 
         #endregion Wifi

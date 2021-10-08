@@ -25,7 +25,7 @@ namespace GoProCSharpDev.Utils
 
         #region Get
 
-        public static void Get(string url)
+        public static string Get(string url)
         {
             // Make request
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
@@ -53,7 +53,7 @@ namespace GoProCSharpDev.Utils
                         string responseBodyText = sr.ReadToEnd().ToString();
 
                         // Show result
-                        MessageBox.Show(responseStatusCode + responseHeaderText + responseBodyText, "Success");
+                        return responseStatusCode + responseHeaderText + responseBodyText;
                     }
                 }
             }
@@ -63,7 +63,7 @@ namespace GoProCSharpDev.Utils
                 Debug.WriteLine(errorMessage);
 
                 // Show result
-                MessageBox.Show(error.Message, "Failed");
+                return "Failed" + error.Message;
             }
         }
 

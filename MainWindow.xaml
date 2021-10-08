@@ -6,14 +6,14 @@
         xmlns:local="clr-namespace:GoProCSharpDev"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="GoPro C# Dev" Height="640.5" Width="617" ResizeMode="NoResize">
+        Title="GoPro C# Dev" Height="640.5" Width="855.5" ResizeMode="NoResize">
     <Window.Resources>
         <local:BrushBoolColorConverter x:Key="BConverter"></local:BrushBoolColorConverter>
     </Window.Resources>
     <Grid Margin="0,0,-6,-1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="413"/>
+            <ColumnDefinition Width="655"/>
         </Grid.ColumnDefinitions>
 
         <GroupBox Grid.Column="1" Header="BLE" HorizontalAlignment="Left" Height="285" Margin="13,0,0,171" VerticalAlignment="Bottom" Width="379" />
@@ -80,19 +80,22 @@
             <ComboBoxItem x:Name="CmbItemTimelapse" Content="Timelapse" Selected="CmbItemTimelapse_Selected" />
         </ComboBox>
 
-        <GroupBox Header="Wi-Fi" Height="142" Margin="15,0,21,461" VerticalAlignment="Bottom" Grid.ColumnSpan="2" />
+        <GroupBox Header="Wi-Fi" Height="142" Margin="15,0,263,461" VerticalAlignment="Bottom" Grid.ColumnSpan="2" />
         <Label Content="Request" HorizontalAlignment="Left" Margin="24,0,0,530" VerticalAlignment="Bottom" Height="26" Width="59"/>
         <Label Content="IP Address" HorizontalAlignment="Left" Margin="23,0,0,558" VerticalAlignment="Bottom" Height="26" Width="60"/>
         <TextBox x:Name="TxtIpAddress" MaxLines="1" Height="23" Margin="88,0,0,559" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom"/>
         <Label Content="File Name" HorizontalAlignment="Left" Margin="10,0,0,558" VerticalAlignment="Bottom" Height="26" Width="66" Grid.Column="1"/>
-        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="76,0,45,559" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.Column="1"/>
-        <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="88,0,44,529" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="76,0,279,559" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.Column="1"/>
+        <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="88,0,279,529" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
         <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="319,0,0,504" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnSendApiRequest_Click" />
         <Button x:Name="BtnListMedia" Content="List Media" HorizontalAlignment="Left" Margin="24,0,0,503" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnListMedia_Click" />
         <Button x:Name="BtnWifiKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="184,0,0,503" VerticalAlignment="Bottom" Width="75" Height="20" Grid.ColumnSpan="2" Click="BtnWifiKeepAlive_Click" />
         <Button x:Name="BtnGetMediaFile" Content="Get File" HorizontalAlignment="Left" Margin="104,0,0,503" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
 
-        <Label Content="Response" HorizontalAlignment="Left" Margin="15,0,0,148" VerticalAlignment="Bottom" Height="26" Width="60"/>
-        <TextBox x:Name="TxtResponse" Margin="15,0,21,28" TextWrapping="Wrap" Text="" Height="122" VerticalAlignment="Bottom" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Visible" FontSize="11"/>
+        <Label Content="Web Response" HorizontalAlignment="Left" Margin="398,0,0,579" VerticalAlignment="Bottom" Height="26" Width="89" Grid.Column="1"/>
+        <TextBox x:Name="TxtWebResponse" Margin="15,0,263,28" TextWrapping="Wrap" Text="" Height="122" VerticalAlignment="Bottom" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Visible" FontSize="11"/>
+
+        <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,148" VerticalAlignment="Bottom" Height="26" Width="85"/>
+        <TextBox x:Name="TxtBleResponse" Margin="400,0,17,28" TextWrapping="Wrap" Text="" Height="552" VerticalAlignment="Bottom" FontSize="11" Grid.Column="1"/>
     </Grid>
 </Window>
