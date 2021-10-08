@@ -43,20 +43,94 @@ namespace GoProCSharpDev.Utils
                     // Get headers
                     WebHeaderCollection headers = webResponse.Headers;
                     string responseHeaderText = "";
+                    string contentType = "";
                     foreach (var headerKey in headers.AllKeys)
                     {
                         responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
+                        if (headerKey.Contains("Content-Type"))
+                        {
+                            contentType = headers.Get(headerKey);
+                        }
                     }
 
                     // Get body
+                    // Json text response
                     using (StreamReader sr = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
                     {
                         string responseBodyText = sr.ReadToEnd().ToString();
-                        dynamic parsedJson = JsonConvert.DeserializeObject(responseBodyText);
-                        responseBodyText = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+
+                        // If content is Json, format the result
+                        if (contentType.Equals("application/json"))
+                        {
+                            dynamic parsedJson = JsonConvert.DeserializeObject(responseBodyText);
+                            responseBodyText = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+                        }
 
                         // Show result
                         return responseStatusCode + responseHeaderText + responseBodyText;
+                    }
+                }
+            }
+            catch (Exception error)
+            {
+                string errorMessage = "Error sending API request: " + error.Message;
+                Debug.WriteLine(errorMessage);
+
+                // Show result
+                return "Failed" + error.Message;
+            }
+        }
+
+        public static string Get(string url, string outputPath)
+        {
+            // Make request
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "GET";
+            req.Host = "localhost";
+            try
+            {
+                // Process response
+                using (HttpWebResponse webResponse = (HttpWebResponse)req.GetResponse())
+                {
+                    // Get status code
+                    string responseStatusCode = "Status code:" + webResponse.StatusCode.ToString() + "(" + (int)webResponse.StatusCode + ")\r\n";
+
+                    // Get headers
+                    WebHeaderCollection headers = webResponse.Headers;
+                    string responseHeaderText = "";
+                    string contentType = "";
+                    foreach (var headerKey in headers.AllKeys)
+                    {
+                        responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
+                        if (headerKey.Contains("Content-Type"))
+                        {
+                            contentType = headers.Get(headerKey);
+                        }
+                    }
+
+                    // Get body
+                    // Accept file stream response
+                    if (contentType.Equals("application/octet-stream"))
+                    {
+                        Stream responseStream = webResponse.GetResponseStream();
+                        FileStream strmFile = File.Create(outputPath);
+
+                        int bytes;
+                        byte[] buffer = new byte[1024];
+                        bytes = strmFile.Read(buffer, 0, buffer.Length);
+                        while (bytes > 0)
+                        {
+                            strmFile.Write(buffer, 0, bytes);
+                            bytes = strmFile.Read(buffer, 0, buffer.Length);
+                        }
+
+                        // Show result
+                        return responseStatusCode + responseHeaderText + outputPath;
+                    }
+                    else
+                    {
+                        // Show result
+                        return responseStatusCode + responseHeaderText + "Unknown response type";
                     }
                 }
             }

@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Windows;
 using System.Windows.Data;
@@ -929,7 +930,7 @@ namespace GoProCSharpDev
         {
             if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
             string requestSuffix = "/gopro/media/gpmf?path=100GOPRO/";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName;
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
         }
 
         private void BtnWifiKeepAlive_Click(object sender, RoutedEventArgs e)
@@ -941,7 +942,24 @@ namespace GoProCSharpDev
 
         private void BtnSendApiRequest_Click(object sender, RoutedEventArgs e)
         {
-            WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text));
+            if (TxtRequestUrl.Text.Contains("gpmf"))
+            {
+                // File response
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text)));
+            }
+            else
+            {
+                // Text response
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text));
+            }
+        }
+
+        private void BtnOpenOutput_Click(object sender, RoutedEventArgs e)
+        {
+            if (TxtOutputFolderPath.Text.Equals(string.Empty)) return;
+            if (!Directory.Exists(TxtOutputFolderPath.Text)) 
+                Directory.CreateDirectory(TxtOutputFolderPath.Text);
+            Process.Start(TxtOutputFolderPath.Text);
         }
 
         #endregion Wifi
