@@ -919,6 +919,38 @@ namespace GoProCSharpDev
             }));
         }
 
+        private void BtnSendApiRequest_Click(object sender, RoutedEventArgs e)
+        {
+            if (TxtRequestUrl.Text.Contains("gpmf"))
+            {
+                // File response
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text)));
+            }
+            else if (TxtRequestUrl.Text.Contains("screennail"))
+            {
+                // JPEG file response for screennail
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_SCREENNAIL.JPEG")));
+            }
+            else if (TxtRequestUrl.Text.Contains("thumbnail"))
+            {
+                // JPEG file response for thumbnail
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_THUMBNAIL.JPEG")));
+            }
+            else
+            {
+                // Text response
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text));
+            }
+        }
+
+        private void BtnOpenOutput_Click(object sender, RoutedEventArgs e)
+        {
+            if (TxtOutputFolderPath.Text.Equals(string.Empty)) return;
+            if (!Directory.Exists(TxtOutputFolderPath.Text))
+                Directory.CreateDirectory(TxtOutputFolderPath.Text);
+            Process.Start(TxtOutputFolderPath.Text);
+        }
+
         private void BtnListMedia_Click(object sender, RoutedEventArgs e)
         {
             if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
@@ -940,26 +972,34 @@ namespace GoProCSharpDev
             TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
         }
 
-        private void BtnSendApiRequest_Click(object sender, RoutedEventArgs e)
+        private void BtnGetThumbnail_Click(object sender, RoutedEventArgs e)
         {
-            if (TxtRequestUrl.Text.Contains("gpmf"))
-            {
-                // File response
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text)));
-            }
-            else
-            {
-                // Text response
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text));
-            }
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/media/thumbnail?path=100GOPRO/";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
         }
 
-        private void BtnOpenOutput_Click(object sender, RoutedEventArgs e)
+        private void BtnGetInfo_Click(object sender, RoutedEventArgs e)
         {
-            if (TxtOutputFolderPath.Text.Equals(string.Empty)) return;
-            if (!Directory.Exists(TxtOutputFolderPath.Text)) 
-                Directory.CreateDirectory(TxtOutputFolderPath.Text);
-            Process.Start(TxtOutputFolderPath.Text);
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/media/info?path=100GOPRO/";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
+        }
+
+        private void BtnGetScreennail_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/media/screennail?path=100GOPRO/";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
+        }
+
+        private void BtnDigitalZoom_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/camera/digital_zoom?percent=";
+            int percent;
+            int.TryParse(TxtDigitalZoomPercent.Text, out percent);
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + percent;
         }
 
         #endregion Wifi

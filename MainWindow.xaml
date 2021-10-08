@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GoProCSharpDev"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="GoPro C# Dev" Height="640.5" Width="855.5" ResizeMode="NoResize">
+        Title="GoPro C# Dev" Height="696.5" Width="855.5" ResizeMode="NoResize">
     <Window.Resources>
         <local:BrushBoolColorConverter x:Key="BConverter"></local:BrushBoolColorConverter>
     </Window.Resources>
@@ -80,30 +80,36 @@
             <ComboBoxItem x:Name="CmbItemTimelapse" Content="Timelapse" Selected="CmbItemTimelapse_Selected" />
         </ComboBox>
 
-        <GroupBox Header="Wi-Fi" Height="142" Margin="15,0,263,461" VerticalAlignment="Bottom" Grid.ColumnSpan="2" >
+        <GroupBox Header="Wi-Fi" Height="197" Margin="15,0,263,461" VerticalAlignment="Bottom" Grid.ColumnSpan="2" >
         </GroupBox>
 
-        <Label Content="Request" HorizontalAlignment="Left" Margin="24,0,0,529" VerticalAlignment="Bottom" Height="26" Width="59"/>
-        <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="88,0,341,529" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
+        <Label Content="Request" HorizontalAlignment="Left" Margin="26,0,0,583" VerticalAlignment="Bottom" Height="26" Width="59"/>
+        <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="90,0,339,583" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
 
-        <Label Content="IP Address" HorizontalAlignment="Left" Margin="23,0,0,558" VerticalAlignment="Bottom" Height="26" Width="60"/>
-        <TextBox x:Name="TxtIpAddress" Text="10.5.5.9" MaxLines="1" Height="23" Margin="88,0,0,559" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
+        <Label Content="IP Address" HorizontalAlignment="Left" Margin="25,0,0,612" VerticalAlignment="Bottom" Height="26" Width="60"/>
+        <TextBox x:Name="TxtIpAddress" Text="10.5.5.9" MaxLines="1" Height="23" Margin="90,0,653,613" TextWrapping="NoWrap" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
 
-        <Label Content="File Name" HorizontalAlignment="Left" Margin="10,0,0,558" VerticalAlignment="Bottom" Height="26" Width="66" Grid.Column="1"/>
-        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="76,0,279,559" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.Column="1"/>
+        <Label Content="File Name" HorizontalAlignment="Left" Margin="12,0,0,612" VerticalAlignment="Bottom" Height="26" Width="66" Grid.Column="1"/>
+        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="78,0,277,613" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.Column="1"/>
 
-        <Label Content="Out Dir" HorizontalAlignment="Left" Margin="24,0,0,501" VerticalAlignment="Bottom" Height="26" Width="59"/>
-        <TextBox x:Name="TxtOutputFolderPath" Text="out" MaxLines="1" Height="23" Margin="88,0,624,500" TextWrapping="NoWrap" VerticalAlignment="Bottom" Grid.ColumnSpan="2" />
-        <Button x:Name="BtnOpenOutput" Content="Open" HorizontalAlignment="Left" Margin="38,0,0,502" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnOpenOutput_Click" />
+        <Label Content="Out Dir" HorizontalAlignment="Left" Margin="26,0,0,555" VerticalAlignment="Bottom" Height="26" Width="59"/>
+        <TextBox x:Name="TxtOutputFolderPath" Text="out" MaxLines="1" Height="23" Margin="90,0,622,554" TextWrapping="NoWrap" VerticalAlignment="Bottom" Grid.ColumnSpan="2" />
+        <Button x:Name="BtnOpenOutput" Content="Open" HorizontalAlignment="Left" Margin="40,0,0,556" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnOpenOutput_Click" />
 
-        <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="321,0,0,530" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnSendApiRequest_Click" />
-        <Button x:Name="BtnListMedia" Content="List Media" HorizontalAlignment="Left" Margin="27,0,0,471" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnListMedia_Click" />
-        <Button x:Name="BtnWifiKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="191,0,0,471" VerticalAlignment="Bottom" Width="75" Height="20" Grid.ColumnSpan="2" Click="BtnWifiKeepAlive_Click" />
-        <Button x:Name="BtnGetMediaFile" Content="Get File" HorizontalAlignment="Left" Margin="109,0,0,471" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
+        <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="323,0,0,584" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnSendApiRequest_Click" />
+        <Button x:Name="BtnListMedia" Content="List Media" HorizontalAlignment="Left" Margin="25,0,0,525" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnListMedia_Click" />
+        <Button x:Name="BtnWifiKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="303,0,0,470" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnWifiKeepAlive_Click" Grid.Column="1" />
+        <Button x:Name="BtnGpmf" Content="GPMF" HorizontalAlignment="Left" Margin="25,0,0,500" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
+        <Button x:Name="BtnGetThumbnail" Content="Thumbnail" HorizontalAlignment="Left" Margin="185,0,0,525" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetThumbnail_Click" Grid.ColumnSpan="2" />
 
-        <Label Content="Web Response" HorizontalAlignment="Left" Margin="398,0,0,579" VerticalAlignment="Bottom" Height="26" Width="89" Grid.Column="1"/>
-        <TextBox x:Name="TxtWebResponse" Margin="400,0,17,28" TextWrapping="Wrap" Text="" Height="552" VerticalAlignment="Bottom" FontSize="11" Grid.Column="1"/>
+        <Label Content="Web Response" HorizontalAlignment="Left" Margin="400,0,0,636" VerticalAlignment="Bottom" Height="26" Width="89" Grid.Column="1"/>
+        <TextBox x:Name="TxtWebResponse" Margin="400,0,17,28" TextWrapping="Wrap" Text="" Height="608" VerticalAlignment="Bottom" FontSize="11" Grid.Column="1"/>
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,148" VerticalAlignment="Bottom" Height="26" Width="85"/>
         <TextBox x:Name="TxtBleResponse" Margin="15,0,263,28" TextWrapping="Wrap" Text="" Height="122" VerticalAlignment="Bottom" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Visible" FontSize="11"/>
+        <Button x:Name="BtnGetInfo" Content="Info" HorizontalAlignment="Left" Margin="105,0,0,525" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetInfo_Click" />
+        <Button x:Name="BtnGetScreennail" Content="Screennail" HorizontalAlignment="Left" Margin="105,0,0,500" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetScreennail_Click" />
+
+        <Button x:Name="BtnDigitalZoom" Content="Zoom(%)" HorizontalAlignment="Left" Margin="25,0,0,475" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnDigitalZoom_Click" />
+        <TextBox x:Name="TxtDigitalZoomPercent" MaxLines="1" Height="20" Margin="105,0,21,475" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
     </Grid>
 </Window>
