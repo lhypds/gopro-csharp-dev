@@ -115,7 +115,6 @@ namespace GoProCSharpDev.Utils
                         using (Stream responseStream = webResponse.GetResponseStream())
                         {
                             FileStream strmFile = File.Create(outputPath);
-
                             int bytes;
                             byte[] buffer = new byte[1024];
                             bytes = responseStream.Read(buffer, 0, buffer.Length);
@@ -124,6 +123,7 @@ namespace GoProCSharpDev.Utils
                                 strmFile.Write(buffer, 0, bytes);
                                 bytes = responseStream.Read(buffer, 0, buffer.Length);
                             }
+                            strmFile.Close();
 
                             // Show result
                             return responseStatusCode + responseHeaderText + outputPath;
@@ -142,7 +142,7 @@ namespace GoProCSharpDev.Utils
                 Debug.WriteLine(errorMessage);
 
                 // Show result
-                return "Failed" + error.Message;
+                return "Failed: " + error.Message;
             }
         }
 
