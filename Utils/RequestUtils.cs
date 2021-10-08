@@ -114,20 +114,22 @@ namespace GoProCSharpDev.Utils
                     {
                         using (Stream responseStream = webResponse.GetResponseStream())
                         {
-                            FileStream strmFile = File.Create(outputPath);
-                            int bytes;
-                            byte[] buffer = new byte[1024];
-                            bytes = responseStream.Read(buffer, 0, buffer.Length);
-                            while (bytes > 0)
+                            using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
                             {
-                                strmFile.Write(buffer, 0, bytes);
-                                bytes = responseStream.Read(buffer, 0, buffer.Length);
+                                byte[] buffer = new byte[16 * 1024];
+                                int bytesRead;
+                                do
+                                {
+                                    bytesRead = responseStream.Read(buffer, 0, 16 * 1024);
+                                    strmFile.Write(buffer, 0, bytesRead);
+                                }
+                                while (bytesRead > 0);
+                                strmFile.Close();
                             }
-                            strmFile.Close();
-
-                            // Show result
-                            return responseStatusCode + responseHeaderText + outputPath;
                         }
+
+                        // Show result
+                        return responseStatusCode + responseHeaderText + outputPath;
                     }
                     else
                     {
