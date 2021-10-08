@@ -87,7 +87,7 @@
         <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="88,0,341,529" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
 
         <Label Content="IP Address" HorizontalAlignment="Left" Margin="23,0,0,558" VerticalAlignment="Bottom" Height="26" Width="60"/>
-        <TextBox x:Name="TxtIpAddress" MaxLines="1" Height="23" Margin="88,0,0,559" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom"/>
+        <TextBox x:Name="TxtIpAddress" Text="10.5.5.9" MaxLines="1" Height="23" Margin="88,0,0,559" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
 
         <Label Content="File Name" HorizontalAlignment="Left" Margin="10,0,0,558" VerticalAlignment="Bottom" Height="26" Width="66" Grid.Column="1"/>
         <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="76,0,279,559" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.Column="1"/>
