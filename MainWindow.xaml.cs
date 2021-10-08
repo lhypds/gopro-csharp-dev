@@ -924,7 +924,7 @@ namespace GoProCSharpDev
             if (TxtRequestUrl.Text.Contains("gpmf"))
             {
                 // File response
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text)));
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_GPMF")));
             }
             else if (TxtRequestUrl.Text.Contains("screennail"))
             {
