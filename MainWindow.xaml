@@ -93,9 +93,8 @@
         <Button x:Name="BtnGetMediaFile" Content="Get File" HorizontalAlignment="Left" Margin="104,0,0,503" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
 
         <Label Content="Web Response" HorizontalAlignment="Left" Margin="398,0,0,579" VerticalAlignment="Bottom" Height="26" Width="89" Grid.Column="1"/>
-        <TextBox x:Name="TxtWebResponse" Margin="15,0,263,28" TextWrapping="Wrap" Text="" Height="122" VerticalAlignment="Bottom" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Visible" FontSize="11"/>
-
+        <TextBox x:Name="TxtWebResponse" Margin="400,0,17,28" TextWrapping="Wrap" Text="" Height="552" VerticalAlignment="Bottom" FontSize="11" Grid.Column="1"/>
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,148" VerticalAlignment="Bottom" Height="26" Width="85"/>
-        <TextBox x:Name="TxtBleResponse" Margin="400,0,17,28" TextWrapping="Wrap" Text="" Height="552" VerticalAlignment="Bottom" FontSize="11" Grid.Column="1"/>
+        <TextBox x:Name="TxtBleResponse" Margin="15,0,263,28" TextWrapping="Wrap" Text="" Height="122" VerticalAlignment="Bottom" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Visible" FontSize="11"/>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
 ﻿using GoProCSharpDev.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -51,6 +52,8 @@ namespace GoProCSharpDev.Utils
                     using (StreamReader sr = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
                     {
                         string responseBodyText = sr.ReadToEnd().ToString();
+                        dynamic parsedJson = JsonConvert.DeserializeObject(responseBodyText);
+                        responseBodyText = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
 
                         // Show result
                         return responseStatusCode + responseHeaderText + responseBodyText;
