@@ -28,6 +28,8 @@ namespace GoProCSharpDev.Utils
 
         public static string Get(string url)
         {
+            if (url.Equals(string.Empty)) return "Please input URL";
+
             // Make request
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
             req.Method = "GET";

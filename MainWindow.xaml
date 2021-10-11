@@ -57,7 +57,7 @@
         <TextBox x:Name="txtAPPassword" MaxLines="1" HorizontalAlignment="Left" Height="23" Margin="195,0,0,307" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="174" Grid.Column="1"/>
 
         <StatusBar Grid.ColumnSpan="2" Height="19" Margin="0,0,3,1" VerticalAlignment="Bottom">
-            <StatusBarItem Padding="0" Width="842">
+            <StatusBarItem Padding="0" Width="838">
                 <TextBlock x:Name="txtStatusBar" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="12" Padding="0,0,0,0"/>
             </StatusBarItem>
         </StatusBar>
@@ -90,13 +90,14 @@
         <TextBox x:Name="TxtIpAddress" Text="10.5.5.9" MaxLines="1" Height="23" Margin="90,0,653,613" TextWrapping="NoWrap" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
 
         <Label Content="File Name" HorizontalAlignment="Left" Margin="12,0,0,612" VerticalAlignment="Bottom" Height="26" Width="66" Grid.Column="1"/>
-        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="78,0,277,613" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.Column="1"/>
+        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="78,0,339,613" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Grid.Column="1"/>
+        <Button x:Name="BtnCopy" Content="Copy" HorizontalAlignment="Left" Margin="321,0,0,614" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnCopy_Click" />
 
         <Label Content="Out Dir" HorizontalAlignment="Left" Margin="26,0,0,555" VerticalAlignment="Bottom" Height="26" Width="59"/>
         <TextBox x:Name="TxtOutputFolderPath" Text="out" MaxLines="1" Height="23" Margin="90,0,622,554" TextWrapping="NoWrap" VerticalAlignment="Bottom" Grid.ColumnSpan="2" />
         <Button x:Name="BtnOpenOutput" Content="Open" HorizontalAlignment="Left" Margin="40,0,0,556" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnOpenOutput_Click" />
 
-        <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="323,0,0,584" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnSendApiRequest_Click" />
+        <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="321,0,0,585" VerticalAlignment="Bottom" Width="50" Height="20" Grid.Column="1" Click="BtnSendApiRequest_Click" />
         <Button x:Name="BtnListMedia" Content="List Media" HorizontalAlignment="Left" Margin="25,0,0,525" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnListMedia_Click" />
         <Button x:Name="BtnWifiKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="303,0,0,470" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnWifiKeepAlive_Click" Grid.Column="1" />
         <Button x:Name="BtnGpmf" Content="GPMF" HorizontalAlignment="Left" Margin="25,0,0,500" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
