@@ -28,12 +28,13 @@ namespace GoProCSharpDev.Utils
 
         public static string Get(string url, string outputPath = null, bool async = false)
         {
-            // Make request
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            req.Method = "GET";
-            req.Host = "localhost";
             try
             {
+                // Make request
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                req.Host = "localhost";
+
                 if (async)
                 {
                     GetAsync(url, outputPath);
@@ -250,21 +251,20 @@ namespace GoProCSharpDev.Utils
         public static void Post(string url, string queryParams, List<QueryParam> queryHeaders)
         {
             Debug.WriteLine("Post: " + url + " Params: " + queryParams);
-
-            // Make request
-            byte[] bs = Encoding.ASCII.GetBytes(queryParams); // transfer to ASCII code
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            req.Method = "POST";
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.ContentLength = bs.Length;
-
-            foreach (QueryParam header in queryHeaders)
-            {
-                req.Headers.Add(header.Key, header.Value);
-            }
-
             try
             {
+                // Make request
+                byte[] bs = Encoding.ASCII.GetBytes(queryParams); // transfer to ASCII code
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "POST";
+                req.ContentType = "application/x-www-form-urlencoded";
+                req.ContentLength = bs.Length;
+
+                foreach (QueryParam header in queryHeaders)
+                {
+                    req.Headers.Add(header.Key, header.Value);
+                }
+
                 using (Stream reqStream = req.GetRequestStream())
                 {
                     reqStream.Write(bs, 0, bs.Length);
