@@ -131,9 +131,21 @@ namespace GoProCSharpDev.Utils
                 HttpResponseMessage response = await httpClient.GetAsync(url);
                 Debug.WriteLine("Got response");
 
-                // Print headers
-                Debug.WriteLine("Print response headers...");
+                // Print response headers
+                Debug.WriteLine("Response headers...");
                 foreach (var header in response.Headers)
+                {
+                    string valueStr = string.Empty;
+                    foreach (var value in header.Value)
+                    {
+                        valueStr += value + ";";
+                    }
+                    Debug.WriteLine(header.Key + ":" + valueStr);
+                }
+
+                // Content headers
+                Debug.WriteLine("Content headers:");
+                foreach (var header in response.Content.Headers)
                 {
                     string valueStr = string.Empty;
                     foreach (var value in header.Value)
