@@ -112,7 +112,7 @@ namespace GoProCSharpDev.Utils
 
                     // Get body
                     // Accept file stream response
-                    if (contentType.Equals("application/octet-stream") || contentType.Equals("image/jpeg"))
+                    if (contentType.Equals("application/octet-stream") || contentType.Equals("image/jpeg") || contentType.Equals("video/mp4"))
                     {
                         using (Stream responseStream = webResponse.GetResponseStream())
                         {

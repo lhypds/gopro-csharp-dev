@@ -952,6 +952,11 @@ namespace GoProCSharpDev
                 // JPEG file response for thumbnail
                 WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_THUMBNAIL.JPEG")));
             }
+            else if (TxtRequestUrl.Text.Contains("8080"))
+            {
+                // JPEG file response for thumbnail
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text)));
+            }
             else
             {
                 // Text response
@@ -1015,6 +1020,13 @@ namespace GoProCSharpDev
             string requestSuffix = "/gopro/camera/digital_zoom?percent=";
             int.TryParse(TxtDigitalZoomPercent.Text, out int percent);
             TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + percent;
+        }
+
+        private void BtnGet_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = ":8080/videos/DCIM/100GOPRO/";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
         }
 
         #endregion Wifi
