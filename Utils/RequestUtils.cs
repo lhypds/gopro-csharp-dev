@@ -131,6 +131,7 @@ namespace GoProCSharpDev.Utils
                 HttpResponseMessage response = await httpClient.GetAsync(url);
                 Debug.WriteLine("Got response");
 
+                // Print headers
                 // Print response headers
                 Debug.WriteLine("Response headers...");
                 foreach (var header in response.Headers)
@@ -154,17 +155,15 @@ namespace GoProCSharpDev.Utils
                     }
                     Debug.WriteLine(header.Key + ":" + valueStr);
                 }
-
                 response.EnsureSuccessStatusCode();
 
                 // Save with a file
                 Debug.WriteLine("Saving content to file...");
-                var responseByteArray = await response.Content.ReadAsByteArrayAsync();
-                using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
+                using (FileStream fileStream = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
                 {
-                    strmFile.Write(responseByteArray, 0, responseByteArray.Length);
-                    strmFile.Close();
+                    await response.Content.CopyToAsync(fileStream);
                 }
+                Debug.WriteLine("Saved");
             }
             catch (HttpRequestException error)
             {
