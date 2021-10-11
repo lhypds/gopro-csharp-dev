@@ -100,7 +100,7 @@
         <Button x:Name="BtnGpmf" Content="GPMF" HorizontalAlignment="Left" Margin="25,0,0,500" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
         <Button x:Name="BtnGetThumbnail" Content="Thumbnail" HorizontalAlignment="Left" Margin="185,0,0,525" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetThumbnail_Click" Grid.ColumnSpan="2" />
 
-        <Label Content="Web Response *JSON Formated" HorizontalAlignment="Left" Margin="599,0,0,632" VerticalAlignment="Bottom" Height="26" Width="184"/>
+        <Label Content="Web Response  * JSON Formated" HorizontalAlignment="Left" Margin="599,0,0,632" VerticalAlignment="Bottom" Height="26" Width="195"/>
         <TextBox x:Name="TxtWebResponse" Margin="599,0,14,28" TextWrapping="Wrap" Text="" Height="606" VerticalAlignment="Bottom" FontSize="11"/>
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,148" VerticalAlignment="Bottom" Height="26" Width="85"/>
         <TextBox x:Name="TxtBleResponse" Margin="15,0,0,28" TextWrapping="Wrap" Text="" Height="122" VerticalAlignment="Bottom" VerticalScrollBarVisibility="Visible" FontSize="11" HorizontalAlignment="Left" Width="575"/>
