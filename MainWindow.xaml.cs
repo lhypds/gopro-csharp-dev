@@ -929,11 +929,13 @@ namespace GoProCSharpDev
             if (_WifiApSsidS.Equals(string.Empty))
             {
                 TxtWebResponse.Text = "Please get Wifi AP SSID";
+                return;
             }
 
             if (!WifiUtils.IsGoProWifiConnected(_WifiApSsidS))
             {
                 TxtWebResponse.Text = "This SSID for GoPro WIFI is not connected";
+                return;
             }
 
             TxtWebResponse.Text = "Waiting for response...";

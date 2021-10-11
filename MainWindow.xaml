@@ -108,6 +108,6 @@
         <Button x:Name="BtnGetScreennail" Content="Screennail" HorizontalAlignment="Left" Margin="105,0,0,500" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetScreennail_Click" />
 
         <Button x:Name="BtnDigitalZoom" Content="Zoom(%)" HorizontalAlignment="Left" Margin="25,0,0,475" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnDigitalZoom_Click" />
-        <TextBox x:Name="TxtDigitalZoomPercent" MaxLines="1" Height="20" Margin="105,0,1326,475" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
+        <TextBox x:Name="TxtDigitalZoomPercent" MaxLines="1" Height="20" Margin="105,0,0,475" TextWrapping="NoWrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="75" />
     </Grid>
 </Window>
