@@ -59,7 +59,7 @@
         </StatusBar>
         <Label Content="Zoom Level(%)" HorizontalAlignment="Left" Margin="26,0,0,199" VerticalAlignment="Bottom" Padding="0" Height="16" Width="78"/>
         <Label Content="{Binding ZoomLevel}" HorizontalAlignment="Left" Margin="115,0,0,196" VerticalAlignment="Bottom" Padding="0" Height="19" RenderTransformOrigin="0.5,0.5" Width="25" />
-        <Button x:Name="BtnBleKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="498,0,0,208" VerticalAlignment="Bottom" Width="74" Height="20" Click="BtnBleKeepAlive_Click" />
+        <Button x:Name="BtnBleKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="498,0,0,208" VerticalAlignment="Bottom" Width="76" Height="20" Click="BtnBleKeepAlive_Click" />
 
         <Label Content="Resolution" HorizontalAlignment="Left" Margin="217,0,0,260" Height="26" VerticalAlignment="Bottom" Width="82"/>
         <ComboBox x:Name="CmbResolutionList" HorizontalAlignment="Left" Margin="305,0,0,260" Width="88" Height="22" VerticalAlignment="Bottom">
@@ -79,7 +79,7 @@
         <GroupBox Header="Wi-Fi" Height="197" Margin="15,0,0,461" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="575" />
 
         <Label Content="Request" HorizontalAlignment="Left" Margin="26,0,0,583" VerticalAlignment="Bottom" Height="26" Width="59"/>
-        <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="90,0,0,583" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="426"/>
+        <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="90,0,0,583" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="429"/>
 
         <Label Content="IP Address" HorizontalAlignment="Left" Margin="25,0,0,612" VerticalAlignment="Bottom" Height="26" Width="60"/>
         <TextBox x:Name="TxtIpAddress" Text="10.5.5.9" MaxLines="1" Height="23" Margin="90,0,0,613" TextWrapping="NoWrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="124"/>
@@ -88,13 +88,13 @@
         <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="280,0,0,613" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="183"/>
         <Button x:Name="BtnCopy" Content="Copy" HorizontalAlignment="Left" Margin="524,0,0,614" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnCopy_Click" />
         <Button x:Name="BtnGet" Content="Get" HorizontalAlignment="Left" Margin="468,0,0,614" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnGet_Click" />
-        <Label Content="* To use Copy connect GoPro with a USB cable (Wifi and Bluetooth will be disable)" FontSize="10" HorizontalAlignment="Left" Margin="208,0,0,463" VerticalAlignment="Bottom" Height="26" Width="372"/>
+        <Label Content="* To use Copy connect GoPro with a USB cable (Wifi and Bluetooth will be disabled)" FontSize="10" HorizontalAlignment="Left" Margin="198,0,0,461" VerticalAlignment="Bottom" Height="26" Width="389"/>
 
         <Label Content="Out Dir" HorizontalAlignment="Left" Margin="26,0,0,555" VerticalAlignment="Bottom" Height="26" Width="59"/>
         <TextBox x:Name="TxtOutputFolderPath" Text="out" MaxLines="1" Height="23" Margin="90,0,0,554" TextWrapping="NoWrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="147" />
         <Button x:Name="BtnOpenOutput" Content="Open" HorizontalAlignment="Left" Margin="242,0,0,555" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnOpenOutput_Click" />
 
-        <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="524,0,0,584" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnSendApiRequest_Click" />
+        <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="524,0,0,585" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnSendApiRequest_Click" />
         <Button x:Name="BtnListMedia" Content="List Media" HorizontalAlignment="Left" Margin="25,0,0,525" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnListMedia_Click" />
         <Button x:Name="BtnWifiKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="185,0,0,500" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnWifiKeepAlive_Click" Grid.ColumnSpan="2" />
         <Button x:Name="BtnGpmf" Content="GPMF" HorizontalAlignment="Left" Margin="25,0,0,500" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
