@@ -333,7 +333,7 @@ namespace GoProCSharpDev
         {
             if (IsBluetoothConnected)
             {
-                UpdateStatusBar("Deivce already connected");
+                UpdateStatusBar("Bluetooth services already connected");
                 return;
             }
             else { UpdateStatusBar("Connecting..."); }
@@ -1144,6 +1144,11 @@ namespace GoProCSharpDev
             string path = Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text);
             if (File.Exists(path)) Process.Start(path);
             else UpdateStatusBar("File not exist, please download");
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(e.Uri.ToString());
         }
     }
 
