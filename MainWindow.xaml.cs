@@ -69,6 +69,15 @@ namespace GoProCSharpDev
             set { _Batterylevel = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatteryLevel")); }
         }
 
+        // Download Progress
+        private int _FileDownloadProgress = 0;
+
+        public int FileDownloadProgress
+        {
+            get => _FileDownloadProgress;
+            set { _FileDownloadProgress = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FileDownloadProgress")); }
+        }
+
         // Wifi
         private bool _WifiStatus = false;
 
@@ -952,6 +961,7 @@ namespace GoProCSharpDev
                 return;
             }
 
+            FileDownloadProgress = 0;
             bool useAsync = true;
             if (TxtRequestUrl.Text.Contains("gpmf"))
             {
@@ -991,7 +1001,8 @@ namespace GoProCSharpDev
                     UpdateStatusBar("Please input file name");
                     return;
                 }
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text), useAsync, (progress) => WebResponse(progress)));
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text), useAsync,
+                    (responseText) => WebResponse(responseText), (progress) => FileDownloadProgress = (int)progress));
             }
             else
             {

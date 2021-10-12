@@ -109,7 +109,9 @@
         <Button x:Name="BtnPreviewStop" Content="Pv Stop" HorizontalAlignment="Left" Margin="426,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStop_Click" />
 
         <Label Content="Web Response  * JSON Formated" HorizontalAlignment="Left" Margin="599,0,0,632" VerticalAlignment="Bottom" Height="26" Width="195"/>
-        <TextBox x:Name="TxtWebResponse" Margin="599,0,14,28" TextWrapping="Wrap" Text="" Height="606" VerticalAlignment="Bottom" FontSize="11"/>
+        <TextBox x:Name="TxtWebResponse" Margin="599,0,14,38" TextWrapping="Wrap" Text="" Height="596" VerticalAlignment="Bottom" FontSize="11"/>
+        <ProgressBar x:Name="PrgDownload" Height="11" Margin="599,0,14,28" VerticalAlignment="Bottom" Value="{Binding FileDownloadProgress, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100"/>
+
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,148" VerticalAlignment="Bottom" Height="26" Width="85"/>
         <TextBox x:Name="TxtBleResponse" Margin="15,0,0,28" TextWrapping="Wrap" Text="" Height="122" VerticalAlignment="Bottom" VerticalScrollBarVisibility="Visible" FontSize="11" HorizontalAlignment="Left" Width="575"/>
         <Button x:Name="BtnGetInfo" Content="Info" HorizontalAlignment="Left" Margin="106,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetInfo_Click" />

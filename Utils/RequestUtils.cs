@@ -27,14 +27,14 @@ namespace GoProCSharpDev.Utils
 
         #region Get
 
-        public static string Get(string url, string outputPath = null, bool async = false, Action<string> progressCallback = null)
+        public static string Get(string url, string outputPath = null, bool async = false, Action<string> responseCallback = null, Action<float> progressCallback = null)
         {
             try
             {
                 if (async)
                 {
                     new Thread(() => {
-                        GetAsync(url, outputPath, progressCallback);
+                        GetAsync(url, outputPath, responseCallback, progressCallback);
                     }).Start();
                     return "Request sent...\r\n" + "Output file path:" + outputPath;
                 }
@@ -128,7 +128,7 @@ namespace GoProCSharpDev.Utils
             }
         }
 
-        private static async void GetAsync(string url, string outputPath, Action<string> progressCallback)
+        private static async void GetAsync(string url, string outputPath, Action<string> responseCallback, Action<float> progressCallback)
         {
             Debug.WriteLine("Getting response async...");
             try
@@ -149,7 +149,7 @@ namespace GoProCSharpDev.Utils
                     responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
                 }
                 webClient.Dispose();
-                progressCallback?.Invoke(responseHeaderText);
+                responseCallback?.Invoke(responseHeaderText);
 
                 // With file stream
                 Task<Stream> getStreamAsyncTask = httpClient.GetStreamAsync(url);
@@ -168,14 +168,15 @@ namespace GoProCSharpDev.Utils
                         strmFile.Write(buffer, 0, bytesRead);
                         bytesWrote += bytesRead;
                         Debug.WriteLine("Write bytes: " + bytesWrote + " / " + bytesTotal + " (" + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%)");
-                        progressCallback?.Invoke(responseHeaderText + "File transfering... " + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%");
+                        responseCallback?.Invoke(responseHeaderText + "File transfering... " + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%");
+                        progressCallback?.Invoke(bytesWrote / (float)bytesTotal * 100);
                     }
                     while (bytesRead > 0);
                     strmFile.Close();
                 }
 
                 stream.Close();
-                progressCallback?.Invoke(responseHeaderText + "File saved to " + outputPath);
+                responseCallback?.Invoke(responseHeaderText + "File saved to " + outputPath);
                 Debug.WriteLine("Saved");
             }
             catch (HttpRequestException error)
