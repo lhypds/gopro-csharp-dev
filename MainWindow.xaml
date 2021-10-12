@@ -116,11 +116,6 @@
         <Button x:Name="BtnPreviewStop" Content="Pv Stop" HorizontalAlignment="Left" Margin="426,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStop_Click" />
 
         <Label Content="Web Response" HorizontalAlignment="Left" Margin="599,0,0,632" VerticalAlignment="Bottom" Height="26" Width="91"/>
-        <TextBlock HorizontalAlignment="Left" Margin="765,0,0,634" VerticalAlignment="Bottom" Height="19" Width="49">
-            <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/ble" RequestNavigate="Hyperlink_RequestNavigate">
-                BLE Spec
-            </Hyperlink>
-        </TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="820,0,0,634" VerticalAlignment="Bottom" Height="19" Width="54">
             <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/wifi_1_0" RequestNavigate="Hyperlink_RequestNavigate">
                 WIFI Spec
@@ -132,6 +127,12 @@
 
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,158" VerticalAlignment="Bottom" Height="26" Width="85"/>
         <TextBox x:Name="TxtBleResponse" Margin="15,0,0,28" TextWrapping="Wrap" Text="" Height="132" VerticalAlignment="Bottom" VerticalScrollBarVisibility="Visible" FontSize="11" HorizontalAlignment="Left" Width="575"/>
+        <TextBlock HorizontalAlignment="Left" Margin="539,0,0,159" VerticalAlignment="Bottom" Height="19" Width="49">
+            <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/ble" RequestNavigate="Hyperlink_RequestNavigate">
+                BLE Spec
+            </Hyperlink>
+        </TextBlock>
+
         <Button x:Name="BtnGetInfo" Content="Info" HorizontalAlignment="Left" Margin="106,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetInfo_Click" />
         <Button x:Name="BtnGetScreennail" Content="Screennail" HorizontalAlignment="Left" Margin="106,0,0,501" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetScreennail_Click" />
 

@@ -410,29 +410,33 @@ namespace GoProCSharpDev
             if (gattDeviceServicesResult.Status == GattCommunicationStatus.Success)
             {
                 IReadOnlyList<GattDeviceService> services = gattDeviceServicesResult.Services;
+
+                // GATT Service
                 foreach (GattDeviceService gatt in services)
                 {
                     GattCharacteristicsResult gattCharacteristicsResult = await gatt.GetCharacteristicsAsync();
                     if (gattCharacteristicsResult.Status == GattCommunicationStatus.Success)
                     {
                         IReadOnlyList<GattCharacteristic> characteristics = gattCharacteristicsResult.Characteristics;
+
+                        // A GATT characteristic is a basic data element used to construct a GATT service
                         foreach (GattCharacteristic characteristic in characteristics)
                         {
                             // Properties
                             GattCharacteristicProperties charProperties = characteristic.CharacteristicProperties;
                             if (charProperties.HasFlag(GattCharacteristicProperties.Read))
                             {
-                              // This characteristic supports reading from it.
+                                // This characteristic supports reading from it.
                             }
 
                             if (charProperties.HasFlag(GattCharacteristicProperties.Write))
                             {
-                              // This characteristic supports writing to it.
+                                // This characteristic supports writing to it.
                             }
 
                             if (charProperties.HasFlag(GattCharacteristicProperties.Notify))
                             {
-                              // This characteristic supports subscribing to notifications.
+                                // This characteristic supports subscribing to notifications.
                             }
 
                             // Services and Characteristics
