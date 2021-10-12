@@ -28,9 +28,9 @@
         <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="336,0,0,306" VerticalAlignment="Bottom" Width="55" Click="BtnConnect_Click" Height="20" />
         <Button x:Name="btnPair" Content="Pair" HorizontalAlignment="Left" Margin="217,0,0,306" VerticalAlignment="Bottom" Width="55" Click="BtnPair_Click" Height="20"/>
 
-        <Button x:Name="BtnSetApName" Content="Set AP" HorizontalAlignment="Left" Margin="466,0,0,335" VerticalAlignment="Bottom" Width="50" Click="BtnSetApName_Click" Height="20" />
-        <Button x:Name="BtnReadApNameAndPass" Content="Get" HorizontalAlignment="Left" Margin="411,0,0,335" VerticalAlignment="Bottom" Width="50" Click="BtnReadWifiApNameAndPass_Click" Height="20" />
-        <Button x:Name="BtnSetApPass" Content="Set Pass" HorizontalAlignment="Left" Margin="521,0,0,335" VerticalAlignment="Bottom" Width="50" Click="BtnSetApPass_Click" Height="20" />
+        <Button x:Name="BtnSetApName" Content="Set AP" HorizontalAlignment="Left" Margin="462,0,0,334" VerticalAlignment="Bottom" Width="54" Click="BtnSetApName_Click" Height="20" />
+        <Button x:Name="BtnReadApNameAndPass" Content="Get" HorizontalAlignment="Left" Margin="407,0,0,334" VerticalAlignment="Bottom" Width="50" Click="BtnReadWifiApNameAndPass_Click" Height="20" />
+        <Button x:Name="BtnSetApPass" Content="Set Pass" HorizontalAlignment="Left" Margin="521,0,0,334" VerticalAlignment="Bottom" Width="53" Click="BtnSetApPass_Click" Height="20" />
 
         <Label Content="Resolution" HorizontalAlignment="Left" Margin="407,0,0,222" Height="26" VerticalAlignment="Bottom" Width="82"/>
 
