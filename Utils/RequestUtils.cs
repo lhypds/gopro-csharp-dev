@@ -133,6 +133,7 @@ namespace GoProCSharpDev.Utils
             Debug.WriteLine("Getting response async...");
             try
             {
+                DateTime startTime = DateTime.Now;
                 HttpClient httpClient = new HttpClient();
 
                 // Get file bytes length before download
@@ -176,7 +177,8 @@ namespace GoProCSharpDev.Utils
                 }
 
                 stream.Close();
-                responseCallback?.Invoke(responseHeaderText + "File saved to " + outputPath);
+                DateTime endTime = DateTime.Now;
+                responseCallback?.Invoke(responseHeaderText + "File saved to " + outputPath + "\r\nTime cost " + (endTime - startTime).TotalSeconds + "s");
                 Debug.WriteLine("Saved");
             }
             catch (HttpRequestException error)
