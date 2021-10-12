@@ -51,6 +51,31 @@ namespace GoProCSharpDev
 
         public ObservableCollection<GDeviceInformation> Devices { get; set; } = new ObservableCollection<GDeviceInformation>();
 
+        // Notifier
+        private bool _QueryNotifierEnabled = false;
+
+        public bool QueryNotifierEnabled
+        {
+            get => _QueryNotifierEnabled;
+            set { _QueryNotifierEnabled = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QueryNotifierEnabled")); }
+        }
+
+        private bool _SettingNotifierEnabled = false;
+
+        public bool SettingNotifierEnabled
+        {
+            get => _SettingNotifierEnabled;
+            set { _SettingNotifierEnabled = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SettingNotifierEnabled")); }
+        }
+
+        private bool _CommandNotifierEnabled = false;
+
+        public bool CommandNotifierEnabled
+        {
+            get => _CommandNotifierEnabled;
+            set { _CommandNotifierEnabled = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CommandNotifierEnabled")); }
+        }
+
         // Encoding
         private bool _Encoding = false;
 
@@ -441,12 +466,13 @@ namespace GoProCSharpDev
                                     if (status == GattCommunicationStatus.Success)
                                     {
                                         _GattNotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
+                                        CommandNotifierEnabled = true;
                                     }
                                     else { UpdateStatusBar("Failed to attach notify cmd " + status); }
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show(ex.Message, "Exception");
+                                    MessageBox.Show(ex.Message, "Command Response Exception");
                                 }
                             }
 
@@ -468,12 +494,13 @@ namespace GoProCSharpDev
                                     if (status == GattCommunicationStatus.Success)
                                     {
                                         _GattNotifySettings.ValueChanged += NotifySettings_ValueChanged;
+                                        SettingNotifierEnabled = true;
                                     }
                                     else { UpdateStatusBar("Failed to attach notify settings " + status); }
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show(ex.Message, "Exception");
+                                    MessageBox.Show(ex.Message, "Settings Response Exception");
                                 }
                             }
 
@@ -495,6 +522,8 @@ namespace GoProCSharpDev
                                     if (status == GattCommunicationStatus.Success)
                                     {
                                         _GattNotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
+                                        QueryNotifierEnabled = true;
+
                                         if (_GattSendQueries != null)
                                         {
                                             // Register for settings and status updates
@@ -512,7 +541,7 @@ namespace GoProCSharpDev
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show(ex.Message, "Exception");
+                                    MessageBox.Show(ex.Message, "Query Response Exception");
                                 }
                             }
                         }
@@ -707,29 +736,17 @@ namespace GoProCSharpDev
         {
             UpdateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "Connected" : "Disconnected");
             IsBluetoothConnected = sender.ConnectionStatus == BluetoothConnectionStatus.Connected;
+            if (!IsBluetoothConnected)
+            {
+                QueryNotifierEnabled = false;
+                SettingNotifierEnabled = false;
+                CommandNotifierEnabled = false;
+            }
         }
 
         // Bluetooth Funcitons
 
         // 1. GoPro WiFi Access Point
-
-        private async void BtnReadWifiApName_Click(object sender, RoutedEventArgs e)
-        {
-            if (_GattWifiApSsid != null)
-            {
-                GattReadResult gattReadResult = await _GattWifiApSsid.ReadValueAsync();
-                if (gattReadResult.Status == GattCommunicationStatus.Success)
-                {
-                    DataReader dataReader = DataReader.FromBuffer(gattReadResult.Value);
-                    string result = dataReader.ReadString(gattReadResult.Value.Length);
-                    txtAPName.Text = result;
-                    _WifiApSsidS = result;
-                    Debug.Print("Wifi AP SSID: " + result);
-                }
-                else { UpdateStatusBar("Failed to read ap name"); }
-            }
-            else { UpdateStatusBar("Not connected"); }
-        }
 
         private async void BtnSetApName_Click(object sender, RoutedEventArgs e)
         {
@@ -760,8 +777,24 @@ namespace GoProCSharpDev
             else { UpdateStatusBar("Not connected"); }
         }
 
-        private async void BtnReadWifiApPass_Click(object sender, RoutedEventArgs e)
+        private async void BtnReadWifiApNameAndPass_Click(object sender, RoutedEventArgs e)
         {
+            // Read AP
+            if (_GattWifiApSsid != null)
+            {
+                GattReadResult gattReadResult = await _GattWifiApSsid.ReadValueAsync();
+                if (gattReadResult.Status == GattCommunicationStatus.Success)
+                {
+                    DataReader dataReader = DataReader.FromBuffer(gattReadResult.Value);
+                    string result = dataReader.ReadString(gattReadResult.Value.Length);
+                    txtAPName.Text = result;
+                    _WifiApSsidS = result;
+                    Debug.Print("Wifi AP SSID: " + result);
+                }
+                else { UpdateStatusBar("Failed to read ap name"); }
+            }
+
+            // Read Pass
             if (_GattWifiApPass != null)
             {
                 GattReadResult gattReadResult = await _GattWifiApPass.ReadValueAsync();
@@ -774,7 +807,6 @@ namespace GoProCSharpDev
                 }
                 else { UpdateStatusBar("Failed to read password"); }
             }
-            else { UpdateStatusBar("Not connected"); }
         }
 
         private async void BtnSetApPass_Click(object sender, RoutedEventArgs e)

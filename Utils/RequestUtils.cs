@@ -167,7 +167,7 @@ namespace GoProCSharpDev.Utils
                         bytesRead = stream.Read(buffer, 0, 16 * 1024);
                         strmFile.Write(buffer, 0, bytesRead);
                         bytesWrote += bytesRead;
-                        Debug.WriteLine("Write bytes: " + bytesWrote + " / " + bytesTotal + " (" + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%)");
+                        Debug.WriteLine("Bytes transfered: " + bytesWrote + " / " + bytesTotal + " (" + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%)");
                         responseCallback?.Invoke(responseHeaderText + "File transfering... " + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%");
                         progressCallback?.Invoke(bytesWrote / (float)bytesTotal * 100);
                     }
