@@ -1024,11 +1024,18 @@ namespace GoProCSharpDev
             TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + percent;
         }
 
-        private void BtnGet_Click(object sender, RoutedEventArgs e)
+        private void BtnDownload_Click(object sender, RoutedEventArgs e)
         {
             if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
             string requestSuffix = ":8080/videos/DCIM/100GOPRO/";
             TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
+        }
+
+        private void BtnCamState_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/camera/state";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
         }
 
         #endregion Wifi
@@ -1071,6 +1078,13 @@ namespace GoProCSharpDev
                 file.Write(bytes, 0, bytes.Length);
                 memoryStream.Close();
             }
+        }
+
+        private void BtnOpenMedia_Click(object sender, RoutedEventArgs e)
+        {
+            string path = Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text);
+            if (File.Exists(path)) Process.Start(path);
+            else UpdateStatusBar("File not exist, please download");
         }
     }
 
