@@ -372,6 +372,12 @@ namespace GoProCSharpDev
 
             // Get device
             _BleDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.DeviceInfo.Id);
+            if (_BleDevice == null)
+            {
+                UpdateStatusBar("Device not found");
+                return;
+            }
+
             if (!_BleDevice.DeviceInformation.Pairing.IsPaired)
             {
                 UpdateStatusBar("Device not paired");
