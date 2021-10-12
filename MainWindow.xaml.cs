@@ -874,6 +874,7 @@ namespace GoProCSharpDev
             {
                 res = await _GattSendCmds.WriteValueAsync(writer.DetachBuffer());
             }
+
             if (res != GattCommunicationStatus.Success)
             {
                 UpdateStatusBar("Failed! Respose: " + res.ToString());
@@ -899,6 +900,7 @@ namespace GoProCSharpDev
             {
                 res = await _GattSetSettings.WriteValueAsync(writer.DetachBuffer());
             }
+
             if (res != GattCommunicationStatus.Success)
             {
                 UpdateStatusBar("Failed! Respose: " + res.ToString());
