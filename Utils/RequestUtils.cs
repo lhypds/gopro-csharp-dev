@@ -27,14 +27,14 @@ namespace GoProCSharpDev.Utils
 
         #region Get
 
-        public static string Get(string url, string outputPath = null, bool async = false)
+        public static string Get(string url, string outputPath = null, bool async = false, Action<string> progressCallback = null)
         {
             try
             {
                 if (async)
                 {
                     new Thread(() => {
-                        GetAsync(url, outputPath);
+                        GetAsync(url, outputPath, progressCallback);
                     }).Start();
                     return "Request sent...\r\n" + "Output file path:" + outputPath;
                 }
@@ -128,7 +128,7 @@ namespace GoProCSharpDev.Utils
             }
         }
 
-        private static async void GetAsync(string url, string outputPath)
+        private static async void GetAsync(string url, string outputPath, Action<string> progressCallback)
         {
             Debug.WriteLine("Getting response async...");
             try
@@ -144,16 +144,12 @@ namespace GoProCSharpDev.Utils
                 // Get headers
                 WebHeaderCollection headers = webClient.ResponseHeaders;
                 string responseHeaderText = "";
-                string contentType = "";
                 foreach (string headerKey in headers.AllKeys)
                 {
                     responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
-                    if (headerKey.Contains("Content-Type"))
-                    {
-                        contentType = headers.Get(headerKey);
-                    }
                 }
                 webClient.Dispose();
+                progressCallback?.Invoke(responseHeaderText);
 
                 // With file stream
                 Task<Stream> getStreamAsyncTask = httpClient.GetStreamAsync(url);
@@ -171,13 +167,15 @@ namespace GoProCSharpDev.Utils
                         bytesRead = stream.Read(buffer, 0, 16 * 1024);
                         strmFile.Write(buffer, 0, bytesRead);
                         bytesWrote += bytesRead;
-                        Debug.WriteLine("Write bytes: " + bytesWrote + " / " + bytesTotal + " (" + bytesWrote / (double)bytesTotal * 100 + "%)");
+                        Debug.WriteLine("Write bytes: " + bytesWrote + " / " + bytesTotal + " (" + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%)");
+                        progressCallback?.Invoke(responseHeaderText + "File transfering... " + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%");
                     }
                     while (bytesRead > 0);
                     strmFile.Close();
                 }
 
                 stream.Close();
+                progressCallback?.Invoke(responseHeaderText + "File saved to " + outputPath);
                 Debug.WriteLine("Saved");
             }
             catch (HttpRequestException error)

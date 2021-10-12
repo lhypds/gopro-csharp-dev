@@ -154,8 +154,6 @@ namespace GoProCSharpDev
 
         private void BtnScanBle_Click(object sender, RoutedEventArgs e)
         {
-            if (lbDevices.Items.Count > 0) lbDevices.Items.Clear();
-
             string BleSelector = "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"";
             DeviceInformationKind deviceInformationKind = DeviceInformationKind.AssociationEndpoint;
             string[] requiredProperties = { "System.Devices.Aep.Bluetooth.Le.IsConnectable", "System.Devices.Aep.IsConnected" };
@@ -958,7 +956,8 @@ namespace GoProCSharpDev
             else if (TxtRequestUrl.Text.Contains("8080"))
             {
                 // Get File from SD card with GoPro server
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text), useAsync));
+                Action<string> progressCallback = (progress) => WebResponse(progress);
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text), useAsync, progressCallback));
             }
             else
             {
