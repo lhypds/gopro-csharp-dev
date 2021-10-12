@@ -128,7 +128,7 @@
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,158" VerticalAlignment="Bottom" Height="26" Width="85"/>
         <TextBox x:Name="TxtBleResponse" Margin="15,0,0,28" TextWrapping="Wrap" Text="" Height="132" VerticalAlignment="Bottom" VerticalScrollBarVisibility="Visible" FontSize="11" HorizontalAlignment="Left" Width="575"/>
         <TextBlock HorizontalAlignment="Left" Margin="539,0,0,159" VerticalAlignment="Bottom" Height="19" Width="49">
-            <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/ble" RequestNavigate="Hyperlink_RequestNavigate">
+            <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/ble_1_0" RequestNavigate="Hyperlink_RequestNavigate">
                 BLE Spec
             </Hyperlink>
         </TextBlock>
