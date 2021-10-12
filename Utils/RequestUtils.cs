@@ -31,11 +31,6 @@ namespace GoProCSharpDev.Utils
         {
             try
             {
-                // Make request
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "GET";
-                req.Host = "localhost";
-
                 if (async)
                 {
                     Debug.WriteLine("Getting response async...");
@@ -101,6 +96,12 @@ namespace GoProCSharpDev.Utils
                 else
                 {
                     // Non async request
+                    // Make request
+                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                    req.Method = "GET";
+                    req.Host = "localhost";
+
+                    // Send request
                     using (HttpWebResponse webResponse = (HttpWebResponse)req.GetResponse())
                     {
                         // Get status code
