@@ -33,65 +33,10 @@ namespace GoProCSharpDev.Utils
             {
                 if (async)
                 {
-                    Debug.WriteLine("Getting response async...");
-                    try
-                    {
-                        HttpClient httpClient = new HttpClient();
-
-                        // Get file bytes length before download
-                        WebClient webClient = new WebClient();
-                        webClient.OpenRead(url);
-                        long bytesTotal = Convert.ToInt64(webClient.ResponseHeaders["Content-Length"]);
-                        Debug.WriteLine("Total bytes: " + bytesTotal);
-
-                        // Get headers
-                        WebHeaderCollection headers = webClient.ResponseHeaders;
-                        string responseHeaderText = "";
-                        string contentType = "";
-                        foreach (string headerKey in headers.AllKeys)
-                        {
-                            responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
-                            if (headerKey.Contains("Content-Type"))
-                            {
-                                contentType = headers.Get(headerKey);
-                            }
-                        }
-                        webClient.Dispose();
-
-                        // With file stream
-                        Task<Stream> getStreamAsyncTask = httpClient.GetStreamAsync(url);
-                        getStreamAsyncTask.Wait();
-
-                        Stream stream = getStreamAsyncTask.Result;
-                        Debug.WriteLine("Got stream");
-
-                        // Save with a file
-                        using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
-                        {
-                            byte[] buffer = new byte[16 * 1024];
-                            int bytesWrote = 0;
-                            int bytesRead;
-                            do
-                            {
-                                bytesRead = stream.Read(buffer, 0, 16 * 1024);
-                                strmFile.Write(buffer, 0, bytesRead);
-                                bytesWrote += bytesRead;
-                                Debug.WriteLine("Write bytes: " + bytesWrote + " / " + bytesTotal + " (" + bytesWrote / (double)bytesTotal * 100 + "%)");
-                            }
-                            while (bytesRead > 0);
-                            strmFile.Close();
-                        }
-
-                        stream.Close();
-                        Debug.WriteLine("Saved");
-                        return responseHeaderText + "Output file path:" + outputPath;
-                    }
-                    catch (HttpRequestException error)
-                    {
-                        string errorMessage = "Error sending API request: " + error.Message;
-                        Debug.WriteLine(errorMessage);
-                        return errorMessage;
-                    }
+                    new Thread(() => {
+                        GetAsync(url, outputPath);
+                    }).Start();
+                    return "Request sent...\r\n" + "Output file path:" + outputPath;
                 }
                 else
                 {
@@ -180,6 +125,65 @@ namespace GoProCSharpDev.Utils
 
                 // Show result
                 return "Failed: " + error.Message;
+            }
+        }
+
+        private static async void GetAsync(string url, string outputPath)
+        {
+            Debug.WriteLine("Getting response async...");
+            try
+            {
+                HttpClient httpClient = new HttpClient();
+
+                // Get file bytes length before download
+                WebClient webClient = new WebClient();
+                webClient.OpenRead(url);
+                long bytesTotal = Convert.ToInt64(webClient.ResponseHeaders["Content-Length"]);
+                Debug.WriteLine("Total bytes: " + bytesTotal);
+
+                // Get headers
+                WebHeaderCollection headers = webClient.ResponseHeaders;
+                string responseHeaderText = "";
+                string contentType = "";
+                foreach (string headerKey in headers.AllKeys)
+                {
+                    responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
+                    if (headerKey.Contains("Content-Type"))
+                    {
+                        contentType = headers.Get(headerKey);
+                    }
+                }
+                webClient.Dispose();
+
+                // With file stream
+                Task<Stream> getStreamAsyncTask = httpClient.GetStreamAsync(url);
+                Stream stream = await getStreamAsyncTask;
+                Debug.WriteLine("Got stream");
+
+                // Save with a file
+                using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    byte[] buffer = new byte[16 * 1024];
+                    int bytesWrote = 0;
+                    int bytesRead;
+                    do
+                    {
+                        bytesRead = stream.Read(buffer, 0, 16 * 1024);
+                        strmFile.Write(buffer, 0, bytesRead);
+                        bytesWrote += bytesRead;
+                        Debug.WriteLine("Write bytes: " + bytesWrote + " / " + bytesTotal + " (" + bytesWrote / (double)bytesTotal * 100 + "%)");
+                    }
+                    while (bytesRead > 0);
+                    strmFile.Close();
+                }
+
+                stream.Close();
+                Debug.WriteLine("Saved");
+            }
+            catch (HttpRequestException error)
+            {
+                string errorMessage = "Error sending API request: " + error.Message;
+                Debug.WriteLine(errorMessage);
             }
         }
 
