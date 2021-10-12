@@ -937,27 +937,28 @@ namespace GoProCSharpDev
                 TxtWebResponse.Text = "This SSID for GoPro WIFI is not connected";
                 return;
             }
-
             TxtWebResponse.Text = "Waiting for response...";
+
+            bool useAsync = true;
             if (TxtRequestUrl.Text.Contains("gpmf"))
             {
                 // File response
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_GPMF"), true));
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_GPMF"), useAsync));
             }
             else if (TxtRequestUrl.Text.Contains("screennail"))
             {
                 // JPEG file response for screennail
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_SCREENNAIL.JPEG"), true));
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_SCREENNAIL.JPEG"), useAsync));
             }
             else if (TxtRequestUrl.Text.Contains("thumbnail"))
             {
                 // JPEG file response for thumbnail
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_THUMBNAIL.JPEG"), true));
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_THUMBNAIL.JPEG"), useAsync));
             }
             else if (TxtRequestUrl.Text.Contains("8080"))
             {
                 // Get File from SD card with GoPro server
-                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text), true));
+                WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text), useAsync));
             }
             else
             {

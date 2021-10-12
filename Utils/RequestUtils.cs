@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -37,77 +38,136 @@ namespace GoProCSharpDev.Utils
 
                 if (async)
                 {
-                    GetAsync(url, outputPath);
-                    return "Output file path:" + outputPath + "\r\nRequest sent...";
+                    Debug.WriteLine("Getting response async...");
+                    try
+                    {
+                        HttpClient httpClient = new HttpClient();
+
+                        // Get file bytes length before download
+                        WebClient webClient = new WebClient();
+                        webClient.OpenRead(url);
+                        long bytesTotal = Convert.ToInt64(webClient.ResponseHeaders["Content-Length"]);
+                        Debug.WriteLine("Total bytes: " + bytesTotal);
+
+                        // Get headers
+                        WebHeaderCollection headers = webClient.ResponseHeaders;
+                        string responseHeaderText = "";
+                        string contentType = "";
+                        foreach (string headerKey in headers.AllKeys)
+                        {
+                            responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
+                            if (headerKey.Contains("Content-Type"))
+                            {
+                                contentType = headers.Get(headerKey);
+                            }
+                        }
+                        webClient.Dispose();
+
+                        // With file stream
+                        Task<Stream> getStreamAsyncTask = httpClient.GetStreamAsync(url);
+                        getStreamAsyncTask.Wait();
+
+                        Stream stream = getStreamAsyncTask.Result;
+                        Debug.WriteLine("Got stream");
+
+                        // Save with a file
+                        using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
+                        {
+                            byte[] buffer = new byte[16 * 1024];
+                            int bytesWrote = 0;
+                            int bytesRead;
+                            do
+                            {
+                                bytesRead = stream.Read(buffer, 0, 16 * 1024);
+                                strmFile.Write(buffer, 0, bytesRead);
+                                bytesWrote += bytesRead;
+                                Debug.WriteLine("Write bytes: " + bytesWrote + " / " + bytesTotal + " (" + bytesWrote / (double)bytesTotal * 100 + "%)");
+                            }
+                            while (bytesRead > 0);
+                            strmFile.Close();
+                        }
+
+                        stream.Close();
+                        Debug.WriteLine("Saved");
+                        return responseHeaderText + "Output file path:" + outputPath;
+                    }
+                    catch (HttpRequestException error)
+                    {
+                        string errorMessage = "Error sending API request: " + error.Message;
+                        Debug.WriteLine(errorMessage);
+                        return errorMessage;
+                    }
                 }
-
-                // Non async request
-                using (HttpWebResponse webResponse = (HttpWebResponse)req.GetResponse())
+                else
                 {
-                    // Get status code
-                    string responseStatusCode = "Status code:" + webResponse.StatusCode.ToString() + "(" + (int)webResponse.StatusCode + ")\r\n";
-
-                    // Get headers
-                    WebHeaderCollection headers = webResponse.Headers;
-                    string responseHeaderText = "";
-                    string contentType = "";
-                    foreach (var headerKey in headers.AllKeys)
+                    // Non async request
+                    using (HttpWebResponse webResponse = (HttpWebResponse)req.GetResponse())
                     {
-                        responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
-                        if (headerKey.Contains("Content-Type"))
-                        {
-                            contentType = headers.Get(headerKey);
-                        }
-                    }
+                        // Get status code
+                        string responseStatusCode = "Status code:" + webResponse.StatusCode.ToString() + "(" + (int)webResponse.StatusCode + ")\r\n";
 
-                    if (outputPath == null)
-                    {
-                        // Get body
-                        // Json text response
-                        using (StreamReader sr = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
+                        // Get headers
+                        WebHeaderCollection headers = webResponse.Headers;
+                        string responseHeaderText = "";
+                        string contentType = "";
+                        foreach (var headerKey in headers.AllKeys)
                         {
-                            string responseBodyText = sr.ReadToEnd().ToString();
-
-                            // If content is Json, format the result
-                            if (contentType.Equals("application/json"))
+                            responseHeaderText += headerKey + ":" + headers.Get(headerKey) + "\r\n";
+                            if (headerKey.Contains("Content-Type"))
                             {
-                                dynamic parsedJson = JsonConvert.DeserializeObject(responseBodyText);
-                                responseBodyText = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+                                contentType = headers.Get(headerKey);
                             }
-
-                            // Show result
-                            return responseStatusCode + responseHeaderText + responseBodyText;
                         }
-                    }
-                    else
-                    {
-                        // Get body
-                        // Accept file stream response
-                        if (contentType.Equals("application/octet-stream") || contentType.Equals("image/jpeg") || contentType.Equals("video/mp4"))
+
+                        if (outputPath == null)
                         {
-                            using (Stream responseStream = webResponse.GetResponseStream())
+                            // Get body
+                            // Json text response
+                            using (StreamReader sr = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
                             {
-                                using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
+                                string responseBodyText = sr.ReadToEnd().ToString();
+
+                                // If content is Json, format the result
+                                if (contentType.Equals("application/json"))
                                 {
-                                    byte[] buffer = new byte[16 * 1024];
-                                    int bytesRead;
-                                    do
-                                    {
-                                        bytesRead = responseStream.Read(buffer, 0, 16 * 1024);
-                                        strmFile.Write(buffer, 0, bytesRead);
-                                    }
-                                    while (bytesRead > 0);
-                                    strmFile.Close();
+                                    dynamic parsedJson = JsonConvert.DeserializeObject(responseBodyText);
+                                    responseBodyText = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
                                 }
-                            }
 
-                            // Show result
-                            return responseStatusCode + responseHeaderText + outputPath;
+                                // Show result
+                                return responseStatusCode + responseHeaderText + responseBodyText;
+                            }
                         }
                         else
                         {
-                            // Show result
-                            return responseStatusCode + responseHeaderText + "Unknown response type";
+                            // Get body
+                            // Accept file stream response
+                            if (contentType.Equals("application/octet-stream") || contentType.Equals("image/jpeg") || contentType.Equals("video/mp4"))
+                            {
+                                using (Stream responseStream = webResponse.GetResponseStream())
+                                {
+                                    using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
+                                    {
+                                        byte[] buffer = new byte[16 * 1024];
+                                        int bytesRead;
+                                        do
+                                        {
+                                            bytesRead = responseStream.Read(buffer, 0, 16 * 1024);
+                                            strmFile.Write(buffer, 0, bytesRead);
+                                        }
+                                        while (bytesRead > 0);
+                                        strmFile.Close();
+                                    }
+                                }
+
+                                // Show result
+                                return responseStatusCode + responseHeaderText + outputPath;
+                            }
+                            else
+                            {
+                                // Show result
+                                return responseStatusCode + responseHeaderText + "Unknown response type";
+                            }
                         }
                     }
                 }
@@ -119,56 +179,6 @@ namespace GoProCSharpDev.Utils
 
                 // Show result
                 return "Failed: " + error.Message;
-            }
-        }
-
-        public static async void GetAsync(string url, string outputPath)
-        {
-            Debug.WriteLine("Getting response async...");
-            try
-            {
-                HttpClient httpClient = new HttpClient();
-                HttpResponseMessage response = await httpClient.GetAsync(url);
-                Debug.WriteLine("Got response");
-
-                // Print headers
-                // Print response headers
-                Debug.WriteLine("Response headers...");
-                foreach (var header in response.Headers)
-                {
-                    string valueStr = string.Empty;
-                    foreach (var value in header.Value)
-                    {
-                        valueStr += value + ";";
-                    }
-                    Debug.WriteLine(header.Key + ":" + valueStr);
-                }
-
-                // Content headers
-                Debug.WriteLine("Content headers:");
-                foreach (var header in response.Content.Headers)
-                {
-                    string valueStr = string.Empty;
-                    foreach (var value in header.Value)
-                    {
-                        valueStr += value + ";";
-                    }
-                    Debug.WriteLine(header.Key + ":" + valueStr);
-                }
-                response.EnsureSuccessStatusCode();
-
-                // Save with a file
-                Debug.WriteLine("Saving content to file...");
-                using (FileStream fileStream = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
-                {
-                    await response.Content.CopyToAsync(fileStream);
-                }
-                Debug.WriteLine("Saved");
-            }
-            catch (HttpRequestException error)
-            {
-                string errorMessage = "Error sending API request: " + error.Message;
-                Debug.WriteLine(errorMessage);
             }
         }
 
