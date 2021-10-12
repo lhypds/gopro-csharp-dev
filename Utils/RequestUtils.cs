@@ -159,12 +159,12 @@ namespace GoProCSharpDev.Utils
                 // Save with a file
                 using (FileStream strmFile = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.Write))
                 {
-                    byte[] buffer = new byte[16 * 1024];
+                    byte[] buffer = new byte[10 * 1024 * 1024];
                     int bytesWrote = 0;
                     int bytesRead;
                     do
                     {
-                        bytesRead = stream.Read(buffer, 0, 16 * 1024);
+                        bytesRead = stream.Read(buffer, 0, 10 * 1024 * 1024);
                         strmFile.Write(buffer, 0, bytesRead);
                         bytesWrote += bytesRead;
                         Debug.WriteLine("Bytes transfered: " + bytesWrote + " / " + bytesTotal + " (" + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%)");
