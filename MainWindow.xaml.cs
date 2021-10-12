@@ -87,6 +87,15 @@ namespace GoProCSharpDev
             set { _IsBluetoothConnected = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsBluetoothConnected")); }
         }
 
+        // Is Preview Stream Started
+        private bool _IsPreviewStreamStarted = false;
+
+        public bool IsPreviewStreamStarted
+        {
+            get => _IsPreviewStreamStarted;
+            set { _IsPreviewStreamStarted = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsPreviewStreamStarted")); }
+        }
+
         // Battery Level
         private int _Zoomlevel = 0;
 
@@ -629,6 +638,12 @@ namespace GoProCSharpDev
                             ZoomLevel = _QueryBuf[k + 2];
                             Debug.Print("Digital Zoom Level: " + ZoomLevel);
                         }
+
+                        if (_QueryBuf[k] == 32)
+                        {
+                            IsPreviewStreamStarted = _QueryBuf[k + 2] == 1;
+                            Debug.Print("Preview Stream: " + IsPreviewStreamStarted);
+                        }
                         k += 2 + _QueryBuf[k + 1];
                     }
                 }
@@ -936,27 +951,46 @@ namespace GoProCSharpDev
                 TxtWebResponse.Text = "This SSID for GoPro WIFI is not connected";
                 return;
             }
-            TxtWebResponse.Text = "Waiting for response...";
 
             bool useAsync = true;
             if (TxtRequestUrl.Text.Contains("gpmf"))
             {
                 // File response
+                if (TxtFileName.Text.Equals(string.Empty))
+                {
+                    UpdateStatusBar("Please input file name");
+                    return;
+                }
                 WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_GPMF"), useAsync));
             }
             else if (TxtRequestUrl.Text.Contains("screennail"))
             {
                 // JPEG file response for screennail
+                if (TxtFileName.Text.Equals(string.Empty))
+                {
+                    UpdateStatusBar("Please input file name");
+                    return;
+                }
                 WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_SCREENNAIL.JPEG"), useAsync));
             }
             else if (TxtRequestUrl.Text.Contains("thumbnail"))
             {
                 // JPEG file response for thumbnail
+                if (TxtFileName.Text.Equals(string.Empty))
+                {
+                    UpdateStatusBar("Please input file name");
+                    return;
+                }
                 WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, "FILE_" + TxtFileName.Text + "_THUMBNAIL.JPEG"), useAsync));
             }
             else if (TxtRequestUrl.Text.Contains("8080"))
             {
                 // Get File from SD card with GoPro server
+                if (TxtFileName.Text.Equals(string.Empty))
+                {
+                    UpdateStatusBar("Please input file name");
+                    return;
+                }
                 WebResponse(WebRequestUtils.Get(TxtRequestUrl.Text, Path.Combine(TxtOutputFolderPath.Text, TxtFileName.Text), useAsync, (progress) => WebResponse(progress)));
             }
             else
@@ -1035,6 +1069,20 @@ namespace GoProCSharpDev
         {
             if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
             string requestSuffix = "/gopro/camera/state";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
+        }
+
+        private void BtnPreviewStart_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/camera/stream/start";
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
+        }
+
+        private void BtnPreviewStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
+            string requestSuffix = "/gopro/camera/stream/stop";
             TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
         }
 
