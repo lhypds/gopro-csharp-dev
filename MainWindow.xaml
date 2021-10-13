@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GoProCSharpDev"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="GoPro C# Dev" Height="696.5" Width="899.5" ResizeMode="NoResize">
+        Title="GoPro C# Dev v1.0" Height="696.5" Width="899.5" ResizeMode="NoResize">
     <Window.Resources>
         <local:BrushBoolColorConverter x:Key="BConverter"></local:BrushBoolColorConverter>
     </Window.Resources>
