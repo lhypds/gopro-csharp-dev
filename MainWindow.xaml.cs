@@ -361,7 +361,12 @@ namespace GoProCSharpDev
             args.Accept();
         }
 
-        private async void BtnConnect_Click(object sender, RoutedEventArgs e)
+        private void BtnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            BleConnect();
+        }
+
+        private async void BleConnect()
         {
             if (IsBluetoothConnected)
             {
@@ -564,7 +569,189 @@ namespace GoProCSharpDev
                         }
                     }
                 }
-                SetThirdPartySource();
+
+                // Not using
+                //SetThirdPartySource();
+            }
+        }
+
+        private async void BleDisconnect()
+        {
+            if (!IsBluetoothConnected)
+            {
+                UpdateStatusBar("Bluetooth services not connected");
+                return;
+            }
+            else { UpdateStatusBar("Disconnecting..."); }
+
+            // Get device
+            if (_BleDevice == null)
+            {
+                UpdateStatusBar("Device not found");
+                return;
+            }
+
+            if (!_BleDevice.DeviceInformation.Pairing.IsPaired)
+            {
+                UpdateStatusBar("Device not paired");
+                return;
+            }
+
+            // Get GATT services
+            GattDeviceServicesResult gattDeviceServicesResult = await _BleDevice.GetGattServicesAsync();
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.Unreachable)
+            {
+                UpdateStatusBar("Connection unreachable");
+                return;
+            }
+
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.AccessDenied)
+            {
+                UpdateStatusBar("Connection access denied");
+                return;
+            }
+
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.ProtocolError)
+            {
+                UpdateStatusBar("Connection protocol error");
+                return;
+            }
+
+            // Success, then get GATT Characteristics
+            if (gattDeviceServicesResult.Status == GattCommunicationStatus.Success)
+            {
+                IReadOnlyList<GattDeviceService> services = gattDeviceServicesResult.Services;
+
+                // GATT Service
+                foreach (GattDeviceService gatt in services)
+                {
+                    GattCharacteristicsResult gattCharacteristicsResult = await gatt.GetCharacteristicsAsync();
+                    if (gattCharacteristicsResult.Status == GattCommunicationStatus.Success)
+                    {
+                        IReadOnlyList<GattCharacteristic> characteristics = gattCharacteristicsResult.Characteristics;
+
+                        // A GATT characteristic is a basic data element used to construct a GATT service
+                        foreach (GattCharacteristic characteristic in characteristics)
+                        {
+                            // Properties
+                            GattCharacteristicProperties charProperties = characteristic.CharacteristicProperties;
+                            if (charProperties.HasFlag(GattCharacteristicProperties.Read))
+                            {
+                                // This characteristic supports reading from it.
+                            }
+
+                            if (charProperties.HasFlag(GattCharacteristicProperties.Write))
+                            {
+                                // This characteristic supports writing to it.
+                            }
+
+                            if (charProperties.HasFlag(GattCharacteristicProperties.Notify))
+                            {
+                                // This characteristic supports subscribing to notifications.
+                            }
+
+                            // Services and Characteristics
+                            // Refer: https://gopro.github.io/OpenGoPro/ble_1_0 for GoPro 9
+
+                            // GoPro WiFi Access Point
+                            // WiFi AP SSID
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0002")))
+                            {
+                                Debug.Print("Set GATT Characteristic: WiFi AP SSID");
+                                _GattWifiApSsid = characteristic;
+                            }
+
+                            // WiFi AP Password
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0003")))
+                            {
+                                Debug.Print("Set GATT Characteristic: WiFi AP Password");
+                                _GattWifiApPass = characteristic;
+                            }
+
+                            // Control and Query
+                            // Command
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0072")))
+                            {
+                                Debug.Print("Set GATT Characteristic: Command");
+                                _GattSendCmds = characteristic;
+                            }
+
+                            // Command Response
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0073")))
+                            {
+                                Debug.Print("Set GATT Characteristic: Command Response");
+                                _GattNotifyCmds = characteristic;
+                                try
+                                {
+                                    GattCommunicationStatus status = await _GattNotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
+                                    if (status == GattCommunicationStatus.Success)
+                                    {
+                                        CommandNotifierEnabled = false;
+                                    }
+                                    else { UpdateStatusBar("Failed to detach notify cmd " + status); }
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Command Response Exception");
+                                }
+                            }
+
+                            // Settings
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0074")))
+                            {
+                                Debug.Print("Set GATT Characteristic: Settings");
+                                _GattSetSettings = characteristic;
+                            }
+
+                            // Settings Response
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0075")))
+                            {
+                                Debug.Print("Set GATT Characteristic: Settings Response");
+                                _GattNotifySettings = characteristic;
+                                try
+                                {
+                                    GattCommunicationStatus status = await _GattNotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
+                                    if (status == GattCommunicationStatus.Success)
+                                    {
+                                        SettingNotifierEnabled = false;
+                                    }
+                                    else { UpdateStatusBar("Failed to detach notify settings " + status); }
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Settings Response Exception");
+                                }
+                            }
+
+                            // Query
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0076")))
+                            {
+                                Debug.Print("Set GATT Characteristic: Query");
+                                _GattSendQueries = characteristic;
+                            }
+
+                            // Query Response
+                            if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0077")))
+                            {
+                                Debug.Print("Set GATT Characteristic: Query Response");
+                                _GattNotifyQueryResp = characteristic;
+                                try
+                                {
+                                    GattCommunicationStatus status = await _GattNotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
+                                    if (status == GattCommunicationStatus.Success)
+                                    {
+                                        QueryNotifierEnabled = false;
+                                    }
+                                    else { UpdateStatusBar("Failed to detach notify query " + status); }
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Query Response Exception");
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -1245,6 +1432,17 @@ namespace GoProCSharpDev
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             Process.Start(e.Uri.ToString());
+        }
+
+        // When closing dispose BLE connection
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            //BleDisconnect();
+        }
+
+        private void btnDisconnect_Click(object sender, RoutedEventArgs e)
+        {
+            BleDisconnect();
         }
     }
 

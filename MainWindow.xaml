@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GoProCSharpDev"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="GoPro C# Dev v1.0" Height="696.5" Width="899.5" ResizeMode="NoResize">
+        Title="GoPro C# Dev v1.0" Height="696.5" Width="899.5" ResizeMode="NoResize" Closing="Window_Closing">
     <Window.Resources>
         <local:BrushBoolColorConverter x:Key="BConverter"></local:BrushBoolColorConverter>
     </Window.Resources>
@@ -24,9 +24,10 @@
         <Label Content="Preview Stream" HorizontalAlignment="Left" Margin="26,0,0,276" VerticalAlignment="Bottom" Padding="0" Height="16" Width="83"/>
         <Rectangle Fill="{Binding IsPreviewStreamStarted, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,274" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
-        <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="276,0,0,306" VerticalAlignment="Bottom" Width="55" Click="BtnScanBle_Click" Height="20"/>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="336,0,0,306" VerticalAlignment="Bottom" Width="55" Click="BtnConnect_Click" Height="20" />
-        <Button x:Name="btnPair" Content="Pair" HorizontalAlignment="Left" Margin="217,0,0,306" VerticalAlignment="Bottom" Width="55" Click="BtnPair_Click" Height="20"/>
+        <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="266,0,0,306" VerticalAlignment="Bottom" Width="44" Click="BtnScanBle_Click" Height="20"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="316,0,0,306" VerticalAlignment="Bottom" Width="55" Click="BtnConnect_Click" Height="20" />
+        <Button x:Name="btnDisconnect" Visibility="Hidden" Content="X" HorizontalAlignment="Left" Margin="376,0,0,306" VerticalAlignment="Bottom" Width="15" Height="20" Click="btnDisconnect_Click" />
+        <Button x:Name="btnPair" Content="Pair" HorizontalAlignment="Left" Margin="217,0,0,306" VerticalAlignment="Bottom" Width="44" Click="BtnPair_Click" Height="20"/>
 
         <Button x:Name="BtnSetApName" Content="Set AP" HorizontalAlignment="Left" Margin="462,0,0,334" VerticalAlignment="Bottom" Width="54" Click="BtnSetApName_Click" Height="20" />
         <Button x:Name="BtnReadApNameAndPass" Content="Get" HorizontalAlignment="Left" Margin="407,0,0,334" VerticalAlignment="Bottom" Width="50" Click="BtnReadWifiApNameAndPass_Click" Height="20" />
