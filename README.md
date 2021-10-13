@@ -24,3 +24,11 @@ Usage
 3. `Pair` to the discovered device that is not `GoPro Cam`. In the .gif below, this is `GoPro 0456` (Only needs to be done once, or if camera is factory reset)  
 4. After pairing is successful, `connect` to the same GoPro device  
 5. Now use any of the GUI buttons to read WiFi info, enable WiFi AP, set shutter, etc.  
+
+
+Known Issue
+-----------
+
+* Sometimes GATT notify has exception
+![image](https://user-images.githubusercontent.com/4526937/137074041-2d261f70-2086-4225-ad67-75c0c7bf16f8.png)
+Solve by restart and retry connect
