@@ -100,6 +100,7 @@
         <Button x:Name="BtnOpenMedia" Content="Open" HorizontalAlignment="Left" Margin="469,0,0,614" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnOpenMedia_Click" />
         <Label Content="* To use Copy connect GoPro with a USB cable (Wifi and Bluetooth will be disabled)" FontSize="10" HorizontalAlignment="Left" Margin="27,0,0,462" VerticalAlignment="Bottom" Height="26" Width="389"/>
         <Label Content="* Preview with udp://@10.5.5.100:8554" FontSize="10" HorizontalAlignment="Left" Margin="27,0,0,475" VerticalAlignment="Bottom" Height="26" Width="389"/>
+        <Label Content="* Shutter control is 2.0 Only" FontSize="10" HorizontalAlignment="Left" Margin="422,0,0,479" VerticalAlignment="Bottom" Height="26" Width="132"/>
 
         <Label Content="Out Dir" HorizontalAlignment="Left" Margin="26,0,0,555" VerticalAlignment="Bottom" Height="26" Width="59"/>
         <TextBox x:Name="TxtOutputFolderPath" Text="out" MaxLines="1" Height="23" Margin="90,0,0,554" TextWrapping="NoWrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="147" />
@@ -107,13 +108,15 @@
 
         <Button x:Name="BtnSendApiRequest" Content="Send" HorizontalAlignment="Left" Margin="524,0,0,585" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnSendApiRequest_Click" />
         <Button x:Name="BtnListMedia" Content="List Media" HorizontalAlignment="Left" Margin="26,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnListMedia_Click" />
-        <Button x:Name="BtnWifiKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="266,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnWifiKeepAlive_Click" />
+        <Button x:Name="BtnWifiKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="426,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnWifiKeepAlive_Click" />
         <Button x:Name="BtnGpmf" Content="GPMF" HorizontalAlignment="Left" Margin="26,0,0,501" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetMediaFile_Click" />
         <Button x:Name="BtnGetThumbnail" Content="Thumbnail" HorizontalAlignment="Left" Margin="186,0,0,501" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetThumbnail_Click" />
         <Button x:Name="BtnCamState" Content="Cam State" HorizontalAlignment="Left" Margin="186,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnCamState_Click" />
-        <Button x:Name="BtnDownload" Content="Download" HorizontalAlignment="Left" Margin="426,0,0,501" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnDownload_Click" />
-        <Button x:Name="BtnPreviewStart" Content="Pv Start" HorizontalAlignment="Left" Margin="346,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStart_Click" />
-        <Button x:Name="BtnPreviewStop" Content="Pv Stop" HorizontalAlignment="Left" Margin="426,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStop_Click" />
+        <Button x:Name="BtnDownload" Content="Download" HorizontalAlignment="Left" Margin="506,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnDownload_Click" />
+        <Button x:Name="BtnShutterOn" Content="Shutter On" HorizontalAlignment="Left" Margin="426,0,0,501" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnShutterOn_Click_1" />
+        <Button x:Name="BtnShutterOff" Content="Shutter Off" HorizontalAlignment="Left" Margin="506,0,0,501" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnShutterOff_Click_1" />
+        <Button x:Name="BtnPreviewStart" Content="Pv Start" HorizontalAlignment="Left" Margin="266,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStart_Click" />
+        <Button x:Name="BtnPreviewStop" Content="Pv Stop" HorizontalAlignment="Left" Margin="346,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStop_Click" />
 
         <Label Content="Web Response" HorizontalAlignment="Left" Margin="599,0,0,632" VerticalAlignment="Bottom" Height="26" Width="91"/>
         <TextBlock HorizontalAlignment="Left" Margin="820,0,0,634" VerticalAlignment="Bottom" Height="19" Width="54">
