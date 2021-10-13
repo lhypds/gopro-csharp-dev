@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using Windows.Devices.Bluetooth;
@@ -757,6 +758,13 @@ namespace GoProCSharpDev
                 QueryNotifierEnabled = false;
                 SettingNotifierEnabled = false;
                 CommandNotifierEnabled = false;
+            }
+            else
+            {
+                BtnReadApNameAndPass.Dispatcher.Invoke(new Action(() =>
+                {
+                    BtnReadApNameAndPass.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                }));
             }
         }
 
