@@ -30,5 +30,5 @@ Known Issue
 -----------
 
 * Sometimes GATT notify has exception  
-![image](https://user-images.githubusercontent.com/4526937/137074041-2d261f70-2086-4225-ad67-75c0c7bf16f8.png)  
 Solve by restart and retry connect  
+![image](https://user-images.githubusercontent.com/4526937/137074041-2d261f70-2086-4225-ad67-75c0c7bf16f8.png)  
