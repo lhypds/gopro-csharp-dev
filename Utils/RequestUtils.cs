@@ -134,7 +134,6 @@ namespace GoProCSharpDev.Utils
             try
             {
                 DateTime startTime = DateTime.Now;
-                HttpClient httpClient = new HttpClient();
 
                 // Get file bytes length before download
                 WebClient webClient = new WebClient();
@@ -153,6 +152,10 @@ namespace GoProCSharpDev.Utils
                 responseCallback?.Invoke(responseHeaderText);
 
                 // With file stream
+                HttpClient httpClient = new HttpClient
+                {
+                    Timeout = TimeSpan.FromMinutes(10)  // The default time out is about 60s
+                };
                 Task<Stream> getStreamAsyncTask = httpClient.GetStreamAsync(url);
                 Stream stream = await getStreamAsyncTask;
                 Debug.WriteLine("Got stream");
@@ -165,12 +168,20 @@ namespace GoProCSharpDev.Utils
                     int bytesRead;
                     do
                     {
-                        bytesRead = stream.Read(buffer, 0, 10 * 1024 * 1024);
-                        strmFile.Write(buffer, 0, bytesRead);
-                        bytesWrote += bytesRead;
-                        Debug.WriteLine("Bytes transfered: " + bytesWrote + " / " + bytesTotal + " (" + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%)");
-                        responseCallback?.Invoke(responseHeaderText + "File transfering... " + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%");
-                        progressCallback?.Invoke(bytesWrote / (float)bytesTotal * 100);
+                        bytesRead = 0;
+                        try
+                        {
+                            bytesRead = stream.Read(buffer, 0, 10 * 1024 * 1024);
+                            strmFile.Write(buffer, 0, bytesRead);
+                            bytesWrote += bytesRead;
+                            Debug.WriteLine("Bytes transfered: " + bytesWrote + " / " + bytesTotal + " (" + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%)");
+                            responseCallback?.Invoke(responseHeaderText + "File transfering... " + (bytesWrote / (double)bytesTotal * 100).ToString("#0.0") + "%");
+                            progressCallback?.Invoke(bytesWrote / (float)bytesTotal * 100);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("File transfer error. Message: " + e.Message + " Inner exception: " + e.InnerException);
+                        }
                     }
                     while (bytesRead > 0);
                     strmFile.Close();
