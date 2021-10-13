@@ -178,6 +178,9 @@ namespace GoProCSharpDev
         private readonly Dictionary<string, DeviceInformation> _AllDevices = new Dictionary<string, DeviceInformation>();
         public event PropertyChangedEventHandler PropertyChanged;
 
+        // Logging
+        private readonly LoggingUtils _LoggingUtils = new LoggingUtils();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -850,6 +853,7 @@ namespace GoProCSharpDev
                         {
                             BatteryLevel = _QueryBuf[k + 2];
                             Debug.Print("Battery Level: " + BatteryLevel);
+                            LoggingUtils.Info("Battery Level: " + BatteryLevel, "APPLOG");
                         }
 
                         if (_QueryBuf[k] == 69)
