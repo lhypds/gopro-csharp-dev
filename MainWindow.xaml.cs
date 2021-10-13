@@ -755,23 +755,6 @@ namespace GoProCSharpDev
             }
         }
 
-        private async void SetThirdPartySource()
-        {
-            DataWriter writer = new DataWriter();
-            writer.WriteBytes(new byte[] { 0x01, 0x50 });
-
-            GattCommunicationStatus res = GattCommunicationStatus.Unreachable;
-            if (_GattSendCmds != null)
-            {
-                res = await _GattSendCmds.WriteValueAsync(writer.DetachBuffer());
-            }
-
-            if (res != GattCommunicationStatus.Success && _GattSendCmds != null)
-            {
-                UpdateStatusBar("Failed to set command source: " + res.ToString());
-            }
-        }
-
         // Bluetooth GATT Characteristic Notification Handlers
         // A GATT characteristic is a basic data element used to construct a GATT service
 
@@ -1440,7 +1423,7 @@ namespace GoProCSharpDev
             //BleDisconnect();
         }
 
-        private void btnDisconnect_Click(object sender, RoutedEventArgs e)
+        private void BtnDisconnect_Click(object sender, RoutedEventArgs e)
         {
             BleDisconnect();
         }
