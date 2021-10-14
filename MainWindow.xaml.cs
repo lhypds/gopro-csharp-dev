@@ -376,7 +376,7 @@ namespace GoProCSharpDev
         {
             if (IsBluetoothConnected) BleDisconnect(); else BleConnect();
             BtnConnect.IsEnabled = false;
-            _ConnectionControlTimer = new Timer(new TimerCallback(ConnectionControlTimerTask), null, 10000, 0);
+            _ConnectionControlTimer = new Timer(new TimerCallback(ConnectionControlTimerTask), null, 7000, 0);
         }
 
         private void ConnectionControlTimerTask(object timerState)
