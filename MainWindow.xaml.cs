@@ -873,12 +873,15 @@ namespace GoProCSharpDev
             IsBluetoothConnected = sender.ConnectionStatus == BluetoothConnectionStatus.Connected;
             if (!IsBluetoothConnected)
             {
+                // Disconnected
                 QueryNotifierEnabled = false;
                 SettingNotifierEnabled = false;
                 CommandNotifierEnabled = false;
+                BatteryLevel = 0;
             }
             else
             {
+                // Bluetooth connected
                 if (_WifiApSsidString.Equals(string.Empty) || _WifiApPasswordString.Equals(string.Empty))
                 {
                     BtnReadApNameAndPass.Dispatcher.Invoke(new Action(() =>
