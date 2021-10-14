@@ -66,10 +66,10 @@
         <Rectangle Fill="{Binding WifiStatus, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,346" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
         <Label Content="Camera Wifi AP" HorizontalAlignment="Left" Margin="402,0,0,411" VerticalAlignment="Bottom" Height="26" Width="104"/>
-        <TextBox x:Name="txtAPName" MaxLines="1" HorizontalAlignment="Left" Height="23" Margin="469,0,0,388" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="105"/>
+        <TextBox x:Name="TxtApName" MaxLines="1" HorizontalAlignment="Left" Height="23" Margin="469,0,0,388" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="105"/>
         <Label Content="Name" HorizontalAlignment="Left" Margin="405,0,0,386" Height="26" VerticalAlignment="Bottom" Width="54"/>
         <Label Content="Password" HorizontalAlignment="Left" Margin="405,0,0,359" Height="26" VerticalAlignment="Bottom" Width="68"/>
-        <TextBox x:Name="txtAPPassword" MaxLines="1" HorizontalAlignment="Left" Height="23" Margin="469,0,0,360" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="105"/>
+        <TextBox x:Name="TxtApPassword" MaxLines="1" HorizontalAlignment="Left" Height="23" Margin="469,0,0,360" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="105"/>
 
         <StatusBar Grid.ColumnSpan="2" Height="19" Margin="0,0,3,1" VerticalAlignment="Bottom">
             <StatusBarItem Padding="0" Width="872">
