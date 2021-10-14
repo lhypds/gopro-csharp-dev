@@ -499,153 +499,161 @@ namespace GoProCSharpDev
                     // GATT Service
                     foreach (GattDeviceService gatt in services)
                     {
-                        GattCharacteristicsResult gattCharacteristicsResult = await gatt.GetCharacteristicsAsync();
-                        if (gattCharacteristicsResult.Status == GattCommunicationStatus.Success)
+                        try
                         {
-                            IReadOnlyList<GattCharacteristic> characteristics = gattCharacteristicsResult.Characteristics;
-
-                            // A GATT characteristic is a basic data element used to construct a GATT service
-                            foreach (GattCharacteristic characteristic in characteristics)
+                            GattCharacteristicsResult gattCharacteristicsResult = await gatt.GetCharacteristicsAsync();
+                            if (gattCharacteristicsResult.Status == GattCommunicationStatus.Success)
                             {
-                                // Properties
-                                GattCharacteristicProperties charProperties = characteristic.CharacteristicProperties;
-                                if (charProperties.HasFlag(GattCharacteristicProperties.Read))
-                                {
-                                    // This characteristic supports reading from it.
-                                }
+                                IReadOnlyList<GattCharacteristic> characteristics = gattCharacteristicsResult.Characteristics;
 
-                                if (charProperties.HasFlag(GattCharacteristicProperties.Write))
+                                // A GATT characteristic is a basic data element used to construct a GATT service
+                                foreach (GattCharacteristic characteristic in characteristics)
                                 {
-                                    // This characteristic supports writing to it.
-                                }
-
-                                if (charProperties.HasFlag(GattCharacteristicProperties.Notify))
-                                {
-                                    // This characteristic supports subscribing to notifications.
-                                }
-
-                                // Services and Characteristics
-                                // Refer: https://gopro.github.io/OpenGoPro/ble_1_0 for GoPro 9
-
-                                // GoPro WiFi Access Point
-                                // WiFi AP SSID
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0002")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: WiFi AP SSID");
-                                    _GattWifiApSsid = characteristic;
-                                }
-
-                                // WiFi AP Password
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0003")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: WiFi AP Password");
-                                    _GattWifiApPass = characteristic;
-                                }
-
-                                // Control and Query
-                                // Command
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0072")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: Command");
-                                    _GattSendCmds = characteristic;
-                                    CommandCommandEnabled = true;
-                                }
-
-                                // Command Response
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0073")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: Command Response");
-                                    _GattNotifyCmds = characteristic;
-                                    try
+                                    // Properties
+                                    GattCharacteristicProperties charProperties = characteristic.CharacteristicProperties;
+                                    if (charProperties.HasFlag(GattCharacteristicProperties.Read))
                                     {
-                                        GattCommunicationStatus status = await _GattNotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                                        if (status == GattCommunicationStatus.Success)
+                                        // This characteristic supports reading from it.
+                                    }
+
+                                    if (charProperties.HasFlag(GattCharacteristicProperties.Write))
+                                    {
+                                        // This characteristic supports writing to it.
+                                    }
+
+                                    if (charProperties.HasFlag(GattCharacteristicProperties.Notify))
+                                    {
+                                        // This characteristic supports subscribing to notifications.
+                                    }
+
+                                    // Services and Characteristics
+                                    // Refer: https://gopro.github.io/OpenGoPro/ble_1_0 for GoPro 9
+
+                                    // GoPro WiFi Access Point
+                                    // WiFi AP SSID
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0002")))
+                                    {
+                                        Debug.Print("Set GATT Characteristic: WiFi AP SSID");
+                                        _GattWifiApSsid = characteristic;
+                                    }
+
+                                    // WiFi AP Password
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0003")))
+                                    {
+                                        Debug.Print("Set GATT Characteristic: WiFi AP Password");
+                                        _GattWifiApPass = characteristic;
+                                    }
+
+                                    // Control and Query
+                                    // Command
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0072")))
+                                    {
+                                        Debug.Print("Set GATT Characteristic: Command");
+                                        _GattSendCmds = characteristic;
+                                        CommandCommandEnabled = true;
+                                    }
+
+                                    // Command Response
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0073")))
+                                    {
+                                        Debug.Print("Set GATT Characteristic: Command Response");
+                                        _GattNotifyCmds = characteristic;
+                                        try
                                         {
-                                            _GattNotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
-                                            CommandNotifierEnabled = true;
-                                        }
-                                        else { UpdateStatusBar("Failed to attach notify cmd " + status); }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Debug.Print("Command Response Exception: " + ex.Message);
-                                        BleNotifyRetryConnect(_GattNotifyCmds);
-                                    }
-                                }
-
-                                // Settings
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0074")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: Settings");
-                                    _GattSetSettings = characteristic;
-                                    SettingCommandEnabled = true;
-                                }
-
-                                // Settings Response
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0075")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: Settings Response");
-                                    _GattNotifySettings = characteristic;
-                                    try
-                                    {
-                                        GattCommunicationStatus status = await _GattNotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                                        if (status == GattCommunicationStatus.Success)
-                                        {
-                                            _GattNotifySettings.ValueChanged += NotifySettings_ValueChanged;
-                                            SettingNotifierEnabled = true;
-                                        }
-                                        else { UpdateStatusBar("Failed to attach notify settings " + status); }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Debug.Print("Settings Response Exception: " + ex.Message);
-                                        BleNotifyRetryConnect(_GattNotifySettings);
-                                    }
-                                }
-
-                                // Query
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0076")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: Query");
-                                    _GattSendQueries = characteristic;
-                                    QueryCommandEnabled = true;
-                                }
-
-                                // Query Response
-                                if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0077")))
-                                {
-                                    Debug.Print("Set GATT Characteristic: Query Response");
-                                    _GattNotifyQueryResp = characteristic;
-                                    try
-                                    {
-                                        GattCommunicationStatus status = await _GattNotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                                        if (status == GattCommunicationStatus.Success)
-                                        {
-                                            _GattNotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
-                                            QueryNotifierEnabled = true;
-
-                                            if (_GattSendQueries != null)
+                                            GattCommunicationStatus status = await _GattNotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                            if (status == GattCommunicationStatus.Success)
                                             {
-                                                // Register for settings and status updates
-                                                DataWriter writer = new DataWriter();
-                                                writer.WriteBytes(new byte[] { 1, 0x52 });
-                                                GattCommunicationStatus gat = await _GattSendQueries.WriteValueAsync(writer.DetachBuffer());
-
-                                                writer = new DataWriter();
-                                                writer.WriteBytes(new byte[] { 1, 0x53 });
-                                                gat = await _GattSendQueries.WriteValueAsync(writer.DetachBuffer());
+                                                _GattNotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
+                                                CommandNotifierEnabled = true;
                                             }
-                                            else { UpdateStatusBar("send queries was null!"); }
+                                            else { UpdateStatusBar("Failed to attach notify cmd " + status); }
                                         }
-                                        else { UpdateStatusBar("Failed to attach notify query " + status); }
+                                        catch (Exception ex)
+                                        {
+                                            Debug.Print("Command Response Exception: " + ex.Message);
+                                            BleNotifyRetryConnect(_GattNotifyCmds);
+                                        }
                                     }
-                                    catch (Exception ex)
+
+                                    // Settings
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0074")))
                                     {
-                                        Debug.Print("Query Response Exception: " + ex.Message);
-                                        BleNotifyRetryConnect(_GattNotifyQueryResp);
+                                        Debug.Print("Set GATT Characteristic: Settings");
+                                        _GattSetSettings = characteristic;
+                                        SettingCommandEnabled = true;
+                                    }
+
+                                    // Settings Response
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0075")))
+                                    {
+                                        Debug.Print("Set GATT Characteristic: Settings Response");
+                                        _GattNotifySettings = characteristic;
+                                        try
+                                        {
+                                            GattCommunicationStatus status = await _GattNotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                            if (status == GattCommunicationStatus.Success)
+                                            {
+                                                _GattNotifySettings.ValueChanged += NotifySettings_ValueChanged;
+                                                SettingNotifierEnabled = true;
+                                            }
+                                            else { UpdateStatusBar("Failed to attach notify settings " + status); }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Debug.Print("Settings Response Exception: " + ex.Message);
+                                            BleNotifyRetryConnect(_GattNotifySettings);
+                                        }
+                                    }
+
+                                    // Query
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0076")))
+                                    {
+                                        Debug.Print("Set GATT Characteristic: Query");
+                                        _GattSendQueries = characteristic;
+                                        QueryCommandEnabled = true;
+                                    }
+
+                                    // Query Response
+                                    if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0077")))
+                                    {
+                                        Debug.Print("Set GATT Characteristic: Query Response");
+                                        _GattNotifyQueryResp = characteristic;
+                                        try
+                                        {
+                                            GattCommunicationStatus status = await _GattNotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                            if (status == GattCommunicationStatus.Success)
+                                            {
+                                                _GattNotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
+                                                QueryNotifierEnabled = true;
+
+                                                if (_GattSendQueries != null)
+                                                {
+                                                    // Register for settings and status updates
+                                                    DataWriter writer = new DataWriter();
+                                                    writer.WriteBytes(new byte[] { 1, 0x52 });
+                                                    GattCommunicationStatus gat = await _GattSendQueries.WriteValueAsync(writer.DetachBuffer());
+
+                                                    writer = new DataWriter();
+                                                    writer.WriteBytes(new byte[] { 1, 0x53 });
+                                                    gat = await _GattSendQueries.WriteValueAsync(writer.DetachBuffer());
+                                                }
+                                                else { UpdateStatusBar("send queries was null!"); }
+                                            }
+                                            else { UpdateStatusBar("Failed to attach notify query " + status); }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Debug.Print("Query Response Exception: " + ex.Message);
+                                            BleNotifyRetryConnect(_GattNotifyQueryResp);
+                                        }
                                     }
                                 }
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            UpdateStatusBar("BLE Connection error, please retry");
+                            Debug.Print("BLE Connection Exception: " + ex.Message);
                         }
                     }
                 }
