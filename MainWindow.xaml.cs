@@ -402,7 +402,16 @@ namespace GoProCSharpDev
         {
             if (lbDevices.SelectedIndex != -1)
             {
-                if (IsBluetoothConnected) BleDisconnect(); else BleConnect();
+                if (IsBluetoothConnected)
+                {
+                    Debug.Print("Disconnecting by user click...");
+                    BleDisconnect();
+                }
+                else
+                {
+                    Debug.Print("Connecting by user click...");
+                    BleConnect(); 
+                }
                 BtnConnect.IsEnabled = false;
                 _ConnectionControlTimer = new Timer(new TimerCallback(ConnectionControlTimerTask), null, 12000, 0);
             }
@@ -721,7 +730,7 @@ namespace GoProCSharpDev
                         // Command
                         if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0072")))
                         {
-                            Debug.Print("Disconnecting GATT Characteristic: Command");
+                            Debug.Print("Disconnect GATT Characteristic: Command");
                             _GattSendCmds = characteristic;
                             CommandCommandEnabled = false;
                         }
@@ -729,7 +738,7 @@ namespace GoProCSharpDev
                         // Settings
                         if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0074")))
                         {
-                            Debug.Print("Disconnecting GATT Characteristic: Settings");
+                            Debug.Print("Disconnect GATT Characteristic: Settings");
                             _GattSetSettings = characteristic;
                             SettingCommandEnabled = false;
                         }
@@ -737,7 +746,7 @@ namespace GoProCSharpDev
                         // Query
                         if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0076")))
                         {
-                            Debug.Print("Disconnecting GATT Characteristic: Query");
+                            Debug.Print("Disconnect GATT Characteristic: Query");
                             _GattSendQueries = characteristic;
                             QueryCommandEnabled = false;
                         }
@@ -745,7 +754,7 @@ namespace GoProCSharpDev
                         // Command Response
                         if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0073")))
                         {
-                            Debug.Print("Disconnecting GATT Characteristic: Command Response");
+                            Debug.Print("Disconnect GATT Characteristic: Command Response");
                             _GattNotifyCmds = characteristic;
                             try
                             {
@@ -762,7 +771,7 @@ namespace GoProCSharpDev
                         // Settings Response
                         if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0075")))
                         {
-                            Debug.Print("Disconnecting GATT Characteristic: Settings Response");
+                            Debug.Print("Disconnect GATT Characteristic: Settings Response");
                             _GattNotifySettings = characteristic;
                             try
                             {
@@ -779,7 +788,7 @@ namespace GoProCSharpDev
                         // Query Response
                         if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0077")))
                         {
-                            Debug.Print("Disconnecting GATT Characteristic: Query Response");
+                            Debug.Print("Disconnect GATT Characteristic: Query Response");
                             _GattNotifyQueryResp = characteristic;
                             try
                             {
@@ -1025,7 +1034,7 @@ namespace GoProCSharpDev
             {
                 // Bluethooth disconnected
                 // Make sure all connected service disabled
-                _RecheckBleStatusTimer = new Timer(new TimerCallback(RecheckBleStatusTimerTask), null, 5000, 0);
+                _RecheckBleStatusTimer = new Timer(new TimerCallback(RecheckBleStatusTimerTask), null, 10000, 0);
             }
         }
 
@@ -1038,7 +1047,10 @@ namespace GoProCSharpDev
                     // Still not connect, disable all connection
                     if (QueryCommandEnabled || SettingCommandEnabled || CommandCommandEnabled
                     || QueryNotifierEnabled || SettingNotifierEnabled || CommandNotifierEnabled)
+                    {
+                        Debug.Print("Disconnecting by recheck statsu timer...");
                         BleDisconnect();
+                    }
                 }
             }));
         }
@@ -1586,6 +1598,7 @@ namespace GoProCSharpDev
         // When closing dispose BLE connection
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            Debug.Print("Disconnecting by window closing...");
             BleDisconnect();
         }
     }
