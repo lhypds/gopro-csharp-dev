@@ -24,7 +24,7 @@
         <Rectangle Fill="{Binding IsPreviewStreamStarted, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,274" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
         <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="266,0,0,306" VerticalAlignment="Bottom" Width="44" Click="BtnScanBle_Click" Height="20"/>
-        <Button x:Name="btnConnect" HorizontalAlignment="Left" Margin="316,0,0,306" VerticalAlignment="Bottom" Width="75" Click="BtnConnect_Click" Height="20">
+        <Button x:Name="BtnConnect" HorizontalAlignment="Left" Margin="316,0,0,306" VerticalAlignment="Bottom" Width="75" Click="BtnConnect_Click" Height="20">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Content" Value="Connect" />

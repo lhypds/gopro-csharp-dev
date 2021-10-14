@@ -13,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -179,6 +180,9 @@ namespace GoProCSharpDev
         private readonly Dictionary<string, DeviceInformation> _AllDevices = new Dictionary<string, DeviceInformation>();
         public event PropertyChangedEventHandler PropertyChanged;
 
+        // Timers
+        Timer _ConnectionControlTimer;
+
         // Logging
         private readonly LoggingUtils _LoggingUtils = new LoggingUtils();
 
@@ -186,6 +190,8 @@ namespace GoProCSharpDev
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            
         }
 
         private void UpdateStatusBar(string status)
@@ -369,6 +375,16 @@ namespace GoProCSharpDev
         private void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
             if (IsBluetoothConnected) BleDisconnect(); else BleConnect();
+            BtnConnect.IsEnabled = false;
+            _ConnectionControlTimer = new Timer(new TimerCallback(ConnectionControlTimerTask), null, 10000, 0);
+        }
+
+        private void ConnectionControlTimerTask(object timerState)
+        {
+            BtnConnect.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                BtnConnect.IsEnabled = true;
+            }));
         }
 
         private async void BleConnect()
@@ -1055,10 +1071,10 @@ namespace GoProCSharpDev
                     // If not it will wakeup again
                     if (res == GattCommunicationStatus.Success)
                     {
-                        if (function.Equals("Put camera to sleep"))
-                        {
-                            BleDisconnect();
-                        }
+                        //if (function.Equals("Put camera to sleep"))
+                        //{
+                        //    BleDisconnect();
+                        //}
                     }
                 }
                 catch (Exception e)
