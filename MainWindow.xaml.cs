@@ -78,6 +78,31 @@ namespace GoProCSharpDev
             set { _CommandNotifierEnabled = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CommandNotifierEnabled")); }
         }
 
+        // Command
+        private bool _QueryCommandEnabled = false;
+
+        public bool QueryCommandEnabled
+        {
+            get => _QueryCommandEnabled;
+            set { _QueryCommandEnabled = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QueryCommandEnabled")); }
+        }
+
+        private bool _SettingCommandEnabled = false;
+
+        public bool SettingCommandEnabled
+        {
+            get => _SettingCommandEnabled;
+            set { _SettingCommandEnabled = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SettingCommandEnabled")); }
+        }
+
+        private bool _CommandCommandEnabled = false;
+
+        public bool CommandCommandEnabled
+        {
+            get => _CommandCommandEnabled;
+            set { _CommandCommandEnabled = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CommandCommandEnabled")); }
+        }
+
         // Encoding
         private bool _Encoding = false;
 
@@ -506,6 +531,7 @@ namespace GoProCSharpDev
                                 {
                                     Debug.Print("Set GATT Characteristic: Command");
                                     _GattSendCmds = characteristic;
+                                    CommandCommandEnabled = true;
                                 }
 
                                 // Command Response
@@ -534,6 +560,7 @@ namespace GoProCSharpDev
                                 {
                                     Debug.Print("Set GATT Characteristic: Settings");
                                     _GattSetSettings = characteristic;
+                                    SettingCommandEnabled = true;
                                 }
 
                                 // Settings Response
@@ -562,6 +589,7 @@ namespace GoProCSharpDev
                                 {
                                     Debug.Print("Set GATT Characteristic: Query");
                                     _GattSendQueries = characteristic;
+                                    QueryCommandEnabled = true;
                                 }
 
                                 // Query Response
@@ -647,6 +675,30 @@ namespace GoProCSharpDev
                     // A GATT characteristic is a basic data element used to construct a GATT service
                     foreach (GattCharacteristic characteristic in gatt.GetAllCharacteristics())
                     {
+                        // Command
+                        if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0072")))
+                        {
+                            Debug.Print("Disconnecting GATT Characteristic: Command");
+                            _GattSendCmds = characteristic;
+                            CommandCommandEnabled = false;
+                        }
+
+                        // Settings
+                        if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0074")))
+                        {
+                            Debug.Print("Disconnecting GATT Characteristic: Settings");
+                            _GattSetSettings = characteristic;
+                            SettingCommandEnabled = false;
+                        }
+
+                        // Query
+                        if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0076")))
+                        {
+                            Debug.Print("Disconnecting GATT Characteristic: Query");
+                            _GattSendQueries = characteristic;
+                            QueryCommandEnabled = false;
+                        }
+
                         // Command Response
                         if (characteristic.Uuid.ToString().Equals(BluetoothUtils.GetUuid128("0073")))
                         {
@@ -898,16 +950,7 @@ namespace GoProCSharpDev
         {
             UpdateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "Connected" : "Disconnected");
             IsBluetoothConnected = sender.ConnectionStatus == BluetoothConnectionStatus.Connected;
-            if (!IsBluetoothConnected)
-            {
-                // Disconnected
-                // Actually even device disconnected, the long connection still exist
-                //QueryNotifierEnabled = false;
-                //SettingNotifierEnabled = false;
-                //CommandNotifierEnabled = false;
-                BatteryLevel = 0;
-            }
-            else
+            if (IsBluetoothConnected)
             {
                 // Bluetooth connected
                 if (_WifiApSsidString.Equals(string.Empty) || _WifiApPasswordString.Equals(string.Empty))
