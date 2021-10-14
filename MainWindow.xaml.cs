@@ -205,11 +205,12 @@ namespace GoProCSharpDev
         private readonly Dictionary<string, DeviceInformation> _AllDevices = new Dictionary<string, DeviceInformation>();
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // Timers
-        Timer _ConnectionControlTimer;
-
         // Logging
         private readonly LoggingUtils _LoggingUtils = new LoggingUtils();
+
+        // Timer
+        private Timer _ConnectionControlTimer;
+        private Timer _RecheckBleStatusTimer;
 
         public MainWindow()
         {
@@ -399,9 +400,16 @@ namespace GoProCSharpDev
         // BLE Connect
         private void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
-            if (IsBluetoothConnected) BleDisconnect(); else BleConnect();
-            BtnConnect.IsEnabled = false;
-            _ConnectionControlTimer = new Timer(new TimerCallback(ConnectionControlTimerTask), null, 12000, 0);
+            if (lbDevices.SelectedIndex != -1)
+            {
+                if (IsBluetoothConnected) BleDisconnect(); else BleConnect();
+                BtnConnect.IsEnabled = false;
+                _ConnectionControlTimer = new Timer(new TimerCallback(ConnectionControlTimerTask), null, 12000, 0);
+            }
+            else
+            {
+                UpdateStatusBar("Please select device");
+            }
         }
 
         private void ConnectionControlTimerTask(object timerState)
@@ -647,21 +655,21 @@ namespace GoProCSharpDev
                     {
                         _GattNotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
                         QueryNotifierEnabled = true;
-                        Debug.Print("Query response connected");
+                        Debug.Print("Query response connected by retry");
                     }
 
                     if (characteristic == _GattNotifySettings)
                     {
                         _GattNotifySettings.ValueChanged += NotifySettings_ValueChanged;
                         SettingNotifierEnabled = true;
-                        Debug.Print("Query response connected");
+                        Debug.Print("Query response connected by retry");
                     }
 
                     if (characteristic == _GattNotifyCmds)
                     {
                         _GattNotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
                         CommandNotifierEnabled = true;
-                        Debug.Print("Query response connected");
+                        Debug.Print("Query response connected by retry");
                     }
                 }
                 else { UpdateStatusBar("Failed to attach notify " + status); }
@@ -674,12 +682,7 @@ namespace GoProCSharpDev
 
         private async void BleDisconnect()
         {
-            if (!IsBluetoothConnected)
-            {
-                UpdateStatusBar("Bluetooth services not connected");
-                return;
-            }
-            else { UpdateStatusBar("Disconnecting..."); }
+            UpdateStatusBar("Disconnecting...");
 
             // Get device
             if (_BleDevice == null)
@@ -747,11 +750,7 @@ namespace GoProCSharpDev
                             try
                             {
                                 GattCommunicationStatus status = await _GattNotifyCmds.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
-                                if (status == GattCommunicationStatus.Success)
-                                {
-                                    CommandNotifierEnabled = false;
-                                }
-                                else { UpdateStatusBar("Failed to detach notify cmd " + status); }
+                                CommandNotifierEnabled = false;
                             }
                             catch (Exception ex)
                             {
@@ -768,11 +767,7 @@ namespace GoProCSharpDev
                             try
                             {
                                 GattCommunicationStatus status = await _GattNotifySettings.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
-                                if (status == GattCommunicationStatus.Success)
-                                {
-                                    SettingNotifierEnabled = false;
-                                }
-                                else { UpdateStatusBar("Failed to detach notify settings " + status); }
+                                SettingNotifierEnabled = false;
                             }
                             catch (Exception ex)
                             {
@@ -789,11 +784,7 @@ namespace GoProCSharpDev
                             try
                             {
                                 GattCommunicationStatus status = await _GattNotifyQueryResp.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
-                                if (status == GattCommunicationStatus.Success)
-                                {
-                                    QueryNotifierEnabled = false;
-                                }
-                                else { UpdateStatusBar("Failed to detach notify query " + status); }
+                                QueryNotifierEnabled = false;
                             }
                             catch (Exception ex)
                             {
@@ -827,19 +818,19 @@ namespace GoProCSharpDev
                     if (characteristic == _GattNotifyQueryResp)
                     {
                         QueryNotifierEnabled = false;
-                        Debug.Print("Query response disconnected");
+                        Debug.Print("Query response disconnected by retry");
                     }
 
                     if (characteristic == _GattNotifySettings)
                     {
                         SettingNotifierEnabled = false;
-                        Debug.Print("Setting response disconnected");
+                        Debug.Print("Setting response disconnected by retry");
                     }
 
                     if (characteristic == _GattNotifyCmds)
                     {
                         CommandNotifierEnabled = false;
-                        Debug.Print("Command response disconnected");
+                        Debug.Print("Command response disconnected by retry");
                     }
                 }
                 else { UpdateStatusBar("Failed to detach notify " + status); }
@@ -1017,7 +1008,7 @@ namespace GoProCSharpDev
 
         private void BleDevice_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
         {
-            UpdateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "Connected" : "Disconnected");
+            UpdateStatusBar(sender.ConnectionStatus == BluetoothConnectionStatus.Connected ? "BLE Connected" : "BLE disconnected");
             IsBluetoothConnected = sender.ConnectionStatus == BluetoothConnectionStatus.Connected;
             if (IsBluetoothConnected)
             {
@@ -1030,6 +1021,26 @@ namespace GoProCSharpDev
                     }));
                 }
             }
+            else
+            {
+                // Bluethooth disconnected
+                // Make sure all connected service disabled
+                _RecheckBleStatusTimer = new Timer(new TimerCallback(RecheckBleStatusTimerTask), null, 5000, 0);
+            }
+        }
+
+        private void RecheckBleStatusTimerTask(object timerState)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (!IsBluetoothConnected)
+                {
+                    // Still not connect, disable all connection
+                    if (QueryCommandEnabled || SettingCommandEnabled || CommandCommandEnabled
+                    || QueryNotifierEnabled || SettingNotifierEnabled || CommandNotifierEnabled)
+                        BleDisconnect();
+                }
+            }));
         }
 
         // Bluetooth Funcitons
@@ -1194,6 +1205,7 @@ namespace GoProCSharpDev
                 catch (Exception e)
                 {
                     Debug.Print("GATT send command write value error: " + e.Message);
+                    BleNotifyRetryConnect(_GattSendCmds);
                     return;
                 }
             }
@@ -1228,6 +1240,7 @@ namespace GoProCSharpDev
                 catch (Exception e)
                 {
                     Debug.Print("GATT send setting write value error: " + e.Message);
+                    BleNotifyRetryConnect(_GattSetSettings);
                     return;
                 }
             }
