@@ -81,7 +81,7 @@
         <Button x:Name="BtnBleKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="297,0,0,220" VerticalAlignment="Bottom" Width="74" Height="20" Click="BtnBleKeepAlive_Click" />
 
         <Label Content="GATT Services Status" HorizontalAlignment="Left" Margin="404,0,0,305" Height="26" VerticalAlignment="Bottom" Width="163"/>
-        <Label Content="Query      Setting   Command" HorizontalAlignment="Left" Margin="415,0,0,287" Height="26" VerticalAlignment="Bottom" Width="166"/>
+        <Label Content="Query      Setting   Command" HorizontalAlignment="Left" Margin="415,0,0,286" Height="26" VerticalAlignment="Bottom" Width="166"/>
 
         <Label Content="ntf" HorizontalAlignment="Left" Margin="387,0,0,266" Height="26" VerticalAlignment="Bottom" Width="28"/>
         <Rectangle Fill="{Binding QueryNotifierEnabled, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="415,0,0,270" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
