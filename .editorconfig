@@ -2,3 +2,6 @@
 
 # Default severity for analyzer diagnostics with category 'CodeQuality'
 dotnet_analyzer_diagnostic.category-CodeQuality.severity = silent
+
+# CS0618: Type or member is obsolete
+dotnet_diagnostic.CS0618.severity = silent

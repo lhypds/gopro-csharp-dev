@@ -11,7 +11,6 @@
         <local:BrushBoolColorConverter x:Key="BConverter"></local:BrushBoolColorConverter>
     </Window.Resources>
     <Grid Margin="0,0,-6,-1">
-
         <GroupBox Header="BLE" HorizontalAlignment="Left" Height="274" Margin="203,0,0,182" VerticalAlignment="Bottom" Width="387" />
         <GroupBox Header="Status" HorizontalAlignment="Left" Height="274" Margin="12,0,0,182" VerticalAlignment="Bottom" Width="177" />
 
@@ -25,8 +24,22 @@
         <Rectangle Fill="{Binding IsPreviewStreamStarted, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,274" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
         <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="266,0,0,306" VerticalAlignment="Bottom" Width="44" Click="BtnScanBle_Click" Height="20"/>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="316,0,0,306" VerticalAlignment="Bottom" Width="55" Click="BtnConnect_Click" Height="20" />
-        <Button x:Name="btnDisconnect" Visibility="Hidden" Content="X" HorizontalAlignment="Left" Margin="376,0,0,306" VerticalAlignment="Bottom" Width="15" Height="20" Click="BtnDisconnect_Click" />
+        <Button x:Name="btnConnect" HorizontalAlignment="Left" Margin="316,0,0,306" VerticalAlignment="Bottom" Width="75" Click="BtnConnect_Click" Height="20">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Content" Value="Connect" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsBluetoothConnected}" Value="True">
+                            <Setter Property="Content" Value="Disconnect" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsBluetoothConnected}" Value="False">
+                            <Setter Property="Content" Value="Connect" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+
+        </Button>
         <Button x:Name="btnPair" Content="Pair" HorizontalAlignment="Left" Margin="217,0,0,306" VerticalAlignment="Bottom" Width="44" Click="BtnPair_Click" Height="20"/>
 
         <Button x:Name="BtnSetApName" Content="Set AP" HorizontalAlignment="Left" Margin="462,0,0,334" VerticalAlignment="Bottom" Width="54" Click="BtnSetApName_Click" Height="20" />
