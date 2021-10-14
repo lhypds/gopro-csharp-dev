@@ -552,6 +552,7 @@ namespace GoProCSharpDev
                                     catch (Exception ex)
                                     {
                                         Debug.Print("Command Response Exception: " + ex.Message);
+                                        BleNotifyRetryConnect(_GattNotifyCmds);
                                     }
                                 }
 
@@ -581,6 +582,7 @@ namespace GoProCSharpDev
                                     catch (Exception ex)
                                     {
                                         Debug.Print("Settings Response Exception: " + ex.Message);
+                                        BleNotifyRetryConnect(_GattNotifySettings);
                                     }
                                 }
 
@@ -623,12 +625,50 @@ namespace GoProCSharpDev
                                     catch (Exception ex)
                                     {
                                         Debug.Print("Query Response Exception: " + ex.Message);
+                                        BleNotifyRetryConnect(_GattNotifyQueryResp);
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        private async void BleNotifyRetryConnect(GattCharacteristic characteristic)
+        {
+            Debug.Print("Retry connect for characteristic");
+            try
+            {
+                GattCommunicationStatus status = await characteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                if (status == GattCommunicationStatus.Success)
+                {
+                    if (characteristic == _GattNotifyQueryResp)
+                    {
+                        _GattNotifyQueryResp.ValueChanged += NotifyQueryResp_ValueChanged;
+                        QueryNotifierEnabled = true;
+                        Debug.Print("Query response connected");
+                    }
+
+                    if (characteristic == _GattNotifySettings)
+                    {
+                        _GattNotifySettings.ValueChanged += NotifySettings_ValueChanged;
+                        SettingNotifierEnabled = true;
+                        Debug.Print("Query response connected");
+                    }
+
+                    if (characteristic == _GattNotifyCmds)
+                    {
+                        _GattNotifyCmds.ValueChanged += NotifyCommands_ValueChanged;
+                        CommandNotifierEnabled = true;
+                        Debug.Print("Query response connected");
+                    }
+                }
+                else { UpdateStatusBar("Failed to attach notify " + status); }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print("Retry Connect Exception: " + ex.Message);
             }
         }
 
@@ -716,6 +756,7 @@ namespace GoProCSharpDev
                             catch (Exception ex)
                             {
                                 Debug.Print("Command Response Disconnect Exception: " + ex.Message);
+                                BleNotifyRetryDisconnect(_GattNotifyCmds);
                             }
                         }
 
@@ -736,6 +777,7 @@ namespace GoProCSharpDev
                             catch (Exception ex)
                             {
                                 Debug.Print("Settings Response Disconnect Exception: " + ex.Message);
+                                BleNotifyRetryDisconnect(_GattNotifySettings);
                             }
                         }
 
@@ -756,6 +798,7 @@ namespace GoProCSharpDev
                             catch (Exception ex)
                             {
                                 Debug.Print("Query Response Disconnect Exception: " + ex.Message);
+                                BleNotifyRetryDisconnect(_GattNotifyQueryResp);
                             }
                         }
                     }
@@ -771,6 +814,40 @@ namespace GoProCSharpDev
 
             // Dispose others
             _BleDevice.Dispose();
+        }
+
+        private async void BleNotifyRetryDisconnect(GattCharacteristic characteristic)
+        {
+            Debug.Print("Retry disconnect for characteristic");
+            try
+            {
+                GattCommunicationStatus status = await characteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.None);
+                if (status == GattCommunicationStatus.Success)
+                {
+                    if (characteristic == _GattNotifyQueryResp)
+                    {
+                        QueryNotifierEnabled = false;
+                        Debug.Print("Query response disconnected");
+                    }
+
+                    if (characteristic == _GattNotifySettings)
+                    {
+                        SettingNotifierEnabled = false;
+                        Debug.Print("Setting response disconnected");
+                    }
+
+                    if (characteristic == _GattNotifyCmds)
+                    {
+                        CommandNotifierEnabled = false;
+                        Debug.Print("Command response disconnected");
+                    }
+                }
+                else { UpdateStatusBar("Failed to detach notify " + status); }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print("Retry Disconnect Exception: " + ex.Message);
+            }
         }
 
         // Bluetooth GATT Characteristic Notification Handlers
