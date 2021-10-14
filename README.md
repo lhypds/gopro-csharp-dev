@@ -24,3 +24,11 @@ Usage
 3. `Pair` to the discovered device that is not `GoPro Cam`. In the .gif below, this is `GoPro 0456` (Only needs to be done once, or if camera is factory reset)  
 4. After pairing is successful, `connect` to the same GoPro device  
 5. Now use any of the GUI buttons to read WiFi info, enable WiFi AP, set shutter, etc.  
+
+
+Known Issues
+------------
+
+* Bluetooth connection issue happen randomly  
+`Command Response Exception: Operation aborted (Exception from HRESULT: 0x80004004 (E_ABORT))`  
+Solve: restart application  
