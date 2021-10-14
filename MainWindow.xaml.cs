@@ -606,8 +606,20 @@ namespace GoProCSharpDev
 
             // Get GATT services
             // GATT Service
+            if (_BleDevice.GattServices == null)
+            {
+                Debug.Print("BLE disconnection: _BleDevice.GattServices is null");
+                return;
+            }
+
             foreach (GattDeviceService gatt in _BleDevice.GattServices)
             {
+                if (gatt.GetAllCharacteristics() == null)
+                {
+                    Debug.Print("BLE disconnection: gatt.GetAllCharacteristics is null");
+                    return;
+                }
+
                 // A GATT characteristic is a basic data element used to construct a GATT service
                 foreach (GattCharacteristic characteristic in gatt.GetAllCharacteristics())
                 {
