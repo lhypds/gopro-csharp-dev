@@ -770,14 +770,6 @@ namespace GoProCSharpDev
             }
 
             // Dispose others
-            _GattWifiApSsid = null;
-            _GattWifiApPass = null;
-            _GattSendCmds = null;
-            _GattNotifyCmds = null;
-            _GattSetSettings = null;
-            _GattNotifySettings = null;
-            _GattSendQueries = null;
-            _GattNotifyQueryResp = null;
             _BleDevice.Dispose();
         }
 

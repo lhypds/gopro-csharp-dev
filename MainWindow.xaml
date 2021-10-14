@@ -72,7 +72,7 @@
         <TextBox x:Name="TxtApPassword" MaxLines="1" HorizontalAlignment="Left" Height="23" Margin="469,0,0,360" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="105"/>
 
         <StatusBar Grid.ColumnSpan="2" Height="19" Margin="0,0,3,1" VerticalAlignment="Bottom">
-            <StatusBarItem Padding="0" Width="872">
+            <StatusBarItem Padding="0" Width="876">
                 <TextBlock x:Name="txtStatusBar" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="12" Padding="0,0,0,0"/>
             </StatusBarItem>
         </StatusBar>
