@@ -23,7 +23,11 @@ jobs:
   
     # The type of runner that the job will run on
     runs-on: windows-latest
-
+    
+    env:
+        Solution_Path: GoProCSharpDev.sln
+        Wpf_Project_Path: GoProCSharpDev.csproj
+     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: Install .NET Core
@@ -38,5 +42,21 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.0
       env:
          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+         
+    # restore the application while passing in the RuntimeIdentifier parameter in order to populate the obj folder with the appropriate platform dependencies for use during build.
+    - name:  Restore the Wpf application to populate the obj folder
+      run: msbuild $env:Solution_Path /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RuntimeIdentifier
+      env:
+        Configuration: Debug
+        RuntimeIdentifier: win-${{ matrix.targetplatform }}
+        
+      # Upload the MSIX package: https://github.com/marketplace/actions/upload-artifact
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: MSIX Package
+        path: GoProCSharpDev.Package\AppPackages\   
+         
+ 
       
 
