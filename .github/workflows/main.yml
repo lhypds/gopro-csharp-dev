@@ -43,6 +43,13 @@ jobs:
       env:
          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
          
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build
+    - name: Test with the dotnet CLI
+      run: dotnet test
+         
     # restore the application while passing in the RuntimeIdentifier parameter in order to populate the obj folder with the appropriate platform dependencies for use during build.
     - name:  Restore the Wpf application to populate the obj folder
       run: msbuild $env:Solution_Path /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RuntimeIdentifier
