@@ -9,6 +9,8 @@ Build
 Visual Studio is required to run the solution. Visit https://visualstudio.microsoft.com/downloads/ to download.  
 The target .NET framework is v4.7.2  
 
+[![.NET Core Desktop](https://github.com/lhypds/gopro-csharp-dev/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/lhypds/gopro-csharp-dev/actions/workflows/dotnet-desktop.yml)
+
 
 Requirements
 ------------
