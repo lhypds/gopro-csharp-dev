@@ -1358,20 +1358,21 @@ namespace GoProCSharpDev
         {
             TxtWebResponse.Dispatcher.Invoke(new Action(() => {
                 TxtWebResponse.Text = responseText;
+                TxtWebResponse.Text += "\r\n" + DateTime.Now.ToString();
             }));
         }
 
         private void BtnSendApiRequest_Click(object sender, RoutedEventArgs e)
         {
-            if (_WifiApSsidString.Equals(string.Empty))
+            if (TxtIpAddress.Text.Equals(string.Empty))
             {
-                TxtWebResponse.Text = "Please get Wifi AP SSID";
+                WebResponse("Please input IP address");
                 return;
             }
 
-            if (!WifiUtils.IsGoProWifiConnected(_WifiApSsidString))
+            if (!NetUtils.Ping(TxtIpAddress.Text))
             {
-                TxtWebResponse.Text = "This SSID for GoPro WIFI is not connected";
+                WebResponse("IP Ping failed");
                 return;
             }
 

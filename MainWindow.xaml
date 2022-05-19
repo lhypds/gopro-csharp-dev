@@ -107,7 +107,7 @@
             <ComboBoxItem x:Name="CmbItemTimelapse" Content="Timelapse" Selected="CmbItemTimelapse_Selected" />
         </ComboBox>
 
-        <GroupBox Header="Wi-Fi" Height="197" Margin="15,0,0,461" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="575" />
+        <GroupBox Header="USB or Wi-Fi" Height="197" Margin="15,0,0,461" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="575" />
 
         <Label Content="Request" HorizontalAlignment="Left" Margin="26,0,0,583" VerticalAlignment="Bottom" Height="26" Width="59"/>
         <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="90,0,0,583" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="429"/>

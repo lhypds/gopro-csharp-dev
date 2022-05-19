@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\QueryParam.cs" />
+    <Compile Include="Utils\NetUtils.cs" />
     <Compile Include="Utils\WifiUtils.cs" />
     <Compile Include="Utils\BluetoothUtils.cs" />
     <Compile Include="Utils\LoggingUtils.cs" />
