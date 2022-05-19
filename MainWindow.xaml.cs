@@ -212,12 +212,19 @@ namespace GoProCSharpDev
         private Timer _ConnectionControlTimer;
         private Timer _RecheckBleStatusTimer;
 
+        private string _IpAddress = "10.5.5.9";
+
         public MainWindow()
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-            
+            _IpAddress = ConfigUtils.Read("IpAddress");
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            TxtIpAddress.Text = _IpAddress;
         }
 
         private void UpdateStatusBar(string status)
@@ -1609,6 +1616,9 @@ namespace GoProCSharpDev
         {
             Debug.Print("Disconnecting by window closing...");
             BleDisconnect();
+
+            // Save current view
+            ConfigUtils.Save("IpAddress", TxtIpAddress.Text);
         }
     }
 

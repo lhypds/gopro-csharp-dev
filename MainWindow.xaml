@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GoProCSharpDev"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="GoPro C# Dev v1.1" Height="696.5" Width="899.5" ResizeMode="NoResize" Closing="Window_Closing">
+        Title="GoPro C# Dev v1.1" Height="696.5" Width="899.5" ResizeMode="NoResize" Closing="Window_Closing" Loaded="Window_Loaded">
     <Window.Resources>
         <local:BrushBoolColorConverter x:Key="BConverter"></local:BrushBoolColorConverter>
     </Window.Resources>
@@ -116,9 +116,9 @@
         <TextBox x:Name="TxtIpAddress" Text="10.5.5.9" MaxLines="1" Height="23" Margin="90,0,0,613" TextWrapping="NoWrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="124"/>
 
         <Label Content="File Name" HorizontalAlignment="Left" Margin="214,0,0,612" VerticalAlignment="Bottom" Height="26" Width="66"/>
-        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="280,0,0,613" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="184"/>
+        <TextBox x:Name="TxtFileName" MaxLines="1" Height="23" Margin="280,0,0,613" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="162"/>
         <Button x:Name="BtnCopy" Content="Copy" HorizontalAlignment="Left" Margin="524,0,0,614" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnCopy_Click" />
-        <Button x:Name="BtnOpenMedia" Content="Open" HorizontalAlignment="Left" Margin="469,0,0,614" VerticalAlignment="Bottom" Width="50" Height="20" Click="BtnOpenMedia_Click" />
+        <Button x:Name="BtnOpenMedia" Content="Open File" HorizontalAlignment="Left" Margin="447,0,0,614" VerticalAlignment="Bottom" Width="72" Height="20" Click="BtnOpenMedia_Click" />
         <Label Content="* To use Copy connect GoPro with a USB cable (Wifi and Bluetooth will be disabled)" FontSize="10" HorizontalAlignment="Left" Margin="27,0,0,462" VerticalAlignment="Bottom" Height="26" Width="389"/>
         <Label Content="* Preview with udp://@10.5.5.100:8554" FontSize="10" HorizontalAlignment="Left" Margin="27,0,0,475" VerticalAlignment="Bottom" Height="26" Width="389"/>
         <Label Content="* Shutter control is 2.0 Only" FontSize="10" HorizontalAlignment="Left" Margin="422,0,0,479" VerticalAlignment="Bottom" Height="26" Width="132"/>

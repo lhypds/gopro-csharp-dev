@@ -12,5 +12,6 @@ namespace GoProCSharpDev
         public const string APP_LOG_PATH = @"Log\App\applog.txt";
         public const string APPLOG_REPO = "APPLOG";
         public const string APPLOG_CONFIG_PATH = @"AppLog4netConfig.xml";
+        public const string CONFIG_FILE = "Config.txt";
     }
 }
