@@ -1364,8 +1364,9 @@ namespace GoProCSharpDev
         private void WebResponse(string responseText)
         {
             TxtWebResponse.Dispatcher.Invoke(new Action(() => {
-                TxtWebResponse.Text = responseText;
-                TxtWebResponse.Text += "\r\n" + DateTime.Now.ToString();
+                TxtWebResponse.Text = "- Timestamp -\r\n" + DateTime.Now.ToString() + "\r\n\r\n";
+                TxtWebResponse.Text += "- Response -" + "\r\n";
+                TxtWebResponse.Text += responseText;
             }));
         }
 
