@@ -1133,9 +1133,9 @@ namespace GoProCSharpDev
                     GattWriteResult gattWriteResult = await _GattWifiApSsid.WriteValueWithResultAsync(writer.DetachBuffer());
                     if (gattWriteResult.Status == GattCommunicationStatus.Success)
                     {
-                        Debug.Print("Wifi AP SSID updated to " + TxtApName.Text);
+                        Debug.Print("Wifi AP Name(SSID) updated to " + TxtApName.Text);
                     }
-                    else { UpdateStatusBar("Failed to update ap name"); }
+                    else { UpdateStatusBar("Failed to update AP Name(SSID)"); }
                 }
                 catch (Exception ex)
                 {
@@ -1154,7 +1154,7 @@ namespace GoProCSharpDev
                         _WifiApSsidString = result;
                         Debug.Print("Latest Wifi AP SSID: " + result);
                     }
-                    else { UpdateStatusBar("Failed to read ap name"); }
+                    else { UpdateStatusBar("Failed to read AP Name(SSID)"); }
                 }
                 catch (Exception ex)
                 {
@@ -1178,7 +1178,7 @@ namespace GoProCSharpDev
                     {
                         Debug.Print("Wifi AP Password updated to " + TxtApPassword.Text);
                     }
-                    else { UpdateStatusBar("Failed to update ap name"); }
+                    else { UpdateStatusBar("Failed to update AP Name(SSID)"); }
                 }
                 catch (Exception ex)
                 {
@@ -1196,7 +1196,7 @@ namespace GoProCSharpDev
                         TxtApPassword.Text = result;
                         Debug.Print("Latest Wifi AP password: " + result);
                     }
-                    else { UpdateStatusBar("Failed to read ap name"); }
+                    else { UpdateStatusBar("Failed to read AP Name(SSID)"); }
                 }
                 catch (Exception ex)
                 {
