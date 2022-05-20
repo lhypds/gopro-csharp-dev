@@ -221,7 +221,17 @@ namespace GoProCSharpDev
         private Timer _ConnectionControlTimer;
         private Timer _RecheckBleStatusTimer;
 
-        private string _IpAddress = "10.5.5.9";
+        // IP address
+        private string _IpAddress = "10.5.5.9";  // Default device IP for GoPro's WIFI
+
+        // Model name
+        private string _ModelName = "";
+
+        public string ModelName
+        {
+            get => _ModelName;
+            set { _ModelName = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ModelName")); }
+        }
 
         public MainWindow()
         {
@@ -904,6 +914,13 @@ namespace GoProCSharpDev
 
             int newLength = ReadBytesIntoBuffer(myBytes, _CommandBuf);
             BleLog("Command Response: " + BitConverter.ToString(myBytes));
+
+            if (myBytes[2] == 0x3C && myBytes[3] == 0x00)
+            {
+                ModelName = System.Text.Encoding.ASCII.GetString(myBytes.Skip(10).Take(10).ToArray());
+                BleLog("GOPRO Model: " + _ModelName);
+            }
+
             Debug.Print("Commands response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -1057,6 +1074,9 @@ namespace GoProCSharpDev
                     BtnReadApNameAndPass.Dispatcher.Invoke(new Action(() =>
                     {
                         BtnReadApNameAndPass.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+
+                        // Get hardware info after connected
+                        SendBleCommand(new byte[] { 0x01, 0x3C }, "Get camera hardware info");
                     }));
                 }
             }

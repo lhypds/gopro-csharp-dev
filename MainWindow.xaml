@@ -17,11 +17,11 @@
         <Label Content="Devices" HorizontalAlignment="Left" Margin="217,0,0,410" VerticalAlignment="Bottom" Height="26" Width="50"/>
         <ListBox x:Name="lbDevices" ItemsSource="{Binding Devices}" DisplayMemberPath="DeviceInfo.Name" HorizontalAlignment="Left" Height="79" Margin="217,0,0,332" VerticalAlignment="Bottom" Width="174"/>
 
-        <Label Content="BLE Connection" HorizontalAlignment="Left" Margin="26,0,0,305" VerticalAlignment="Bottom" Padding="0" Height="16" Width="83"/>
-        <Rectangle Fill="{Binding IsBluetoothConnected, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,304" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
+        <Label Content="BLE Connection" HorizontalAlignment="Left" Margin="26,0,0,285" VerticalAlignment="Bottom" Padding="0" Height="16" Width="83"/>
+        <Rectangle Fill="{Binding IsBluetoothConnected, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,284" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
-        <Label Content="Preview Stream" HorizontalAlignment="Left" Margin="26,0,0,284" VerticalAlignment="Bottom" Padding="0" Height="16" Width="83"/>
-        <Rectangle Fill="{Binding IsPreviewStreamStarted, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,282" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
+        <Label Content="Preview Stream" HorizontalAlignment="Left" Margin="26,0,0,264" VerticalAlignment="Bottom" Padding="0" Height="16" Width="83"/>
+        <Rectangle Fill="{Binding IsPreviewStreamStarted, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,262" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
         <Button x:Name="btnScanBle" Content="Scan" HorizontalAlignment="Left" Margin="266,0,0,306" VerticalAlignment="Bottom" Width="44" Click="BtnScanBle_Click" Height="20"/>
         <Button x:Name="BtnConnect" HorizontalAlignment="Left" Margin="316,0,0,306" VerticalAlignment="Bottom" Width="75" Click="BtnConnect_Click" Height="20">
@@ -56,17 +56,17 @@
         <Button x:Name="BtnHardwareInfo" Content="Hard Info" HorizontalAlignment="Left" Margin="218,0,0,220" VerticalAlignment="Bottom" Width="74" Click="BtnHardwareInfo_Click" Height="20" />
         <Button x:Name="BtnOpenGoProVersion" Content="GoPro Ver" HorizontalAlignment="Left" Margin="218,0,0,195" VerticalAlignment="Bottom" Width="74" Click="BtnOpenGoProVersion_Click" Height="20" />
 
-        <Label Content="Encoding" HorizontalAlignment="Left" Margin="26,0,0,327" VerticalAlignment="Bottom" Padding="0" Height="16" Width="50"/>
-        <Rectangle Fill="{Binding Encoding, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,326" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
+        <Label Content="Encoding" HorizontalAlignment="Left" Margin="26,0,0,307" VerticalAlignment="Bottom" Padding="0" Height="16" Width="50"/>
+        <Rectangle Fill="{Binding Encoding, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,306" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
-        <Label Content="System Busy" HorizontalAlignment="Left" Margin="27,0,0,262" VerticalAlignment="Bottom" Padding="0" Height="16" Width="67"/>
-        <Rectangle Fill="{Binding IsSystemBusy, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,260" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
+        <Label Content="System Busy" HorizontalAlignment="Left" Margin="27,0,0,242" VerticalAlignment="Bottom" Padding="0" Height="16" Width="67"/>
+        <Rectangle Fill="{Binding IsSystemBusy, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,240" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
-        <Label Content="Battery Level" HorizontalAlignment="Left" Margin="26,0,0,413" VerticalAlignment="Bottom" Padding="0" Height="16" Width="68"/>
-        <ProgressBar x:Name="prgBatteryLevel" HorizontalAlignment="Left" Height="11" Margin="26,0,0,397" VerticalAlignment="Bottom" Width="83" Value="{Binding BatteryLevel, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100"/>
+        <Label Content="Battery Level" HorizontalAlignment="Left" Margin="26,0,0,393" VerticalAlignment="Bottom" Padding="0" Height="16" Width="68"/>
+        <ProgressBar x:Name="prgBatteryLevel" HorizontalAlignment="Left" Height="11" Margin="26,0,0,377" VerticalAlignment="Bottom" Width="83" Value="{Binding BatteryLevel, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100"/>
 
-        <Label Content="Wi-Fi" HorizontalAlignment="Left" Margin="26,0,0,349" VerticalAlignment="Bottom" Padding="0" Height="16" Width="28"/>
-        <Rectangle Fill="{Binding WifiStatus, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,348" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
+        <Label Content="Wi-Fi" HorizontalAlignment="Left" Margin="26,0,0,329" VerticalAlignment="Bottom" Padding="0" Height="16" Width="28"/>
+        <Rectangle Fill="{Binding WifiStatus, Converter={StaticResource BConverter}}" HorizontalAlignment="Left" Height="17" Margin="122,0,0,328" Stroke="Black" VerticalAlignment="Bottom" Width="49"/>
 
         <Label Content="Camera Wifi AP" HorizontalAlignment="Left" Margin="402,0,0,411" VerticalAlignment="Bottom" Height="26" Width="104"/>
         <TextBox x:Name="TxtApName" MaxLines="1" HorizontalAlignment="Left" Height="23" Margin="469,0,0,388" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" Width="105"/>
@@ -79,8 +79,8 @@
                 <TextBlock x:Name="txtStatusBar" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="12" Padding="0,0,0,0"/>
             </StatusBarItem>
         </StatusBar>
-        <Label Content="Zoom Level(%)" HorizontalAlignment="Left" Margin="27,0,0,372" VerticalAlignment="Bottom" Padding="0" Height="16" Width="78"/>
-        <Label Content="{Binding ZoomLevel}" BorderBrush="Black" BorderThickness="1" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="122,0,0,370" VerticalAlignment="Bottom" Padding="0" Height="19" RenderTransformOrigin="0.5,0.5" Width="28" />
+        <Label Content="Zoom Level(%)" HorizontalAlignment="Left" Margin="27,0,0,352" VerticalAlignment="Bottom" Padding="0" Height="16" Width="78"/>
+        <Label Content="{Binding ZoomLevel}" BorderBrush="Black" BorderThickness="1" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="122,0,0,350" VerticalAlignment="Bottom" Padding="0" Height="19" RenderTransformOrigin="0.5,0.5" Width="28" />
         <Button x:Name="BtnBleKeepAlive" Content="Keep Alive" HorizontalAlignment="Left" Margin="297,0,0,220" VerticalAlignment="Bottom" Width="74" Height="20" Click="BtnBleKeepAlive_Click" />
 
         <Label Content="GATT Services Status" HorizontalAlignment="Left" Margin="404,0,0,305" Height="26" VerticalAlignment="Bottom" Width="163"/>
@@ -155,7 +155,7 @@
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,158" VerticalAlignment="Bottom" Height="26" Width="85"/>
         <TextBox x:Name="TxtBleResponse" Margin="15,0,0,28" TextWrapping="Wrap" Text="" Height="132" VerticalAlignment="Bottom" VerticalScrollBarVisibility="Visible" FontSize="11" HorizontalAlignment="Left" Width="575"/>
         <TextBlock HorizontalAlignment="Left" Margin="539,0,0,159" VerticalAlignment="Bottom" Height="19" Width="49">
-            <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/ble_1_0" RequestNavigate="Hyperlink_RequestNavigate">
+            <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/ble_2_0" RequestNavigate="Hyperlink_RequestNavigate">
                 BLE Spec
             </Hyperlink>
         </TextBlock>
@@ -171,5 +171,7 @@
         <Button x:Name="BtnVideo" Content="Video" HorizontalAlignment="Left" Margin="346,0,0,519" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnVideo_Click" />
         <Button x:Name="BtnPhoto" Content="Photo" HorizontalAlignment="Left" Margin="426,0,0,519" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPhoto_Click" />
         <Button x:Name="BtnGetVersion" Content="Version" HorizontalAlignment="Left" Margin="106,0,0,519" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnGetVersion_Click" />
+        <Label Content="Model Name" HorizontalAlignment="Left" Margin="26,0,0,414" VerticalAlignment="Bottom" Padding="0" Height="16" Width="83"/>
+        <Label Content="{Binding ModelName}" BorderBrush="Black" BorderThickness="1" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="122,0,0,409" VerticalAlignment="Bottom" Padding="0" Height="19" RenderTransformOrigin="0.5,0.5" Width="49" FontSize="10" />
     </Grid>
 </Window>
