@@ -112,6 +112,15 @@ namespace GoProCSharpDev
             set { _Encoding = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Encoding")); }
         }
 
+        // System Busy
+        private bool _IsSystemBusy = false;
+
+        public bool IsSystemBusy
+        {
+            get => _IsSystemBusy;
+            set { _IsSystemBusy = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSystemBusy")); }
+        }
+
         // Battery Level
         private int _Batterylevel = 0;
 
@@ -950,6 +959,12 @@ namespace GoProCSharpDev
                     // Status messages
                     for (int k = 0; k < _QueryBuf.Count;)
                     {
+                        if (_QueryBuf[k] == 8)
+                        {
+                            IsSystemBusy = _QueryBuf[k + 2] > 0;
+                            Debug.Print("IsSystemBusy: " + IsSystemBusy);
+                        }
+
                         if (_QueryBuf[k] == 10)
                         {
                             Encoding = _QueryBuf[k + 2] > 0;
