@@ -1374,6 +1374,12 @@ namespace GoProCSharpDev
         {
             TxtWebResponse.Text = "";
 
+            if (FileDownloadProgress > 0)
+            {
+                UpdateStatusBar("File downloading please wait...");
+                return;
+            }
+
             if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text))
             {
                 UpdateStatusBar("Please input valid IP Address");
