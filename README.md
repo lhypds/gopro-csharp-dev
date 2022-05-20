@@ -3,6 +3,13 @@ GoPro C# Development
 ====================
 
 
+Features
+--------
+
+BLE, WIFI and USB-C connection, control of GoPro HERO 9/10. To use USB-C a driver is required.
+Depends on Open GoPro API. https://gopro.github.io/OpenGoPro/
+
+
 Build
 -----
 
@@ -40,3 +47,11 @@ Known Issues
 * Bluetooth connection issue happen randomly  
 `Command Response Exception: Operation aborted (Exception from HRESULT: 0x80004004 (E_ABORT))`  
 Solve: restart application  
+
+
+Trouble Shooting
+----------------
+
+* USB-C cable connected but cannot ping device  
+Install driver GoPro.Webcam.msi  
+Download https://community.gopro.com/s/article/GoPro-Webcam?language=en_US#GetStartedPC
