@@ -38,7 +38,7 @@ Usage
 Screenshots
 -----------
 
-![image](https://user-images.githubusercontent.com/4526937/169522137-5d6e2e30-fa58-4c87-a873-f90224cc9684.png)
+![image](https://user-images.githubusercontent.com/4526937/169522539-c09d4bc8-018f-4ce8-8809-2faeed2ed3ff.png)
 
 
 Known Issues
