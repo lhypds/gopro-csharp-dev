@@ -1378,22 +1378,23 @@ namespace GoProCSharpDev
 
         private void CmbItem4K_Selected(object sender, RoutedEventArgs e)
         {
-            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x01 }, "Set video resolution (id: 2) to 4k (value: 1)");
+            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x01 }, "Set video resolution (id: 2) to 4k");
         }
 
         private void CmbItem5K_Selected(object sender, RoutedEventArgs e)
         {
-            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x18 }, "Set video resolution (id: 2) to 5k (value: 24)");
+            if (_ModelName.Contains("HERO10")) SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x19 }, "Set video resolution (id: 2) to 5k");
+            else SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x18 }, "Set video resolution (id: 2) to 5k");
         }
 
         private void CmbItem1080_Selected(object sender, RoutedEventArgs e)
         {
-            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x09 }, "Set video resolution (id: 2) to 1080 (value: 9)");
+            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x09 }, "Set video resolution (id: 2) to 1080");
         }
 
-        private void CmbItem1440_Selected(object sender, RoutedEventArgs e)
+        private void CmbItem2700_Selected(object sender, RoutedEventArgs e)
         {
-            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x07 }, "Set video resolution (id: 2) to 1440 (value: 7)");
+            SendBleSetting(new byte[] { 0x03, 0x02, 0x01, 0x04 }, "Set video resolution (id: 2) to 2.7k");
         }
 
         #endregion Bluetooth

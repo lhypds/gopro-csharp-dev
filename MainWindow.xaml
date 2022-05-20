@@ -100,7 +100,7 @@
             <ComboBoxItem x:Name="CmbItem4K" Content="4K" Selected="CmbItem4K_Selected"/>
             <ComboBoxItem x:Name="CmbItem5K" Content="5K" Selected="CmbItem5K_Selected"/>
             <ComboBoxItem x:Name="CmbItem1080" Content="1080" Selected="CmbItem1080_Selected"/>
-            <ComboBoxItem x:Name="CmbItem1440" Content="1440" Selected="CmbItem1440_Selected"/>
+            <ComboBoxItem x:Name="CmbItem1440" Content="2.7k" Selected="CmbItem2700_Selected"/>
         </ComboBox>
 
         <Label Content="Preset Group" HorizontalAlignment="Left" Margin="407,0,0,195" Height="26" VerticalAlignment="Bottom" Width="82"/>
