@@ -107,7 +107,7 @@
             <ComboBoxItem x:Name="CmbItemTimelapse" Content="Timelapse" Selected="CmbItemTimelapse_Selected" />
         </ComboBox>
 
-        <GroupBox Header="USB or Wi-Fi" Height="197" Margin="15,0,0,461" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="575" />
+        <GroupBox Header="USB or Wi-Fi" Margin="15,10,0,461" HorizontalAlignment="Left" Width="575" />
 
         <Label Content="Request" HorizontalAlignment="Left" Margin="26,0,0,583" VerticalAlignment="Bottom" Height="26" Width="59"/>
         <TextBox x:Name="TxtRequestUrl" MaxLines="1" Height="23" Margin="90,0,0,583" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="429"/>
@@ -139,14 +139,14 @@
         <Button x:Name="BtnPreviewStart" Content="Pv Start" HorizontalAlignment="Left" Margin="266,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStart_Click" />
         <Button x:Name="BtnPreviewStop" Content="Pv Stop" HorizontalAlignment="Left" Margin="346,0,0,526" VerticalAlignment="Bottom" Width="75" Height="20" Click="BtnPreviewStop_Click" />
 
-        <Label Content="HTTP Response" HorizontalAlignment="Left" Margin="599,0,0,632" VerticalAlignment="Bottom" Height="26" Width="91"/>
-        <TextBlock HorizontalAlignment="Left" Margin="821,0,0,634" VerticalAlignment="Bottom" Height="19" Width="60">
+        <Label Content="HTTP Response" Margin="599,10,210,0" Height="26" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Right" Margin="0,15,19,0" VerticalAlignment="Top" Height="19" Width="60">
             <Hyperlink NavigateUri="https://gopro.github.io/OpenGoPro/http_2_0" RequestNavigate="Hyperlink_RequestNavigate">
                 HTTP Spec
             </Hyperlink>
         </TextBlock>
 
-        <TextBox x:Name="TxtWebResponse" Margin="599,0,14,38" TextWrapping="Wrap" Text="" Height="596" VerticalAlignment="Bottom" FontSize="11"/>
+        <TextBox x:Name="TxtWebResponse" Margin="0,34,14,38" TextWrapping="Wrap" Text="" FontSize="11" HorizontalAlignment="Right" Width="287"/>
         <ProgressBar x:Name="PrgDownload" Height="11" Margin="599,0,14,28" VerticalAlignment="Bottom" Value="{Binding FileDownloadProgress, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100"/>
 
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,158" VerticalAlignment="Bottom" Height="26" Width="85"/>
