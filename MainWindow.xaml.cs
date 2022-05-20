@@ -877,21 +877,21 @@ namespace GoProCSharpDev
         // Bluetooth GATT Characteristic Notification Handlers
         // A GATT characteristic is a basic data element used to construct a GATT service
 
-        private void BleResponse(string responseText)
+        private void BleLog(string newLogText)
         {
-            string logText = "";
-            TxtBleResponse.Dispatcher.Invoke(new Action(() => { logText = TxtBleResponse.Text; }));
-            if (logText != null)
+            string currentLogText = "";
+            TxtBleResponse.Dispatcher.Invoke(new Action(() => { currentLogText = TxtBleResponse.Text; }));
+            if (currentLogText != null)
             {
-                if (!logText.Equals(string.Empty))
+                if (!currentLogText.Equals(string.Empty))
                 {
-                    logText += "\r\n";
+                    currentLogText += "\r\n";
                 }
             }
-            logText += "[" + DateTime.Now.ToLongTimeString() + "] ";
-            logText += responseText;
+            currentLogText += "[" + DateTime.Now.ToLongTimeString() + "] ";
+            currentLogText += newLogText;
             TxtBleResponse.Dispatcher.Invoke(new Action(() => {
-                TxtBleResponse.Text = logText;
+                TxtBleResponse.Text = currentLogText;
                 TxtBleResponse.ScrollToEnd();
             }));
         }
@@ -903,7 +903,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _CommandBuf);
-            BleResponse("Command Response: " + BitConverter.ToString(myBytes));
+            BleLog("Command Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Commands response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -922,7 +922,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _SettingBuf);
-            BleResponse("Setting Response: " + BitConverter.ToString(myBytes));
+            BleLog("Setting Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Setting changed response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -943,7 +943,7 @@ namespace GoProCSharpDev
             reader.ReadBytes(myBytes);
 
             int newLength = ReadBytesIntoBuffer(myBytes, _QueryBuf);
-            BleResponse("Query Response: " + BitConverter.ToString(myBytes));
+            BleLog("Query Response: " + BitConverter.ToString(myBytes));
             Debug.Print("Query response recieved: " + BitConverter.ToString(myBytes));
 
             if (newLength > 0)
@@ -1233,7 +1233,9 @@ namespace GoProCSharpDev
                 return;
             }
 
+            BleLog("Send Command: " + BitConverter.ToString(value));
             Debug.Print("Send command: " + function);
+
             DataWriter writer = new DataWriter();
             writer.WriteBytes(value);
 
@@ -1268,7 +1270,9 @@ namespace GoProCSharpDev
                 return;
             }
 
+            BleLog("Send Setting: " + BitConverter.ToString(value));
             Debug.Print("Send setting: " + function);
+
             DataWriter writer = new DataWriter();
             writer.WriteBytes(value);
 
@@ -1339,7 +1343,7 @@ namespace GoProCSharpDev
 
         private void CmbItemPhoto_Selected(object sender, RoutedEventArgs e)
         {
-            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE8 }, "Presets: Load Group - Photo");
+            SendBleCommand(new byte[] { 0x04, 0x3E, 0x02, 0x03, 0xE9 }, "Presets: Load Group - Photo");
         }
 
         private void CmbItemTimelapse_Selected(object sender, RoutedEventArgs e)
