@@ -127,7 +127,7 @@ namespace GoProCSharpDev
         public int FileDownloadProgress
         {
             get => _FileDownloadProgress;
-            set { _FileDownloadProgress = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FileDownloadProgress")); }
+            set { _FileDownloadProgress = value == 100 ? 0 : value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FileDownloadProgress")); }
         }
 
         // Wifi

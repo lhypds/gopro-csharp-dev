@@ -147,7 +147,7 @@
         </TextBlock>
 
         <TextBox x:Name="TxtWebResponse" Margin="599,34,14,38" TextWrapping="Wrap" Text="" FontSize="11"/>
-        <ProgressBar x:Name="PrgDownload" Height="11" Margin="599,0,14,28" VerticalAlignment="Bottom" Value="{Binding FileDownloadProgress, Mode=OneWay}" ToolTip="{Binding BatteryLevel, Mode=OneWay}" Maximum="100"/>
+        <ProgressBar x:Name="PrgDownload" Height="11" Margin="599,0,14,28" VerticalAlignment="Bottom" Value="{Binding FileDownloadProgress, Mode=OneWay}" Maximum="100"/>
 
         <Label Content="BLE Response" HorizontalAlignment="Left" Margin="15,0,0,158" VerticalAlignment="Bottom" Height="26" Width="85"/>
         <TextBox x:Name="TxtBleResponse" Margin="15,0,0,28" TextWrapping="Wrap" Text="" Height="132" VerticalAlignment="Bottom" VerticalScrollBarVisibility="Visible" FontSize="11" HorizontalAlignment="Left" Width="575"/>
