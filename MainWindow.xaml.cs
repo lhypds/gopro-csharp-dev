@@ -1359,7 +1359,7 @@ namespace GoProCSharpDev
 
         #endregion Bluetooth
 
-        #region Wifi
+        #region HTTP
 
         private void WebResponse(string responseText)
         {
@@ -1372,9 +1372,11 @@ namespace GoProCSharpDev
 
         private void BtnSendApiRequest_Click(object sender, RoutedEventArgs e)
         {
-            if (TxtIpAddress.Text.Equals(string.Empty))
+            TxtWebResponse.Text = "";
+
+            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text))
             {
-                WebResponse("Please input IP address");
+                UpdateStatusBar("Please input valid IP Address");
                 return;
             }
 
@@ -1447,110 +1449,112 @@ namespace GoProCSharpDev
 
         private void BtnListMedia_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/media/list";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/media/list");
         }
 
         private void BtnGetMediaFile_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/media/gpmf?path=100GOPRO/";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/media/gpmf?path=100GOPRO/" + TxtFileName.Text);
         }
 
         private void BtnWifiKeepAlive_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/camera/keep_alive";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/camera/keep_alive");
         }
 
         private void BtnGetThumbnail_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/media/thumbnail?path=100GOPRO/";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/media/thumbnail?path=100GOPRO/" + TxtFileName.Text);
         }
 
         private void BtnGetInfo_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/media/info?path=100GOPRO/";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/media/info?path=100GOPRO/" + TxtFileName.Text);
         }
 
         private void BtnGetScreennail_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/media/screennail?path=100GOPRO/";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/media/screennail?path=100GOPRO/" + TxtFileName.Text);
         }
 
         private void BtnDigitalZoom_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/camera/digital_zoom?percent=";
             int.TryParse(TxtDigitalZoomPercent.Text, out int percent);
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + percent;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/camera/digital_zoom?percent=" + percent);
         }
 
         private void BtnDownload_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = ":8080/videos/DCIM/100GOPRO/";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix + TxtFileName.Text;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest(":8080/videos/DCIM/100GOPRO/" + TxtFileName.Text);
         }
 
         private void BtnCamState_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/camera/state";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/camera/state");
         }
 
         private void BtnPreviewStart_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/camera/stream/start";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/camera/stream/start");
         }
 
         private void BtnPreviewStop_Click(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/camera/stream/stop";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/camera/stream/stop");
         }
 
         private void BtnShutterOn_Click_1(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/camera/shutter/start";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
-            BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            SendHttpRequest("/gopro/camera/shutter/start");
         }
 
         private void BtnShutterOff_Click_1(object sender, RoutedEventArgs e)
         {
-            if (!WebRequestUtils.ValidateIPv4(TxtIpAddress.Text)) { UpdateStatusBar("Please input valid IP Address"); return; }
-            string requestSuffix = "/gopro/camera/shutter/stop";
-            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + requestSuffix;
+            SendHttpRequest("/gopro/camera/shutter/stop");
+        }
+
+        private void BtnGetVersion_Click(object sender, RoutedEventArgs e)
+        {
+            SendHttpRequest("/gopro/version");
+        }
+
+        private void BtnGetDateTime_Click(object sender, RoutedEventArgs e)
+        {
+            SendHttpRequest("/gopro/camera/get_date_time");
+        }
+
+        private void BtnWebcamStatus_Click(object sender, RoutedEventArgs e)
+        {
+            SendHttpRequest("/gopro/webcam/status");
+        }
+
+        private void BtnEnableWiredUsbControl_Click(object sender, RoutedEventArgs e)
+        {
+            SendHttpRequest("/gopro/camera/control/wired_usb?p=1");
+        }
+
+        private void BtnVideo_Click(object sender, RoutedEventArgs e)
+        {
+            SendHttpRequest("/gopro/camera/presets/set_group?id=1000");
+        }
+
+        private void BtnPhoto_Click(object sender, RoutedEventArgs e)
+        {
+            SendHttpRequest("/gopro/camera/presets/set_group?id=1001");
+        }
+
+        private void BtnTimelapse_Click(object sender, RoutedEventArgs e)
+        {
+            SendHttpRequest("/gopro/camera/presets/set_group?id=1002");
+        }
+
+        private void SendHttpRequest(string suffix)
+        {
+            TxtRequestUrl.Text = "http://" + TxtIpAddress.Text + suffix;
             BtnSendApiRequest.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
         }
 
-        #endregion Wifi
+        #endregion HTTP
 
         private void BtnOpenOutput_Click(object sender, RoutedEventArgs e)
         {
