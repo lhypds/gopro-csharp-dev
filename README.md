@@ -9,6 +9,9 @@ Features
 BLE, WIFI and USB-C connection, control of GoPro HERO 9/10. To use USB-C a driver is required.
 Depends on Open GoPro API. https://gopro.github.io/OpenGoPro/
 
+For USB-C connection, in GoPro 9, need to use "GoPro Connect".
+In GoPro 10, no need to change anything.
+
 
 Build
 -----
@@ -54,4 +57,4 @@ Trouble Shooting
 
 * USB-C cable connected but cannot ping device  
 Install driver GoPro.Webcam.msi  
-Download https://community.gopro.com/s/article/GoPro-Webcam?language=en_US#GetStartedPC
+Download https://community.gopro.com/s/article/GoPro-Webcam?language=en_US#GetStartedPC  
