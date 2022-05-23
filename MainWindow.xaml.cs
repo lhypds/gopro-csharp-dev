@@ -915,7 +915,7 @@ namespace GoProCSharpDev
             int newLength = ReadBytesIntoBuffer(myBytes, _CommandBuf);
             BleLog("Command Response: " + BitConverter.ToString(myBytes));
 
-            if (myBytes[2] == 0x3C && myBytes[3] == 0x00)
+            if (myBytes.Length > 3 && myBytes[2] == 0x3C && myBytes[3] == 0x00)
             {
                 ModelName = System.Text.Encoding.ASCII.GetString(myBytes.Skip(10).Take(10).ToArray());
                 BleLog("GOPRO Model: " + _ModelName);
