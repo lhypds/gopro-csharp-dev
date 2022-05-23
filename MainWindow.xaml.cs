@@ -848,6 +848,13 @@ namespace GoProCSharpDev
 
             // Dispose others
             _BleDevice.Dispose();
+
+            // Clear connected GoPro status
+            ModelName = "";
+            BatteryLevel = 0;
+            ZoomLevel = 0;
+            TxtApName.Text = "";
+            TxtApPassword.Text = "";
         }
 
         private async void BleNotifyRetryDisconnect(GattCharacteristic characteristic)
