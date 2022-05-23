@@ -855,6 +855,10 @@ namespace GoProCSharpDev
             ZoomLevel = 0;
             TxtApName.Text = "";
             TxtApPassword.Text = "";
+            WifiStatus = false;
+            Encoding = false;
+            IsPreviewStreamStarted = false;
+            IsSystemBusy = false;
         }
 
         private async void BleNotifyRetryDisconnect(GattCharacteristic characteristic)
